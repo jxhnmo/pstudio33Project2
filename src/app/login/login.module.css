@@ -1,3 +1,23 @@
-.p{
-    color: blue;
+.square {
+    width: 350px;
+    height: 350px;
+    background-color: var(--c4);
+    margin: 0 auto;
+    margin-top: 100px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s;
+    border: 2px solid var(--c7);
+}
+
+.square:hover {
+    transform: scale(1.1);
+    background-color: var(--c6);
+    color: var(--c5)
 }
