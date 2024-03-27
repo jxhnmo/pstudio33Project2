@@ -1,8 +1,8 @@
 import Image from "next/image";
-import styles from "./src/login.module.css";
+import styles from "@/app/login/login.module.css";
 
 export default function Home() {
   return (
-   <p>This is login page</p>
+   <p className = {styles.p}>This is login page</p>
   );
 }

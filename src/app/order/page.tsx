@@ -1,8 +1,8 @@
 import Image from "next/image";
-import styles from "./src/order.module.css";
+import styles from "@/app/order/order.module.css";
 
 export default function Home() {
   return (
-   <p>This is order page</p>
+   <p className={styles.p}>This is order page</p>
   );
 }

@@ -1,8 +1,8 @@
 import Image from "next/image";
-import styles from "./src/menu.module.css";
+import styles from "@/app/menu/menu.module.css";
 
 export default function Home() {
   return (
-   <p>This is menu page</p>
+   <p className={styles.p}>This is menu page</p>
   );
 }
