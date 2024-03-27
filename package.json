@@ -1,6 +1,7 @@
 {
   "name": "pstudio33_project2",
   "version": "0.1.0",
+  "homepage": "https://jxhnmo.github.io/pstudio33project2",
   "private": true,
   "scripts": {
     "dev": "next dev",
