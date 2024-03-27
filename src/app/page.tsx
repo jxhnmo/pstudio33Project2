@@ -95,20 +95,3 @@ export default function Home() {
     </main>
   );
 }
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  let items: { id: number; name: string; description: string; }[] = [];
-  try {
-      // Adjust the query according to your actual data
-      const result = await DBConnection.query<{ id: number, name: string, description: string }>("SELECT id, name, description FROM items;");
-      items = result.rows;
-  } catch (error) {
-      console.error("Database fetch error:", error);
-      // Handle error as needed
-  }
-  
-  return {
-      props: {
-          items,
-      },
-  };
-};
