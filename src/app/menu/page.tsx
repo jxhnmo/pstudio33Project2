@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import styles from "@/app/menu/menu.module.css";
 
@@ -26,3 +28,4 @@ export default function Home() {
     </Link>
   );
 }
+
