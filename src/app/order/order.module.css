@@ -1,3 +1,90 @@
-.p{
-    color: blue;
+.main {
+    display: flex;
+    max-width: var(--max-width);
+    margin: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .categories {
+    flex-basis: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* This will make sure the buttons stretch to the full width of the column */
+  }
+  
+  .categoriesHeader {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ccc; /* Adjust color as needed */
+    text-align: center;
+    /* Other styling as necessary */
+  }
+  
+  .categoriesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Adjust the space between buttons */
+    width: 100%; /* This ensures the category list takes up the full width of its container */
+  }
+  
+  .categoryButton {
+    width: 100%; /* This will make the buttons full width */
+    /* Rest of the button styling here */
+    padding: 0.5rem 1rem; /* Adjust padding as needed */
+    border: 1px solid #ccc; /* Example button border */
+    background-color: var(--c4); /* Using variable for button background */
+    color: var(--c3); /* Using variable for text color */
+    /* Add hover effects, transitions, etc. as needed */
+  }
+  
+  .orderMenu {
+    flex-basis: 60%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1rem;
+    /* Adjust styling as needed */
+  }
+  
+.currentOrderTitle {
+  /* Styles for the 'Current Order' title */
+  border-bottom: 1px solid #ccc; /* Example style */
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
+
+.orderList {
+  /* Styles if you have a list of items instead of a textarea */
+  margin-bottom: 1rem;
+}
+
+.currentOrderTextarea {
+  /* Styles for the textbox showing the current order */
+  width: 100%; /* Take the full width of the parent */
+  height: 150px; /* Or any other height */
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc; /* Example style */
+  resize: none; /* Prevent resizing if it should be fixed in size */
+  background-color: #f8f8f8; /* Light grey background */
+  color: #333; /* Darker text color */
+}
+
+.total {
+  /* Styles for the 'Total' section */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/**.total span {
+  /* Additional styling for the total amount, if needed */
+/*}
+
+/* .confirmOrderButton {
+  /* Styles for the confirm order button */
+/*} 
+
+  /* You may want to add specific button styles and other component styles here */
+  
