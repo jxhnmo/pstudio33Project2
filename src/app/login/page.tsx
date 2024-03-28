@@ -9,7 +9,16 @@ export default function Home() {
     <div className="container">
       <Link className={styles.square} href="/order"> Customer Order</Link>
       <Link className={styles.square} href="/menu"> Menu</Link>
-      <Link className={styles.square} href="/staff"> Staff</Link>
+      <div className={styles.square}>
+        <form>
+          <h1>Staff</h1>
+          <label htmlFor="username">Username:</label><br />
+          <input type="text" id="username" name="username" /> <br />
+          <label htmlFor="password">Password:</label><br />
+          <input type="password" id="password" name="password" /> <br />
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 }
