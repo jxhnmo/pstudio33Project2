@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import React, { useState, useEffect } from 'react';
 import styles from "@/app/menu/menu.module.css";
 
 // Temporary data before database connection is coded
@@ -22,17 +23,27 @@ const menuData = [
 ];
 
 const Home: React.FC = () => {
-  const firstCategory = menuData[0]; // to be changed every 5 seconds later
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % menuData.length);
+    }, 5000); // Change category every 5000 ms (5 seconds)
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentCategory = menuData[currentCategoryIndex];
 
   return (
     <div className={styles.menuContainer}>
       <Link href="/" style={{ width: '100%', height: '100%' }}>
         <h1 className={styles.heading}>REV's American Grill</h1>
       </Link>
-      <div key={firstCategory.category} className={styles.categoryContainer}>
-        <h2>{firstCategory.category}</h2>
+      <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
+        <h2>{currentCategory.category}</h2>
         <div className={styles.items}>
-          {firstCategory.items.map((item) => (
+          {currentCategory.items.map((item) => (
             <div key={item.name} className={styles.itemContainer}>
               <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
               <p className={styles.itemNamePrice}>{item.name} - ${item.price.toFixed(2)}</p>
