@@ -22,24 +22,24 @@ const menuData = [
 ];
 
 const Home: React.FC = () => {
+  const firstCategory = menuData[0]; // to be changed every 5 seconds later
+
   return (
     <div className={styles.menuContainer}>
       <Link href="/" style={{ width: '100%', height: '100%' }}>
-        <h1>This is the menu</h1>
+        <h1 className={styles.heading}>REV's American Grill</h1>
       </Link>
-      {menuData.map((category) => (
-        <div key={category.category} className={styles.category}>
-          <h2>{category.category}</h2>
-          <div className={styles.items}>
-            {category.items.map((item) => (
-              <div key={item.name} className={styles.item}>
-                <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
-                <p>{item.name} - ${item.price.toFixed(2)}</p>
-              </div>
-            ))}
-          </div>
+      <div key={firstCategory.category} className={styles.categoryContainer}>
+        <h2>{firstCategory.category}</h2>
+        <div className={styles.items}>
+          {firstCategory.items.map((item) => (
+            <div key={item.name} className={styles.itemContainer}>
+              <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
+              <p className={styles.itemNamePrice}>{item.name} - ${item.price.toFixed(2)}</p>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
