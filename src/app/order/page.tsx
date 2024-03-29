@@ -1,25 +1,54 @@
+"use client";
+
 import Image from "next/image";
 import styles from "@/app/order/order.module.css";
+import { useEffect, useState } from 'react';
+
+import { fetchCategories } from '../categories';
+
 
 export default function Home() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoryObjects = await fetchCategories();
+        console.log(categoryObjects);
+        const categoryNames = categoryObjects.map(obj => obj.category);
+        setCategories(categoryNames);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  // const changeCategory = async (categoryName: string) => {
+  //   const response = await fetch(`/api/items?category=${categoryName}`);
+  //   const items = await response.json();
+  //   setCurrentCategoryItems(items);
+  // };
+
   return (
     <div className={styles.main}>
       {/* Categories Column */}
       <div className={styles.categories}>
         <h2 className={styles.categoriesHeader}>Categories</h2>
         <div className={styles.categoriesList}>
-          {['Category 1', 'Category 2', 'Category 3'].map((category) => (
-            <button key={category} className={styles.categoryButton}>
-              {category}
+          {categories.map((categoryName, index) => (
+            <button key={index} className={styles.categoryButton}>
+              {categoryName}
             </button>
           ))}
         </div>
       </div>
       {/* Order Menu */}
       <div className={styles.orderMenu}>
-        {Array.from({ length: 16 }).map((_, index) => (
-          <button key={index}>Menu Item {index + 1}</button>
-        ))}
+        {/* {currentCategoryItems.map((item, index) => (
+          <button key={index}>{item}</button> // Display items for the current category
+        ))} */}
       </div>
       {/* Current Order Column */}
       <div className={styles.currentOrder}>
