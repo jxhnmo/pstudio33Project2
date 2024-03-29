@@ -1,6 +1,6 @@
 import Image from "next/image";
-import styles from "./styles/page.module.css";
-import DBConnection from "./DBConnection"; // Adjust the path as necessary
+import styles from "../src/app/styles/page.module.css";
+import DBConnection from "../src/app/DBConnection"; // Adjust the path as necessary
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 

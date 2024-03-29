@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import styles from "@/app/menu/menu.module.css";
+import styles from "../src/app/styles/menu.module.css";
 
 // Temporary data before database connection is coded
 const menuData = [

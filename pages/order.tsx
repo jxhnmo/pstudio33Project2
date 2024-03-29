@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "@/app/order/order.module.css";
+import styles from "../src/app/styles/order.module.css";
 
 export default function Home() {
   return (
