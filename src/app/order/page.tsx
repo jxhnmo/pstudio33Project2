@@ -10,6 +10,7 @@ import { fetchCategories, fetchItems } from '../categories';
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -32,6 +33,7 @@ export default function Home() {
       const items = await fetchItems(categoryName);
       console.log(items);
       setCurrentCategoryItems(items);
+      setActiveCategory(categoryName);
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
       setCurrentCategoryItems([]); // Consider resetting or handling the error state differently
@@ -45,7 +47,11 @@ export default function Home() {
         <h2 className={styles.categoriesHeader}>Categories</h2>
         <div className={styles.categoriesList}>
           {categories.map((categoryName, index) => (
-            <button key={index} className={styles.categoryButton} onClick={() => loadItemsForCategory(categoryName)}>
+            <button
+              key={index}
+              className={`${styles.categoryButton} ${activeCategory === categoryName ? styles.activeCategory : ''}`}
+              onClick={() => loadItemsForCategory(categoryName)}
+            >
               {categoryName}
             </button>
           ))}
