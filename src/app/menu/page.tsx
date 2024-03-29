@@ -11,13 +11,22 @@ const menuData = [
     items: [
       { name: "Spring Rolls", price: 5.99, imageUrl: "/images/spring-rolls.jpg" },
       { name: "Garlic Bread", price: 4.99, imageUrl: "/images/garlic-bread.jpg" },
+      { name: "Spring Rolls", price: 5.99, imageUrl: "/images/spring-rolls.jpg" },
+      { name: "Garlic Bread", price: 4.99, imageUrl: "/images/garlic-bread.jpg" },
+      { name: "Spring Rolls", price: 5.99, imageUrl: "/images/spring-rolls.jpg" },
+      { name: "Garlic Bread", price: 4.99, imageUrl: "/images/garlic-bread.jpg" },
     ],
   },
   {
-    category: "Mains",
+    category: "Entrees",
     items: [
       { name: "Steak", price: 19.99, imageUrl: "/images/steak.jpg" },
       { name: "Salmon", price: 17.99, imageUrl: "/images/salmon.jpg" },
+      { name: "Steak", price: 19.99, imageUrl: "/images/steak.jpg" },
+      { name: "Salmon", price: 17.99, imageUrl: "/images/salmon.jpg" },
+      { name: "Steak", price: 19.99, imageUrl: "/images/steak.jpg" },
+      { name: "Salmon", price: 17.99, imageUrl: "/images/salmon.jpg" },
+      { name: "Steak", price: 19.99, imageUrl: "/images/steak.jpg" },
     ],
   },
 ];
