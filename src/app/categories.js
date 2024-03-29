@@ -12,7 +12,7 @@ export async function fetchCategories() {
     });
 
     try {
-        const queryResult = await pool.query('SELECT category FROM menu_items GROUP BY category;');
+        const queryResult = await pool.query('SELECT category FROM menu_items GROUP BY category ORDER BY category ASC;');
         await pool.end();
         return queryResult.rows; // Assuming this returns the categories
     } catch (err) {
