@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems } from '../order';
+import { fetchCategories, fetchItems, completeTransaction } from '../order';
 
 
 export default function Home() {
@@ -63,6 +63,10 @@ export default function Home() {
   };
 
   const handleConfirmOrder = () => {
+    const currentTime: Date = new Date();
+    // console.log(currentTime.toISOString());
+    completeTransaction(totalPrice.toFixed(2),selectedItems);
+    // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
   };
 
