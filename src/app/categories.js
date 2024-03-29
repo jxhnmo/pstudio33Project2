@@ -20,6 +20,26 @@ export async function fetchCategories() {
         return [];
     }
 }
-// export default function handler(req, res) {
-//     res.status(200).json({ message: 'Success' });
-// }
+
+
+export async function fetchItems(categoryName) {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        const queryText = 'SELECT * FROM menu_items WHERE category = $1 ORDER BY name ASC;';
+        console.log(`Fetching items for category: ${categoryName}`); // Debugging
+        const queryResult = await pool.query(queryText, [categoryName]);
+        console.log(`Query result: `, queryResult.rows); // Debugging
+        await pool.end();
+        return queryResult.rows;
+    } catch (err) {
+        console.error(`Failed to fetch items for category ${categoryName}`, err);
+        return [];
+    }
+}
