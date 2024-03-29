@@ -17,7 +17,7 @@
 .categoriesHeader {
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 3px solid var(--c3);
   /* Adjust color as needed */
   text-align: center;
   /* Other styling as necessary */
@@ -34,8 +34,8 @@
 
 .categoryButton {
   width: 100%;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--c7);
+  padding: 3rem 1rem;
+  border: 3px solid var(--c7);
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
@@ -56,7 +56,7 @@
 
 .orderMenu button {
   padding: 1rem;
-  border: 1px solid var(--c7);
+  border: 3px solid var(--c7);
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
@@ -78,7 +78,7 @@
 
 .currentOrderTitle {
   /* Styles for the 'Current Order' title */
-  border-bottom: 1px solid #ccc;
+  border-bottom: 3px solid var(--c3);
   /* Example style */
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
@@ -120,7 +120,7 @@
 .confirmOrderButton {
   /* Styles for the 'Confirm Order' button */
   padding: 1rem;
-  border: 1px solid var(--c7);
+  border: 3px solid var(--c7);
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
