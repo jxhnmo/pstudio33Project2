@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems } from '../categories';
+import { fetchCategories, fetchItems } from '../order';
 
 
 export default function Home() {
