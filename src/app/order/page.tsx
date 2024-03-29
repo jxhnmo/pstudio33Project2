@@ -23,22 +23,21 @@ export default function Home() {
       </div>
       {/* Current Order Column */}
       <div className={styles.currentOrder}>
-        <h2 className={styles.currentOrderTitle}>Current Order</h2>
-        <div className={styles.orderList}>
-          {/* Dynamic list of order items would go here */}
-          <div>Item 1 - $2.99</div>
-          <div>Item 2 - $1.99</div>
-          {/* ... more items ... */}
+        <div className={styles.currOrderTop}>
+          <h2 className={styles.currentOrderTitle}>Current Order</h2>
+          <div className={styles.orderList}>
+            {/* Dynamic list of order items would go here */}
+            <div>Item 1 - $2.99</div>
+            <div>Item 2 - $1.99</div>
+            {/* ... more items ... */}
+          </div>
         </div>
-        <textarea
-          className={styles.currentOrderTextarea}
-          disabled
-          value="Order Details"
-        />
-        <div className={styles.total}>
-          Total: $<span>4.98</span> {/* This would be calculated */}
+        <div className={styles.currOrderBtm}>
+          <div className={styles.total}>
+            Total: $<span>4.98</span> {/* This would be calculated */}
+          </div>
+          <button className={styles.confirmOrderButton}>Confirm Order</button>
         </div>
-        <button className={styles.confirmOrderButton}>Confirm Order</button>
       </div>
     </div>
   );
