@@ -3,7 +3,7 @@
 import Link from "next/link";
 import styles from "@/app/menu/menu.module.css";
 
-// Just for testing, data should be retrieved from database
+// Temporary data before database connection is coded
 const menuData = [
   {
     category: "Appetizers",
@@ -21,11 +21,27 @@ const menuData = [
   },
 ];
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
-    <Link href="/" style={{ width: '100%', height: '100%' }}>
-      <h1>This is the menu</h1>
-    </Link>
+    <div className={styles.menuContainer}>
+      <Link href="/" style={{ width: '100%', height: '100%' }}>
+        <h1>This is the menu</h1>
+      </Link>
+      {menuData.map((category) => (
+        <div key={category.category} className={styles.category}>
+          <h2>{category.category}</h2>
+          <div className={styles.items}>
+            {category.items.map((item) => (
+              <div key={item.name} className={styles.item}>
+                <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
+                <p>{item.name} - ${item.price.toFixed(2)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
-}
+};
 
+export default Home;
