@@ -46,11 +46,18 @@
   color: var(--c4);
 }
 
+.activeCategory {
+  background-color: var(--c6);
+  color: var(--c4);
+}
+
 .orderMenu {
   flex-basis: 60%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  /* Aligns content at the start, reducing the gap */
+  gap: 1rem;
   /* Adjust styling as needed */
 }
 
@@ -60,6 +67,10 @@
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
+  width: 23%;
+  height: 25%;
+  min-width: 150px;
+  min-height: 150px;
 }
 
 .orderMenu button:hover {

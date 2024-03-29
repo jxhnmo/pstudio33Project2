@@ -4,11 +4,13 @@ import Image from "next/image";
 import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
-import { fetchCategories } from '../categories';
+import { fetchCategories, fetchItems } from '../order';
 
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
+  const [currentCategoryItems, setCurrentCategoryItems] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -25,11 +27,18 @@ export default function Home() {
     loadCategories();
   }, []);
 
-  // const changeCategory = async (categoryName: string) => {
-  //   const response = await fetch(`/api/items?category=${categoryName}`);
-  //   const items = await response.json();
-  //   setCurrentCategoryItems(items);
-  // };
+  // Function to load items for a selected category
+  const loadItemsForCategory = async (categoryName) => {
+    try {
+      const items = await fetchItems(categoryName);
+      console.log(items);
+      setCurrentCategoryItems(items);
+      setActiveCategory(categoryName);
+    } catch (error) {
+      console.error(`Failed to fetch items for category ${categoryName}:`, error);
+      setCurrentCategoryItems([]); // Consider resetting or handling the error state differently
+    }
+  };
 
   return (
     <div className={styles.main}>
@@ -38,7 +47,11 @@ export default function Home() {
         <h2 className={styles.categoriesHeader}>Categories</h2>
         <div className={styles.categoriesList}>
           {categories.map((categoryName, index) => (
-            <button key={index} className={styles.categoryButton}>
+            <button
+              key={index}
+              className={`${styles.categoryButton} ${activeCategory === categoryName ? styles.activeCategory : ''}`}
+              onClick={() => loadItemsForCategory(categoryName)}
+            >
               {categoryName}
             </button>
           ))}
@@ -46,9 +59,9 @@ export default function Home() {
       </div>
       {/* Order Menu */}
       <div className={styles.orderMenu}>
-        {/* {currentCategoryItems.map((item, index) => (
-          <button key={index}>{item}</button> // Display items for the current category
-        ))} */}
+        {currentCategoryItems.map((item, index) => (
+          <button key={index}>{item.name}</button> // Adjust to match your item object structure
+        ))}
       </div>
       {/* Current Order Column */}
       <div className={styles.currentOrder}>
