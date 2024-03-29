@@ -32,3 +32,16 @@
     color: var(--c5);
 }
   
+/* ANIMATIONS and EFFECTS */
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .fade {
+    animation: fadeIn 1s ease-in-out;
+  }
