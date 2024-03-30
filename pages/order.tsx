@@ -1,24 +1,67 @@
+"use client";
+
 import Image from "next/image";
 import styles from "../src/app/styles/order.module.css";
+import { useEffect, useState } from 'react';
+
+import { fetchCategories, fetchItems } from './api/order';
+
 
 export default function Home() {
+  const [categories, setCategories] = useState([]);
+  const [currentCategoryItems, setCurrentCategoryItems] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        const data = await response.json();
+        setCategories(data.map((cat) => cat.category));
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+  
+    loadCategories();
+  }, []);
+  
+
+  // Function to load items for a selected category
+  const loadItemsForCategory = async (categoryName: string) => {
+    try {
+      const response = await fetch(`/api/items/${categoryName}`);
+      const items = await response.json();
+      setCurrentCategoryItems(items);
+      setActiveCategory(categoryName);
+    } catch (error) {
+      console.error(`Failed to fetch items for category ${categoryName}:`, error);
+      setCurrentCategoryItems([]);
+    }
+  };
+
+
   return (
     <div className={styles.main}>
       {/* Categories Column */}
       <div className={styles.categories}>
         <h2 className={styles.categoriesHeader}>Categories</h2>
         <div className={styles.categoriesList}>
-          {['Category 1', 'Category 2', 'Category 3'].map((category) => (
-            <button key={category} className={styles.categoryButton}>
-              {category}
+          {categories.map((categoryName, index) => (
+            <button
+              key={index}
+              className={`${styles.categoryButton} ${activeCategory === categoryName ? styles.activeCategory : ''}`}
+              onClick={() => loadItemsForCategory(categoryName)}
+            >
+              {categoryName}
             </button>
           ))}
         </div>
       </div>
       {/* Order Menu */}
       <div className={styles.orderMenu}>
-        {Array.from({ length: 16 }).map((_, index) => (
-          <button key={index}>Menu Item {index + 1}</button>
+        {currentCategoryItems.map((item, index) => (
+          <button key={index}>{item.name}</button> // Adjust to match your item object structure
         ))}
       </div>
       {/* Current Order Column */}
