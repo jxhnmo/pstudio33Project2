@@ -58,6 +58,14 @@ export default function Home() {
     }
   };
 
+  const handleRemoveItem = (item) => {
+
+  };
+
+  const handleConfirmOrder = () => {
+    setSelectedItems([]);
+  };
+
   return (
     <div className={styles.main}>
       {/* Categories Column */}
@@ -99,7 +107,7 @@ export default function Home() {
           <div className={styles.total}>
             Total: <span>${totalPrice.toFixed(2)}</span>
           </div>
-          <button className={styles.confirmOrderButton}>Confirm Order</button>
+          <button className={styles.confirmOrderButton} onClick={handleConfirmOrder}>Confirm Order</button>
         </div>
       </div>
     </div>
