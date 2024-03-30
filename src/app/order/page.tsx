@@ -6,12 +6,20 @@ import { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../order';
 
+interface Item {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  // Add other properties as needed
+}
 
 export default function Home() {
-  const [categories, setCategories] = useState([]);
-  const [currentCategoryItems, setCurrentCategoryItems] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
+  // const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]); // Use the Item type for selectedItems
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
 
@@ -31,7 +39,7 @@ export default function Home() {
   }, []);
 
   // Function to load items for a selected category
-  const loadItemsForCategory = async (categoryName) => {
+  const loadItemsForCategory = async (categoryName: any) => {
     try {
       const items = await fetchItems(categoryName);
       console.log(items);
@@ -43,7 +51,7 @@ export default function Home() {
     }
   };
 
-  const handleSelectItem = (item) => {
+  const handleSelectItem = (item: Item) => {
     const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
 
     if (existingItem) {
@@ -58,14 +66,14 @@ export default function Home() {
     }
   };
 
-  const handleRemoveItem = (item) => {
+  const handleRemoveItem = (item: Item) => {
 
   };
 
   const handleConfirmOrder = () => {
     const currentTime: Date = new Date();
     // console.log(currentTime.toISOString());
-    completeTransaction(totalPrice.toFixed(2),selectedItems);
+    completeTransaction(totalPrice.toFixed(2), selectedItems);
     // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
   };
@@ -100,7 +108,7 @@ export default function Home() {
         <div className={styles.currOrderTop}>
           <h2 className={styles.currentOrderTitle}>Current Order</h2>
           <div className={styles.orderList}>
-            {selectedItems.map((item, index) => (
+            {selectedItems.map((item: { name: string, price: number, quantity: number }, index: number) => (
               <div key={index}>
                 {item.name} - ${item.price} x {item.quantity}
               </div>
