@@ -11,6 +11,9 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -40,6 +43,21 @@ export default function Home() {
     }
   };
 
+  const handleSelectItem = (item) => {
+    const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
+
+    if (existingItem) {
+      // Update the quantity of the existing item
+      const updatedItems = selectedItems.map(selectedItem =>
+        selectedItem.id === item.id ? { ...selectedItem, quantity: selectedItem.quantity + 1 } : selectedItem
+      );
+      setSelectedItems(updatedItems);
+    } else {
+      // Add the new item with a quantity of 1
+      setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
+    }
+  };
+
   return (
     <div className={styles.main}>
       {/* Categories Column */}
@@ -60,7 +78,9 @@ export default function Home() {
       {/* Order Menu */}
       <div className={styles.orderMenu}>
         {currentCategoryItems.map((item, index) => (
-          <button key={index}>{item.name}</button> // Adjust to match your item object structure
+          <button key={index} onClick={() => handleSelectItem(item)}>
+            {item.name}
+          </button> // Adjust to match your item object structure
         ))}
       </div>
       {/* Current Order Column */}
@@ -68,15 +88,16 @@ export default function Home() {
         <div className={styles.currOrderTop}>
           <h2 className={styles.currentOrderTitle}>Current Order</h2>
           <div className={styles.orderList}>
-            {/* Dynamic list of order items would go here */}
-            <div>Item 1 - $2.99</div>
-            <div>Item 2 - $1.99</div>
-            {/* ... more items ... */}
+            {selectedItems.map((item, index) => (
+              <div key={index}>
+                {item.name} - ${item.price} x {item.quantity}
+              </div>
+            ))}
           </div>
         </div>
         <div className={styles.currOrderBtm}>
           <div className={styles.total}>
-            Total: $<span>4.98</span> {/* This would be calculated */}
+            Total: <span>${totalPrice.toFixed(2)}</span>
           </div>
           <button className={styles.confirmOrderButton}>Confirm Order</button>
         </div>
