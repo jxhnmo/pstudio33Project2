@@ -47,7 +47,7 @@ const Home: React.FC = () => {
   return (
     <div className={styles.menuContainer}>
       <Link href="/" style={{ width: '100%', height: '100%' }}>
-        <h1 className={styles.heading}>REV's American Grill</h1>
+        <h1 className={styles.heading}>REV&apos;s American Grill</h1>
       </Link>
       <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
         <h2>{currentCategory.category}</h2>
