@@ -71,13 +71,11 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import styles from "@/app/menu/menu.module.css";
 import { fetchCategories, fetchItems } from '../menu'; // Adjust the import path as needed
-
 interface MenuItem {
   name: string;
   price: number;
   imageUrl: string;
 }
-
 interface MenuCategory {
   category: string;
   items: MenuItem[];
@@ -98,6 +96,11 @@ const Home: React.FC = () => {
       const categories = await fetchCategories();
       const menuData = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
+      //  for each throguh items 
+      //  items.forEach((item) => {
+      //     item.name = item.name.replace(/\s/g, '');
+      //     item.imageUrl = `/images/${item.name}.jpg`;
+      //   });
         return { category: category.category, items };
       }));
       setMenuData(menuData);
