@@ -1,5 +1,5 @@
 "use client";
-
+import Link from 'next/link';
 import Image from "next/image";
 import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
@@ -119,7 +119,10 @@ export default function Home() {
           <div className={styles.total}>
             Total: <span>${totalPrice.toFixed(2)}</span>
           </div>
-          <button className={styles.confirmOrderButton} onClick={handleConfirmOrder}>Confirm Order</button>
+          <Link href="/orderSummary" className={styles.confirmOrderButton}>
+              Confirm Order
+            </Link>
+
         </div>
       </div>
     </div>
