@@ -60,7 +60,6 @@
   gap: 1rem;
   /* Adjust styling as needed */
 }
-
 .orderMenu button {
   padding: 1rem;
   border: 3px solid var(--c7);
@@ -71,12 +70,30 @@
   height: 25%;
   min-width: 150px;
   min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* This will center the content (image and text) vertically */
+  text-align: center; /* Ensures text is centered */
 }
+
+/* .orderMenu button {
+  padding: 1rem;
+  border: 3px solid var(--c7);
+  background-color: var(--c4);
+  color: var(--c3);
+  transition: 0.5s;
+  width: 23%;
+  height: 25%;
+  min-width: 150px;
+  min-height: 150px;
+} */
 
 .orderMenu button:hover {
   background-color: var(--c6);
   color: var(--c4);
 }
+
 
 .currentOrder {
   flex-basis: 20%;
