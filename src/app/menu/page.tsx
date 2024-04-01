@@ -96,11 +96,11 @@ const Home: React.FC = () => {
       const categories = await fetchCategories();
       const menuData = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
-      //  for each throguh items 
-      //  items.forEach((item) => {
-      //     item.name = item.name.replace(/\s/g, '');
-      //     item.imageUrl = `/images/${item.name}.jpg`;
-      //   });
+      // for each throguh items 
+       items.forEach((item) => {
+          item.name = item.name.replace(/\s/g, '');
+          item.imageUrl = `/images/${item.name}.jpg`;
+        });
         return { category: category.category, items };
       }));
       setMenuData(menuData);
