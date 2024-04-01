@@ -1,7 +1,10 @@
 "use client";
+import { useRouter } from 'next/navigation'; // Ensure this import is at the top
+
 import { useEffect, useState } from 'react';
 import styles from '@/app/orderSummary/orderSummary.module.css'; // Adjust the path as necessary
 import { completeTransaction } from '../order';
+import { Router } from 'next/router';
 
 // If you're placing this in the same file
 interface Item {
@@ -12,6 +15,8 @@ interface Item {
 }
 
 const OrderSummary = () => {
+  const router = useRouter(); // Use the useRouter hook
+
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -29,6 +34,7 @@ const OrderSummary = () => {
     completeTransaction(totalPrice.toFixed(2), selectedItems);
     // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
+    router.push('/ThankYou');
   };
 
   return (
