@@ -1,6 +1,8 @@
 "use client";
 import Link from 'next/link';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
+
 import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
@@ -11,10 +13,11 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
-  // Add other properties as needed
 }
 
 export default function Home() {
+  const router = useRouter();
+
   // const [categories, setCategories] = useState([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
@@ -71,11 +74,16 @@ export default function Home() {
   };
 
   const handleConfirmOrder = () => {
-    const currentTime: Date = new Date();
-    // console.log(currentTime.toISOString());
-    completeTransaction(totalPrice.toFixed(2), selectedItems);
-    // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
-    setSelectedItems([]);
+    const currentTime = new Date();
+    // Store selected items in local storage
+    console.log("printing selected items");
+    console.log(selectedItems);
+    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+    router.push('/orderSummary'); // Adjust the path to your order summary page
+
+    //completeTransaction(totalPrice.toFixed(2), selectedItems);
+
+   // setSelectedItems([]);
   };
 
   return (
@@ -119,9 +127,12 @@ export default function Home() {
           <div className={styles.total}>
             Total: <span>${totalPrice.toFixed(2)}</span>
           </div>
-          <Link href="/orderSummary" className={styles.confirmOrderButton}>
+          {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
-            </Link>
+            </Link> */}
+        <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+          Confirm Order
+        </button>
 
         </div>
       </div>
