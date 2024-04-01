@@ -1,10 +1,11 @@
 .main {
-    display: flex;
-    margin: auto;
-    padding: 1rem;
-    gap: 1rem;
-    height: 100vh;
+  display: flex;
+  margin: auto;
+  padding: 1rem;
+  gap: 1rem;
+  min-height: 900px; /* Changed from height to min-height */
 }
+
 
 .heading {
     color: var(--c6);
@@ -16,6 +17,7 @@
     text-decoration: underline;
 }
 
+
 .categoryContainer h2 {
     margin: auto;
     padding: 20px;
@@ -25,13 +27,16 @@
 }
 
 .items {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 100%;
-    margin: auto;
-    padding: 20px;
-  }
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Creates four columns */
+  gap: 20px; /* Keeps the gap between items */
+  width: 100%; /* Maintains the full width */
+  margin: auto; /* Centers the grid within its parent container */
+  padding: 20px; /* Adds padding around the entire grid */
+  overflow-y: auto; /* Enables vertical scrolling */
+  overflow-x: auto;
+  height: 900px; /* Example fixed height */
+}
   
   .itemContainer {
     background-color: var(--c4);
@@ -39,21 +44,26 @@
     border-radius: 10px;
     font-size: 20px;
     border: 2px solid var(--c5);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    text-wrap: wrap;
+    display: flex ;
+
+    width: 400px;
+    height: 400px;
   }
   
   .itemImage {
-    width: 100%;
-    height: auto;
+    width: 300px;
+    height: 300px;
     border-radius: 8px;
   }
   
   .itemNamePrice {
-    text-align: center;
+    text-align: left;
+    text-wrap: wrap;
     width: 100%;
+    padding: 10px;
     padding-top: 10px;
   }
   

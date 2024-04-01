@@ -90,6 +90,8 @@ const Home: React.FC = () => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const [currentPage, setCurrentPage] = useState(0);
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -97,10 +99,9 @@ const Home: React.FC = () => {
       const menuData = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
       // for each throguh items 
-      //  items.forEach((item) => {
-      //     item.name = item.name.replace(/\s/g, '');
-      //     item.imageUrl = `/images/${item.name}.jpg`;
-      //   });
+       items.forEach((item) => {
+          item.imageUrl = `/images/${item.name.replace(/\s/g, '')}.png`;
+        });
         return { category: category.category, items };
       }));
       setMenuData(menuData);
@@ -109,11 +110,24 @@ const Home: React.FC = () => {
     loadData();
 
     const interval = setInterval(() => {
-      setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % menuData.length);
-    }, 5000); // Change category every 5000 ms (5 seconds)
-
+      setCurrentCategoryIndex((prevIndex) => {
+        // Calculate the number of pages for the current category
+        const numPages = Math.ceil(menuData[prevIndex].items.length / 3);
+        // If the current page is the last page of the current category, move to the next category
+        if (currentPage + 1 < numPages) {
+          setCurrentPage(currentPage + 1);
+          return prevIndex; // Stay on the current category, but increment page
+        } else {
+          setCurrentPage(0); // Reset to the first page for the next category
+          return (prevIndex + 1) % menuData.length; // Move to the next category
+        }
+      });
+    }, 5000); // Adjust time as needed
+  
     return () => clearInterval(interval);
-  }, [menuData.length]);
+  }, [menuData.length, currentPage]);
+  
+   // Empty dependency array means this effect runs only once on mount
 
   const currentCategory = menuData[currentCategoryIndex] || { category: '', items: [] };
 
@@ -125,7 +139,9 @@ const Home: React.FC = () => {
       <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
         <h2>{currentCategory.category}</h2>
         <div className={styles.items}>
-          {currentCategory.items.map((item) => (
+          {currentCategory.items
+          .slice(currentPage * 3, (currentPage + 1) * 3)
+          .map((item) => (
             <div key={item.name} className={styles.itemContainer}>
               <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
               <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
