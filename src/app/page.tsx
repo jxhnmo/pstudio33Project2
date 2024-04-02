@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function Home() {
   //Function needs backend connection so that 1. it takes username from DB
   //  and 2. it passes a boolean to the order page saying if it's a manager or not
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
 
     // Get the values from the form
