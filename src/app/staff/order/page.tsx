@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 import styles from "@/app/staff/order/staffOrder.module.css";
 import { useEffect, useState } from 'react';
-
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
 
 interface Item {
@@ -88,55 +87,65 @@ export default function Home() {
 
   return (
     <div className={styles.main}>
-      {/* Categories Column */}
-      <div className={styles.categories}>
-        <h2 className={styles.categoriesHeader}>Categories</h2>
-        <div className={styles.categoriesList}>
-          {categories.map((categoryName, index) => (
-            <button
-              key={index}
-              className={`${styles.categoryButton} ${activeCategory === categoryName ? styles.activeCategory : ''}`}
-              onClick={() => loadItemsForCategory(categoryName)}
-            >
-              {categoryName}
-            </button>
-          ))}
-        </div>
-      </div>
-      {/* Order Menu */}
-      <div className={styles.orderMenu}>
-        {currentCategoryItems.map((item, index) => (
-          <button key={index} onClick={() => handleSelectItem(item)}>
-            {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
-            {item.name}
-          </button> // Adjust to match your item object structure
-        ))}
-      </div>
-      {/* Current Order Column */}
-      <div className={styles.currentOrder}>
-        <div className={styles.currOrderTop}>
-          <h2 className={styles.currentOrderTitle}>Current Order</h2>
-          <div className={styles.orderList}>
-            {selectedItems.map((item: { name: string, price: number, quantity: number }, index: number) => (
-              <div key={index}>
-                {item.name} - ${item.price} x {item.quantity}
-              </div>
+      <div className={styles.orderContainer}>
+        {/* Categories Column */}
+        <div className={styles.categories}>
+          <h2 className={styles.categoriesHeader}>Categories</h2>
+          <div className={styles.categoriesList}>
+            {categories.map((categoryName, index) => (
+              <button
+                key={index}
+                className={`${styles.categoryButton} ${activeCategory === categoryName ? styles.activeCategory : ''}`}
+                onClick={() => loadItemsForCategory(categoryName)}
+              >
+                {categoryName}
+              </button>
             ))}
           </div>
         </div>
-        <div className={styles.currOrderBtm}>
-          <div className={styles.total}>
-            Total: <span>${totalPrice.toFixed(2)}</span>
+        {/* Order Menu */}
+        <div className={styles.orderMenu}>
+          {currentCategoryItems.map((item, index) => (
+            <button key={index} onClick={() => handleSelectItem(item)}>
+              {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
+              {item.name}
+            </button> // Adjust to match your item object structure
+          ))}
+        </div>
+        {/* Current Order Column */}
+        <div className={styles.currentOrder}>
+          <div className={styles.currOrderTop}>
+            <h2 className={styles.currentOrderTitle}>Current Order</h2>
+            <div className={styles.orderList}>
+              {selectedItems.map((item: { name: string, price: number, quantity: number }, index: number) => (
+                <div key={index}>
+                  {item.name} - ${item.price} x {item.quantity}
+                </div>
+              ))}
+            </div>
           </div>
-          {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
+          <div className={styles.currOrderBtm}>
+            <div className={styles.total}>
+              Total: <span>${totalPrice.toFixed(2)}</span>
+            </div>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
               Confirm Order
-            </Link> */}
-        <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
-          Confirm Order
-        </button>
-
+            </button>
+          </div>
         </div>
       </div>
+      {/* Navigation Buttons */}
+      <div className={styles.footer}>
+        <Link href="/staff/order" legacyBehavior>
+          <a className={styles.navButton}>Staff Order</a>
+        </Link>
+        <Link href="/staff/stats" legacyBehavior>
+          <a className={styles.navButton}>Staff Stats</a>
+        </Link>
+        <Link href="/staff/inventory" legacyBehavior>
+          <a className={styles.navButton}>Staff Inventory</a>
+        </Link>
+      </div>
     </div>
-  );
+  );  
 }
