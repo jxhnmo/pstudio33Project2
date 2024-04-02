@@ -14,7 +14,7 @@ const SetTheme = () => {
     global.window.__onThemeChange = setTheme;
   }, []);
 
-  return <button onClick={toggleTheme}>{isHighContrast ? 'high-contrast' : 'default'}</button>;
+  return <button onClick={toggleTheme}>{isHighContrast ? 'default' : 'high-contrast'}</button>;
 };
 
 export default SetTheme;
