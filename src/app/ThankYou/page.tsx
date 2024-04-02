@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Import useNavigate
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const ThankYou = () => {
-  const router = useRouter(); // Create an instance of useNavigate
+  const router = useRouter(); // Create an instance of useRouter
 
   useEffect(() => {
     // Set a timeout to navigate to the main page after 5 seconds
-    const timer = setTimeout(() => router.push('/order'), 5000);
+    const timer = setTimeout(() => router.push('/ordenp'), 5000);
 
     // Cleanup function to clear the timeout if the component unmounts before 5 seconds
     return () => clearTimeout(timer);
