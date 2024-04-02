@@ -7,7 +7,7 @@ const ThankYou = () => {
 
   useEffect(() => {
     // Set a timeout to navigate to the main page after 5 seconds
-    const timer = setTimeout(() => router.push('/ordenp'), 5000);
+    const timer = setTimeout(() => router.push('/order'), 5000);
 
     // Cleanup function to clear the timeout if the component unmounts before 5 seconds
     return () => clearTimeout(timer);
