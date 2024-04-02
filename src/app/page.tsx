@@ -9,7 +9,7 @@ import { useState } from "react";
 
 export default function Home() {
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
 
     // Get the values from the form
