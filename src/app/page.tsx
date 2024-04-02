@@ -9,6 +9,8 @@ import { useState } from "react";
 
 export default function Home() {
 
+  //Function needs backend connection so that 1. it takes username from DB
+  //  and 2. it passes a boolean to the order page saying if it's a manager or not
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -17,7 +19,7 @@ export default function Home() {
     const password = event.target.password.value;
 
     if (username === '0' && password === '0') {
-      window.location.href = '/staff';
+      window.location.href = '/staff/order';
     } else {
       alert("Incorrect username or password.");
     }
