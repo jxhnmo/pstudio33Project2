@@ -8,8 +8,9 @@ import Link from 'next/link';
 import { useState } from "react";
 
 export default function Home() {
-
-  const handleSubmit = (event: any) => {
+  //Function needs backend connection so that 1. it takes username from DB
+  //  and 2. it passes a boolean to the order page saying if it's a manager or not
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     // Get the values from the form
