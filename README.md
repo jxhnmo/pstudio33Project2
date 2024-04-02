@@ -5,10 +5,15 @@ Application accessible [here](https://pstudio33-project2-host.vercel.app/).
 
 ## Team Members
 John Mo - Scrum Master, Front End Lead
+
 Grant Oxford - Project Manager, Front End Assistant
+
 Jeffrey Cheung - Full Stack
+
 Joseph Chau - Back End Lead
+
 Thomas Bolf - Full Stack
+
 Ethan Van Swearingen - Full Stack
 
 ## Meetings
