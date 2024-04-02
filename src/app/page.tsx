@@ -17,7 +17,7 @@ export default function Home() {
     const password = event.target.password.value;
 
     if (username === '0' && password === '0') {
-      window.location.href = '/staff';
+      window.location.href = '/staff/order';
     } else {
       alert("Incorrect username or password.");
     }
