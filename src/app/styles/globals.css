@@ -81,6 +81,25 @@
   }
 }
 
+/* High-contrast theme */
+[data-theme='high-contrast'] {
+  /* COLOUR THEME */
+  /* background */
+  --c1: #000000;
+  /* secondary background */
+  --c2: #5c5c5c;
+  /* white text */
+  --c3: #ffffff;
+  /* object background (buttons) */
+  --c4: #160528;
+  /* secondary colour */
+  --c5: #0f143f;
+  /* object hover */
+  --c6: #ffffff;
+  /* borders */
+  --c7: #00ffee;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
