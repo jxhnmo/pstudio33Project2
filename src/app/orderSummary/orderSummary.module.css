@@ -1,102 +1,117 @@
 /* OrderSummary.module.css Adjustments */
 
 .main {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    padding: 2rem;
-    gap: 1rem;
-    max-width: 100%;
-    min-width: 100%;
-    width: 900px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: var(--c4);
-    align-items: stretch;
-  }
-  .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--c2);
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  .orderSummaryHeader {
-    color: var(--c3);
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: 2rem;
+  gap: 1rem;
+  max-width: 100%;
+  min-width: 100%;
+  width: 900px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+  border-radius: 8px;
+  background-color: var(--c4);
+  align-items: stretch;
+}
 
-    font-size: 1.75rem;
-    font-weight: bold;
-    color: var(--c3);
-    text-align: center;
-    margin-bottom: 0; /* Remove bottom margin to close gap */
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--c3);
-  }
-  
-  .orderList {
-    color: var(--c3);
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--c2);
+  border-radius: 5px;
+  /* box-shadow: 0 2px 4px var(--c1); */
+}
 
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-    overflow-y: auto;
-    width: 100%;
-    background-color: var(--c2);
-    padding: 1rem;
-    border-radius: 8px; /* Add for consistency */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Optional, adds depth */
-  }
-  
-  .orderItem {
-    width:100%;
-    padding: 0.75rem;
-    background-color: var(--c2);
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-width: 100px;
-  }
-  
-  .total {
-    font-size: 1.25rem;
-    font-weight: medium;
-    color: var(--c3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 2px dashed var(--c3);
-    margin-top: auto; /* Pushes the total to the bottom */
-  }
-  
-  .confirmOrderButton {
-    padding: 0.5rem 1rem; /* Reduce vertical padding to make button less tall */
-    font-size: 1rem;
-    font-weight: bold;
-    background-color: var(--c4);
-    color: #ffffff;
-    transition: background-color 0.3s, transform 0.2s;
-    cursor: pointer;
-    align-self: flex-end; /* Align the button to the right */
-    border-radius: 8px;
-    margin-top: 1rem; /* Ensure there's a margin above the button if the order list is short */
-  }
-  
-  /* Adjust the container to accommodate the button and total placement */
-  .orderContainer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  /* New class to adjust layout if needed */
-  .orderDetails {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+.orderSummaryHeader {
+  color: var(--c3);
+
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--c3);
+  text-align: center;
+  margin-bottom: 0;
+  /* Remove bottom margin to close gap */
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--c3);
+}
+
+.orderList {
+  color: var(--c3);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+  width: 100%;
+  background-color: var(--c2);
+  padding: 1rem;
+  border-radius: 8px;
+  /* Add for consistency */
+  /* box-shadow: 0 2px 4px var; */
+  /* Optional, adds depth */
+}
+
+.orderItem {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--c2);
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
+  min-width: 100px;
+}
+
+.total {
+  font-size: 1.25rem;
+  font-weight: medium;
+  color: var(--c3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 2px dashed var(--c3);
+  margin-top: auto;
+  /* Pushes the total to the bottom */
+}
+
+.confirmOrderButton {
+  padding: 0.5rem 1rem;
+  /* Reduce vertical padding to make button less tall */
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: var(--c4);
+  color: var(--c3);
+  transition: background-color 0.3s, transform 0.2s;
+  cursor: pointer;
+  align-self: flex-end;
+  /* Align the button to the right */
+  border-radius: 8px;
+  border-color: var(--c7);
+  margin-top: 1rem;
+  /* Ensure there's a margin above the button if the order list is short */
+}
+
+.confirmOrderButton:hover {
+  background-color: var(--c6);
+  color: var(--c4);
+}
+
+/* Adjust the container to accommodate the button and total placement */
+.orderContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* New class to adjust layout if needed */
+.orderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
