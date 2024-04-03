@@ -1,26 +1,12 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import styles from './sidebar.module.css';
+import SetTheme from '../theme/SetTheme';
 
-/** SetTheme function for toggling between high-contrast and default themes */
-const SetTheme = () => {
-  const [theme, setTheme] = useState(global.window?.__theme || 'default');
-
-  const isHighContrast = theme === 'high-contrast';
-
-  const toggleTheme = () => {
-    global.window?.__setPreferredTheme(theme === 'default' ? 'high-contrast' : 'default');
-  };
-
-  useEffect(() => {
-    global.window.__onThemeChange = setTheme;
-  }, []);
-
-  return <button onClick={toggleTheme} className={styles.settingButton}>{isHighContrast ? 'ON' : 'OFF'}</button>;
-};
-
-/** Siddebar function for handling opening and closing the sidebar */
+/** Siddebar component for handling opening and closing the sidebar */
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,10 +18,10 @@ const Sidebar = () => {
         <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
       </button>
       {
-        <>
-          <h3 className={styles.settingName}>High Contrast Mode</h3>
+        <div>
+          <div className={styles.settingName}>High Contrast Mode</div>
           <SetTheme />
-        </>
+        </div>
       }
     </div>
   );
