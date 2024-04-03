@@ -82,15 +82,18 @@ export default function Home() {
 
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
-   // setSelectedItems([]);
+    // setSelectedItems([]);
   };
+  const handleReturnHome = () => {
+    router.push('/');
+  }
 
   return (
     <div className={styles.main}>
       <div className={styles.orderContainer}>
         {/* Categories Column */}
         <div className={styles.categories}>
-          <h2 className={styles.categoriesHeader}>Categories</h2>
+          <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
           <div className={styles.categoriesList}>
             {categories.map((categoryName, index) => (
               <button
@@ -147,5 +150,5 @@ export default function Home() {
         </Link>
       </div>
     </div>
-  );  
+  );
 }
