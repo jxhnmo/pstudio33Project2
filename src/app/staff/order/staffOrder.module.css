@@ -3,13 +3,16 @@
   flex-direction: column;
   height: 100vh;
   padding: 1rem;
-  overflow: auto; /* Enables scrolling if content overflows */
+  overflow: auto;
+  /* Enables scrolling if content overflows */
 }
 
 .orderContainer {
-  flex: 1; /* This should allow the container to expand, taking up all available space */
+  flex: 1;
+  /* This should allow the container to expand, taking up all available space */
   display: flex;
   gap: 1rem;
+  height: 90%;
   /* Other styles */
 }
 
@@ -67,6 +70,7 @@
   gap: 1rem;
   /* Adjust styling as needed */
 }
+
 .orderMenu button {
   padding: 1rem;
   border: 3px solid var(--c7);
@@ -80,8 +84,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* This will center the content (image and text) vertically */
-  text-align: center; /* Ensures text is centered */
+  justify-content: center;
+  /* This will center the content (image and text) vertically */
+  text-align: center;
+  /* Ensures text is centered */
 }
 
 /* .orderMenu button {
@@ -153,7 +159,6 @@
 .total span {}
 
 .confirmOrderButton {
-  /* Styles for the 'Confirm Order' button */
   padding: 1rem;
   border: 3px solid var(--c7);
   background-color: var(--c4);
@@ -167,26 +172,28 @@
   background-color: var(--c6);
   color: var(--c4);
 }
-  
+
 .footer {
   display: flex;
   justify-content: center;
   gap: 20px;
   padding: 20px 0;
-  background-color: #f0f0f0; /*Temporary background color for visibility */
+  background-color: var(--c2);
 }
 
 .navButton {
   padding: 10px 15px;
-  background-color: #0070f3;
-  color: white;
-  border-radius: 5px;
+  background-color: var(--c4);
+  color: var(--c3);
+  border-radius: 10px;
+  border-color: var(--c7);
+  border-style: solid;
   text-decoration: none;
-  transition: background-color 0.3s;
-
-  /* Additional styling as needed */
+  transition: 0.5s;
 }
 
 .navButton:hover {
-  background-color: #0056b3;
+  background-color: var(--c6);
+  color: var(--c4);
+  transform: scale(1.1);
 }
