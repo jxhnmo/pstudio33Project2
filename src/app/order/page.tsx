@@ -83,14 +83,18 @@ export default function Home() {
 
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
-   // setSelectedItems([]);
+    // setSelectedItems([]);
   };
+
+  const handleReturnHome = () => {
+    router.push('/');
+  }
 
   return (
     <div className={styles.main}>
       {/* Categories Column */}
       <div className={styles.categories}>
-        <h2 className={styles.categoriesHeader}>Categories</h2>
+        <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
         <div className={styles.categoriesList}>
           {categories.map((categoryName, index) => (
             <button
@@ -131,9 +135,9 @@ export default function Home() {
           {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}
-        <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
-          Confirm Order
-        </button>
+          <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+            Confirm Order
+          </button>
 
         </div>
       </div>
