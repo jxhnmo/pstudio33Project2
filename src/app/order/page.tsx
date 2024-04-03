@@ -7,6 +7,11 @@ import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../order';
+import dynamic from 'next/dynamic';
+
+const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
+  ssr: false,
+});
 
 interface Item {
   id: number;
@@ -91,6 +96,8 @@ export default function Home() {
   }
 
   return (
+    <>
+    <Sidebar />
     <div className={styles.main}>
       {/* Categories Column */}
       <div className={styles.categories}>
@@ -142,5 +149,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }

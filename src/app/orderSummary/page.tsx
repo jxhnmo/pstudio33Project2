@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react';
 import styles from '@/app/orderSummary/orderSummary.module.css'; // Adjust the path as necessary
 import { completeTransaction } from '../order';
 import { Router } from 'next/router';
+import dynamic from 'next/dynamic';
+const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
+  ssr: false,
+});
 
 // If you're placing this in the same file
 interface Item {
@@ -38,6 +42,8 @@ const OrderSummary = () => {
   };
 
   return (
+    <>
+    <Sidebar />
     <div className={styles.main}>
       <h1 className={styles.orderSummaryHeader}>Order Summary</h1>
       <div className={styles.orderList}>
@@ -58,6 +64,7 @@ const OrderSummary = () => {
           Confirm Order
         </button>
     </div>
+    </>
   );
 };
 
