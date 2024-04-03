@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useState } from "react";
 
-const SetTheme = dynamic(() => import('../components/SetTheme'), {
+const Sidebar = dynamic(() => import('../components/sidebar/Sidebar'), {
   ssr: false,
 });
 
@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <main>
-      <SetTheme />
+      <Sidebar />
       <div>
         <div>
           <h1 className={styles.h1}>Welcome to REVS</h1>
