@@ -32,17 +32,6 @@
   left: 0;
 }
 
-.settingButton {
-  background-color: var(--c4);
-  margin: 15px;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  border: 2px solid var(--c7);
-  width: calc(100% - 30px); /* to account for the margin */
-  box-sizing: border-box;
-}
-
 .settingName {
   text-align: center;
   color: var(--c3);
