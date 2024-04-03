@@ -4,6 +4,12 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import styles from "@/app/menu/menu.module.css";
 import { fetchCategories, fetchItems } from '../menu'; // Adjust the import path as needed
+
+import dynamic from 'next/dynamic';
+const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
+  ssr: false,
+});
+
 interface MenuItem {
   name: string;
   price: number;
@@ -65,24 +71,27 @@ const Home: React.FC = () => {
   const currentCategory = menuData[currentCategoryIndex] || { category: '', items: [] };
 
   return (
-    <div className={styles.menuContainer}>
-      <Link href="/" style={{ width: '100%', height: '100%' }}>
-        <h1 className={styles.heading}>REV&apos;s American Grill</h1>
-      </Link>
-      <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
-        <h2>{currentCategory.category}</h2>
-        <div className={styles.items}>
-          {currentCategory.items
-          .slice(currentPage * 3, (currentPage + 1) * 3)
-          .map((item) => (
-            <div key={item.name} className={styles.itemContainer}>
-              <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
-              <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
-            </div>
-          ))}
+    <>
+      <Sidebar />
+      <div className={styles.menuContainer}>
+        <Link href="/" style={{ width: '100%', height: '100%' }}>
+          <h1 className={styles.heading}>REV&apos;s American Grill</h1>
+        </Link>
+        <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
+          <h2>{currentCategory.category}</h2>
+          <div className={styles.items}>
+            {currentCategory.items
+            .slice(currentPage * 3, (currentPage + 1) * 3)
+            .map((item) => (
+              <div key={item.name} className={styles.itemContainer}>
+                <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
+                <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

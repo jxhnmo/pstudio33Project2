@@ -7,6 +7,11 @@ import styles from "@/app/order/order.module.css";
 import { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../order';
+import dynamic from 'next/dynamic';
+
+const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
+  ssr: false,
+});
 
 interface Item {
   id: number;
@@ -83,14 +88,20 @@ export default function Home() {
 
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
-   // setSelectedItems([]);
+    // setSelectedItems([]);
   };
 
+  const handleReturnHome = () => {
+    router.push('/');
+  }
+
   return (
+    <>
+    <Sidebar />
     <div className={styles.main}>
       {/* Categories Column */}
       <div className={styles.categories}>
-        <h2 className={styles.categoriesHeader}>Categories</h2>
+        <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
         <div className={styles.categoriesList}>
           {categories.map((categoryName, index) => (
             <button
@@ -131,12 +142,13 @@ export default function Home() {
           {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}
-        <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
-          Confirm Order
-        </button>
+          <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+            Confirm Order
+          </button>
 
         </div>
       </div>
     </div>
+    </>
   );
 }
