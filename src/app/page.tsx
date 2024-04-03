@@ -34,7 +34,7 @@ export default function Home() {
       <Sidebar />
       <div>
         <div>
-          <h1 className={styles.h1}>Welcome to REVS</h1>
+          <h1 className={styles.h1}>Welcome to REV&apos;S</h1>
         </div>
         <div className="container">
           <Link className={styles.square} href="/order"> Customer Order</Link>
