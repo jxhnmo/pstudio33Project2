@@ -46,6 +46,13 @@ const OrderSummary = () => {
     router.push('/ThankYou');
   };
 
+  const handleRemoveItem = (index: number) => {
+    const updatedItems = [...selectedItems];
+    updatedItems.splice(index, 1);
+    setSelectedItems(updatedItems);
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+  };
+
   return (
     <>
     <Sidebar />
@@ -55,8 +62,13 @@ const OrderSummary = () => {
         {selectedItems.length > 0 ? (
           selectedItems.map((item, index) => (
             <div key={index} className={styles.orderItem}>
-              <div>{item.name} - ${item.price} x {item.quantity}</div>
+            <div>
+              {item.name} - ${item.price} x {item.quantity}
+              <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                Remove
+              </button>
             </div>
+          </div>
           ))
         ) : (
           <div>No items in the order.</div>
