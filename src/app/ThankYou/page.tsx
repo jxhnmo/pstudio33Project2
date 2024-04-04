@@ -1,26 +1,23 @@
-"use client"
+"use client";
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Adjusted import for useRouter
+import styles from './ThankYou.module.css'; // Adjust the path as necessary
 
 const ThankYou = () => {
-  const router = useRouter(); // Create an instance of useRouter
+  const router = useRouter();
+
   useEffect(() => {
-    // Set a timeout to navigate to the main page after 5 seconds
     const timer = setTimeout(() => router.push('/order'), 5000);
-
-    // Cleanup function to clear the timeout if the component unmounts before 5 seconds
     return () => clearTimeout(timer);
-  }, [router]); // Dependency array with navigate to ensure effect runs once
+  }, [router]);
 
-  // Assuming orderId is a simple string or number
   const orderId = localStorage.getItem('orderId');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
-      <h1>Thank you for your business!</h1>
-      <p>Your order will be out shortly.</p>
-      {/* Check orderId exists before rendering */}
-      {orderId && <p>Your order, {orderId}, will be out shortly.</p>}
+    <div className={styles.container}>
+      <h1 className={styles.header}>Thank you for your business!</h1>
+      <p className={styles.message}>Your order will be out shortly.</p>
+      {orderId && <p className={styles.message}>Your order, {orderId}, will be out shortly.</p>}
     </div>
   );
 };
