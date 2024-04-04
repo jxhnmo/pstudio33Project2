@@ -134,6 +134,8 @@ export default function Home() {
             <button key={index} onClick={() => handleSelectItem(item)}>
               {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
               {item.name}
+              <br />
+              {'$' + item.price}
             </button> // Adjust to match your item object structure
           ))}
         </div>
