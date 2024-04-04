@@ -98,7 +98,7 @@ export default function Home() {
       console.log("printing selected items");
       console.log(selectedItems);
       localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-      router.push('/staff'); // Adjust the path to your order summary page
+      //router.push('/staff'); // Adjust the path to your order summary page
     }
     completeTransaction(totalPriceInfo.total.toFixed(2), selectedItems);
 
