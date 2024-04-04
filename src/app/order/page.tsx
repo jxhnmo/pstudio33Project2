@@ -92,13 +92,14 @@ export default function Home() {
   };
 
   const handleConfirmOrder = () => {
-    const currentTime = new Date();
-    // Store selected items in local storage
-    console.log("printing selected items");
-    console.log(selectedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-    router.push('/orderSummary'); // Adjust the path to your order summary page
-
+    if(selectedItems.length !== 0){
+      const currentTime = new Date();
+      // Store selected items in local storage
+      console.log("printing selected items");
+      console.log(selectedItems);
+      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      router.push('/orderSummary'); // Adjust the path to your order summary page
+    }
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
     // setSelectedItems([]);
@@ -149,7 +150,6 @@ export default function Home() {
                     Remove
                 </button>
               </div>
-              
             ))}
           </div>
           </div>
