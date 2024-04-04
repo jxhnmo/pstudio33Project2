@@ -30,7 +30,12 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
-  const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
+
+  useEffect(() => {
+    const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotalPriceInfo({ total, updateKey: Date.now() });
+  }, [selectedItems]); // Recalculate whenever selectedItems changes
 
 
   useEffect(() => {
@@ -133,17 +138,18 @@ export default function Home() {
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
             <div className={styles.orderList}>
-              {selectedItems.map((item: { name: string, price: number, quantity: number }, index: number) => (
-                <div key={index}>
-                  {item.name} - ${item.price} x {item.quantity}
-                </div>
-              ))}
-            </div>
+            {selectedItems.map((item, index) => (
+              <div key={`${item.id}-${new Date().getTime()}-${index}`}>
+                {item.name} - ${item.price} x {item.quantity}
+              </div>
+            ))}
+          </div>
           </div>
           <div className={styles.currOrderBtm}>
-            <div className={styles.total}>
-              Total: <span>${totalPrice.toFixed(2)}</span>
-            </div>
+          
+          <div key={totalPriceInfo.updateKey} className={styles.total}>
+                Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
+          </div>
             {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}
