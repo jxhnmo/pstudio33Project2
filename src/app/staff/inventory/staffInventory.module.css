@@ -41,3 +41,34 @@
   color: var(--c4);
   transform: scale(1.1);
 }
+
+.title {
+  color: var(--c6);
+  font-weight: bold;
+  padding: 10px 10px;
+  margin-top: 20px;
+  font-size: 60px;
+  text-align: center;
+  text-decoration: underline;
+
+}
+
+.inventoryTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inventoryTable th,
+.inventoryTable td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--c7);
+}
+
+.inventoryTable th {
+  background-color: var(--c4);
+}
+
+.inventoryTable tr:nth-child(even) {
+  background-color: var(--c2);
+}
