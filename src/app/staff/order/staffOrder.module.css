@@ -1,23 +1,9 @@
-.pageContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 .main {
-  flex: 1;
-  overflow-y: auto;
-  /* Allows scrolling */
-  padding: 1rem;
-}
-
-.orderContainer {
-  flex: 1;
-  /* This should allow the container to expand, taking up all available space */
   display: flex;
+  margin: auto;
+  padding: 1rem;
   gap: 1rem;
-  height: 90%;
-  /* Other styles */
+  height: 100vh;
 }
 
 .categories {
@@ -74,7 +60,9 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  /* Aligns content at the start, reducing the gap */
   gap: 1rem;
+  /* Adjust styling as needed */
 }
 
 .orderMenu button {
@@ -93,7 +81,6 @@
   justify-content: center;
   text-align: center;
   font-size: 1rem;
-
 }
 
 .orderMenu button:hover {
@@ -121,7 +108,7 @@
 .orderList {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem;
+  margin-bottom: 1rem;
   background-color: var(--c2);
   height: 100%;
   gap: 10px;
