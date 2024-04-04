@@ -31,6 +31,7 @@ export default function Home() {
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
 
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -56,13 +57,19 @@ export default function Home() {
   // Function to load items for a selected category
   const loadItemsForCategory = async (categoryName: string) => {
     try {
+
       const items = await fetchItems(categoryName);
       console.log(items);
       // Temporarily clear items to signal a significant change
       setCurrentCategoryItems([]);
       // Introduce a slight delay before showing new items
-      setTimeout(() => setCurrentCategoryItems(items), 100);
-      setActiveCategory(categoryName);
+       setIsCategoryLoaded(true); // Set to true once items are loaded
+
+      setTimeout(() => {
+        setCurrentCategoryItems(items);
+        setActiveCategory(categoryName);
+      });
+
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
       setCurrentCategoryItems([]); // Reset on error
@@ -112,7 +119,7 @@ export default function Home() {
   return (
     <>
       <Sidebar />
-      <div className={styles.main}>
+      <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
         <div className={styles.categories}>
           <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
@@ -160,6 +167,7 @@ export default function Home() {
           <div key={totalPriceInfo.updateKey} className={styles.total}>
                 Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
           </div>
+
             {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}

@@ -5,8 +5,14 @@
   gap: 1rem;
   height: 100vh;
   overflow-y:auto;
+  background-image: url('/images/revCartoon.png'); 
+  background-size: 70%; /* Cover the entire page */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat;
 }
-
+.categoryLoaded {
+  background-image: none !important; /* Override to remove the background image */
+}
 .categories {
   flex-basis: 20%;
   display: flex;
