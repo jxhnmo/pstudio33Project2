@@ -1,10 +1,14 @@
-.main {
+.pageContainer {
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  /* Allows scrolling */
   padding: 1rem;
-  overflow: auto;
-  /* Enables scrolling if content overflows */
 }
 
 .orderContainer {
@@ -21,34 +25,38 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  /* This will make sure the buttons stretch to the full width of the column */
+  overflow-y: auto;
+  height: 100%;
 }
+
 
 .categoriesHeader {
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid var(--c3);
-  /* Adjust color as needed */
   text-align: center;
-  /* Other styling as necessary */
+  /* position: sticky;
+  top: 0; */
 }
 
 .categoriesList {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  /* Adjust the space between buttons */
   width: 100%;
-  /* This ensures the category list takes up the full width of its container */
+  flex: 1;
+  overflow-y: auto;
 }
 
 .categoryButton {
+  flex: 1 1 auto;
   width: 100%;
-  padding: 3rem 1rem;
+  padding: 1rem;
   border: 3px solid var(--c7);
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
+  font-size: 1.5rem;
 }
 
 .categoryButton:hover {
@@ -66,9 +74,7 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  /* Aligns content at the start, reducing the gap */
   gap: 1rem;
-  /* Adjust styling as needed */
 }
 
 .orderMenu button {
@@ -85,22 +91,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* This will center the content (image and text) vertically */
   text-align: center;
-  /* Ensures text is centered */
-}
+  font-size: 1rem;
 
-/* .orderMenu button {
-  padding: 1rem;
-  border: 3px solid var(--c7);
-  background-color: var(--c4);
-  color: var(--c3);
-  transition: 0.5s;
-  width: 23%;
-  height: 25%;
-  min-width: 150px;
-  min-height: 150px;
-} */
+}
 
 .orderMenu button:hover {
   background-color: var(--c6);
@@ -118,9 +112,7 @@
 }
 
 .currentOrderTitle {
-  /* Styles for the 'Current Order' title */
   border-bottom: 3px solid var(--c3);
-  /* Example style */
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -149,11 +141,11 @@
 }
 
 .total {
-  /* Styles for the 'Total' section */
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  font-size: 1.5rem;
 }
 
 .total span {}
@@ -173,12 +165,19 @@
   color: var(--c4);
 }
 
-.footer {
+.buttonsContainer {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
   padding: 20px 0;
   background-color: var(--c2);
+  /* Or any color that matches your design */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  /* Optional: adds a slight shadow for depth */
 }
 
 .navButton {
