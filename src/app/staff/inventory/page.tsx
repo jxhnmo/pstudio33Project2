@@ -23,7 +23,7 @@ interface Item {
 
 
 export default function StaffInventory() {
-  const [inventory, setInventory] = useState([]);
+  const [inventory, setInventory] = useState<Item[]>([]);
 
 
   useEffect(() => {
@@ -43,35 +43,38 @@ export default function StaffInventory() {
 
   return (
     <>
-      <Sidebar />
+      <div className="pageContainer">
+        <Sidebar />
 
-      <div className={styles.main}>
-
-        <h1 className={styles.title}>Inventory</h1>
-        <div className={styles.container}>
-          {/* Inventory Grid */}
-          <table className={styles.inventoryTable}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Item Name</th>
-                <th>Max Stock</th>
-                <th>Price</th>
-                <th>Current Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inventory.map((item: Item) => (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.item_name}</td>
-                  <td>{item.max_stock}</td>
-                  <td>${item.price}</td>
-                  <td>{item.stock}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className={styles.main}>
+          <h1 className={styles.title}>Inventory</h1>
+          <div className={styles.container}>
+            {/* Inventory Grid */}
+            <div className={styles.inventoryTableContainer}>
+              <table className={styles.inventoryTable}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Max Stock</th>
+                    <th>Price</th>
+                    <th>Current Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inventory.map((item: Item) => (
+                    <tr key={item.id}>
+                      <td>{item.id}</td>
+                      <td>{item.item_name}</td>
+                      <td>{item.max_stock}</td>
+                      <td>${item.price}</td>
+                      <td>{item.stock}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
 

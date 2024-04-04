@@ -1,28 +1,30 @@
-.main {
+.pageContainer {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 1rem;
-  overflow: auto;
-  /* Enables scrolling if content overflows */
 }
 
-
-.container {
+.main {
   flex: 1;
-  /* This should allow the container to expand, taking up all available space */
-  display: flex;
-  gap: 1rem;
-  height: 90%;
-  /* Other styles */
+  overflow-y: auto;
+  /* Allows scrolling */
+  padding: 1rem;
 }
 
+/* This positions the navigation buttons at the bottom */
 .buttonsContainer {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 20px;
-  /* Adjust spacing as needed */
+  padding: 20px 0;
+  background-color: var(--c2);
+  /* Or any color that matches your design */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  /* Optional: adds a slight shadow for depth */
 }
 
 .navButton {
@@ -53,6 +55,12 @@
 
 }
 
+.inventoryTableContainer {
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--c7);
+}
+
 .inventoryTable {
   width: 100%;
   border-collapse: collapse;
@@ -67,6 +75,9 @@
 
 .inventoryTable th {
   background-color: var(--c4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .inventoryTable tr:nth-child(even) {
