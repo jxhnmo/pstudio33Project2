@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation'; // Ensure this import is at the top
 
 import { useEffect, useState } from 'react';
 import styles from '@/app/orderSummary/orderSummary.module.css'; // Adjust the path as necessary
-import { completeTransaction } from '../order';
+import { completeTransaction, getMaxId } from '../order';
 import { Router } from 'next/router';
 import dynamic from 'next/dynamic';
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
@@ -32,12 +32,17 @@ const OrderSummary = () => {
   // Calculate the total price
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const currentTime: Date = new Date();
     // console.log(currentTime.toISOString());
+    const orderId = await getMaxId() + 1;
     completeTransaction(totalPrice.toFixed(2), selectedItems);
+    console.log(orderId);
+    localStorage.setItem('orderId', JSON.stringify(orderId));
+
     // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
+
     router.push('/ThankYou');
   };
 
