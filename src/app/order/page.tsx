@@ -49,15 +49,18 @@ export default function Home() {
   }, []);
 
   // Function to load items for a selected category
-  const loadItemsForCategory = async (categoryName: any) => {
+  const loadItemsForCategory = async (categoryName: string) => {
     try {
       const items = await fetchItems(categoryName);
       console.log(items);
-      setCurrentCategoryItems(items);
+      // Temporarily clear items to signal a significant change
+      setCurrentCategoryItems([]);
+      // Introduce a slight delay before showing new items
+      setTimeout(() => setCurrentCategoryItems(items), 100);
       setActiveCategory(categoryName);
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
-      setCurrentCategoryItems([]); // Consider resetting or handling the error state differently
+      setCurrentCategoryItems([]); // Reset on error
     }
   };
 

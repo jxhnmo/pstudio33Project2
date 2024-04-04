@@ -31,9 +31,10 @@ const Sidebar = () => {
 
       // Cleanup function
       return () => {
+        window.googleTranslateScriptLoaded = false; // Reset flag
+
         document.body.removeChild(googleTranslateScript);
         delete window.googleTranslateElementInit;
-        window.googleTranslateScriptLoaded = false; // Reset flag
       };
     };
 
