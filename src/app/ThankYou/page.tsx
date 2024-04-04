@@ -12,12 +12,12 @@ const ThankYou = () => {
   }, [router]);
 
   const orderId = localStorage.getItem('orderId');
-
+  
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>Thank you for your business!</h1>
       <p className={styles.message}>Your order will be out shortly.</p>
-      {orderId && <p className={styles.message}>Your order, {orderId}, will be out shortly.</p>}
+      {orderId && <p className={styles.message}>Your order, {orderId} , will be out shortly.</p>}
     </div>
   );
 };
