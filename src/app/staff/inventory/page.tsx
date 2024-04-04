@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 
 import { useEffect, useState } from 'react';
 
-import { fetchInventory } from '../../inventory';
+import { fetchInventory, addItem } from '../../inventory';
 
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
@@ -21,10 +21,17 @@ interface Item {
   stock: number;
 }
 
+interface NewItem {
+  item_name?: string;
+  max_stock?: number;
+  price?: number;
+  stock?: number;
+}
+
 
 export default function StaffInventory() {
   const [inventory, setInventory] = useState<Item[]>([]);
-
+  const [newItem, setNewItem] = useState<NewItem>({});
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,6 +47,22 @@ export default function StaffInventory() {
 
     loadData();
   }, []);
+
+  const handleAddNewItem = async () => {
+    if (newItem.item_name && newItem.max_stock && newItem.price && newItem.stock) { // Ensure all fields are filled
+      try {
+        const addedItem = await addItem(newItem);
+        if (addedItem) {
+          setInventory([...inventory, addedItem]);
+          setNewItem({}); // Reset form
+        }
+      } catch (error) {
+        console.error("Failed to add new item:", error);
+      }
+    } else {
+      alert('Please fill in all fields.');
+    }
+  };
 
   return (
     <>
@@ -71,6 +94,16 @@ export default function StaffInventory() {
                       <td>{item.stock}</td>
                     </tr>
                   ))}
+
+                  {/* New Item Row */}
+                  <tr>
+                    <td>New</td>
+                    <td><input type="text" placeholder="Item Name" value={newItem.item_name || ''} onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })} /></td>
+                    <td><input type="number" placeholder="Max Stock" value={newItem.max_stock || ''} onChange={(e) => setNewItem({ ...newItem, max_stock: parseInt(e.target.value) })} /></td>
+                    <td><input type="number" placeholder="Price" value={newItem.price || ''} onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) })} /></td>
+                    <td><input type="number" placeholder="Stock" value={newItem.stock || ''} onChange={(e) => setNewItem({ ...newItem, stock: parseInt(e.target.value) })} /></td>
+                    <td><button onClick={handleAddNewItem}>Add</button></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
