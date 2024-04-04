@@ -38,7 +38,7 @@ const OrderSummary = () => {
     const orderId = await getMaxId() + 1;
     completeTransaction(totalPrice.toFixed(2), selectedItems);
     localStorage.setItem('orderId', JSON.stringify(orderId));
-
+    //i hope that i can sitll commit
     // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
     localStorage.setItem('selectedItems', JSON.stringify([]));
