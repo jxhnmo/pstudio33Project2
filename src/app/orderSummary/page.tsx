@@ -37,12 +37,11 @@ const OrderSummary = () => {
     // console.log(currentTime.toISOString());
     const orderId = await getMaxId() + 1;
     completeTransaction(totalPrice.toFixed(2), selectedItems);
-    console.log(orderId);
     localStorage.setItem('orderId', JSON.stringify(orderId));
 
     // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
-
+    localStorage.setItem('selectedItems', JSON.stringify([]));
     router.push('/ThankYou');
   };
 
@@ -53,34 +52,40 @@ const OrderSummary = () => {
     localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
   };
 
+  
   return (
     <>
-    <Sidebar />
-    <div className={styles.main}>
-      <h1 className={styles.orderSummaryHeader}>Order Summary</h1>
-      <div className={styles.orderList}>
-        {selectedItems.length > 0 ? (
-          selectedItems.map((item, index) => (
-            <div key={index} className={styles.orderItem}>
-            <div>
-              {item.name} - ${item.price} x {item.quantity}
-              <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                Remove
-              </button>
-            </div>
-          </div>
-          ))
-        ) : (
-          <div>No items in the order.</div>
-        )}
+      <Sidebar />
+      <div className={styles.main}>
+        <h1 className={styles.orderSummaryHeader}>Order Summary</h1>
+        <div className={styles.orderList}>
+          {selectedItems.length > 0 ? (
+            selectedItems.map((item, index) => (
+              <div key={index} className={styles.orderItem}>
+                <div>
+                  {item.name} - ${item.price} x {item.quantity}
+                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div>No items in the order.</div>
+          )}
+        </div>
+        <div className={styles.total}>
+          Total: <span>${totalPrice.toFixed(2)}</span>
+        </div>
+        <div className={styles.buttonsContainer}>
+          <button className={styles.goBackButton} onClick={() => router.back()}>
+            Go Back
+          </button>
+          <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+            Confirm Order
+          </button>
+        </div>
       </div>
-      <div className={styles.total}>
-        Total: <span>${totalPrice.toFixed(2)}</span>
-      </div>
-      <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
-          Confirm Order
-        </button>
-    </div>
     </>
   );
 };

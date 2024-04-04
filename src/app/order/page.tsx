@@ -27,7 +27,9 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<Item[]>([]); // Use the Item type for selectedItems
+  //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
+  const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
+  const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
 
