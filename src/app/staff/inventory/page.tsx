@@ -4,7 +4,7 @@ import Link from 'next/link';
 import styles from "@/app/staff/inventory/staffInventory.module.css";
 import dynamic from 'next/dynamic';
 
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { fetchInventory, addItem } from '../../inventory';
 
@@ -19,6 +19,7 @@ interface Item {
   max_stock: number;
   price: number;
   stock: number;
+  isEditing?: boolean;
 }
 
 interface NewItem {
@@ -64,6 +65,28 @@ export default function StaffInventory() {
     }
   };
 
+  const toggleEdit = (index: number) => {
+    const updatedInventory = inventory.map((item, idx) => {
+      if (idx === index) {
+        // Toggle the isEditing state of the item
+        return { ...item, isEditing: !item.isEditing };
+      }
+      return item;
+    });
+    setInventory(updatedInventory);
+  };
+
+  const handleEditChange = (event: ChangeEvent<HTMLInputElement>, index: number, field: string) => {
+    const updatedInventory = inventory.map((item, idx) => {
+      if (idx === index) {
+        return { ...item, [field]: event.target.value };
+      }
+      return item;
+    });
+    setInventory(updatedInventory);
+  };
+
+
   return (
     <>
       <div className="pageContainer">
@@ -85,13 +108,36 @@ export default function StaffInventory() {
                   </tr>
                 </thead>
                 <tbody>
-                  {inventory.map((item: Item) => (
+                  {inventory.map((item: Item, index: number) => (
                     <tr key={item.id}>
                       <td>{item.id}</td>
                       <td>{item.item_name}</td>
-                      <td>{item.max_stock}</td>
-                      <td>${item.price}</td>
+                      <td>
+                        {item.isEditing ? (
+                          <input
+                            type="number"
+                            value={item.max_stock}
+                            onChange={(e) => handleEditChange(e, index, 'max_stock')}
+                          />
+                        ) : (
+                          item.max_stock
+                        )}
+                      </td>
+                      <td>
+                        {item.isEditing ? (
+                          <input
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => handleEditChange(e, index, 'price')}
+                          />
+                        ) : (
+                          `$${item.price}`
+                        )}
+                      </td>
                       <td>{item.stock}</td>
+                      <td>
+                        <button onClick={() => toggleEdit(index)}>{item.isEditing ? 'Save' : 'Edit'}</button>
+                      </td>
                     </tr>
                   ))}
 
