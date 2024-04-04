@@ -84,8 +84,11 @@ export default function Home() {
     }
   };
 
-  const handleRemoveItem = (item: Item) => {
-
+  const handleRemoveItem = (index: number) => {
+    const updatedItems = [...selectedItems];
+    updatedItems.splice(index, 1);
+    setSelectedItems(updatedItems);
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
   };
 
   const handleConfirmOrder = () => {
@@ -141,7 +144,12 @@ export default function Home() {
             {selectedItems.map((item, index) => (
               <div key={`${item.id}-${new Date().getTime()}-${index}`}>
                 {item.name} - ${item.price} x {item.quantity}
+                <br />
+                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                    Remove
+                </button>
               </div>
+              
             ))}
           </div>
           </div>
