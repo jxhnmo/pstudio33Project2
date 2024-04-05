@@ -37,9 +37,11 @@ const Home: React.FC = () => {
       const categories = await fetchCategories();
       const menuData = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
-        items.forEach((item) => {
-          item.imageUrl = `/images/${item.name.replace(/\s/g, '')}.png`;
-        });
+        if (Array.isArray(items)) { // Extra precaution
+          items.forEach((item) => {
+            item.imageUrl = `/images/${item.name.replace(/\s/g, '')}.png`;
+          });
+        }
         return { category: category.category, items };
       }));
       setMenuData(menuData);
@@ -65,7 +67,6 @@ const Home: React.FC = () => {
 
   const currentCategory = menuData[currentCategoryIndex] || { category: '', items: [] };
 
-  // Adding an onClick event to the main container
   return (
     <>
       <Sidebar />

@@ -21,7 +21,6 @@ const Sidebar = () => {
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
       };
-
       // Dynamically load the Google Translate script
       const googleTranslateScript = document.createElement('script');
       googleTranslateScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
@@ -34,8 +33,8 @@ const Sidebar = () => {
       return () => {
         window.googleTranslateScriptLoaded = false; // Reset flag
 
-        document.body.removeChild(googleTranslateScript);
-        delete window.googleTranslateElementInit;
+      //  document.body.removeChild(googleTranslateScript);
+      //  delete window.googleTranslateElementInit;
       };
     };
 
