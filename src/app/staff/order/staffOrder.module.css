@@ -144,7 +144,7 @@
   background-color: var(--c4);
   color: var(--c3);
   transition: 0.5s;
-
+  z-index: 2;
   margin-bottom: 0;
 }
 
@@ -154,6 +154,7 @@
 }
 
 .buttonsContainer {
+  
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -166,6 +167,7 @@
   left: 0;
   width: 100%;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
   /* Optional: adds a slight shadow for depth */
 }
 

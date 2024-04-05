@@ -109,7 +109,7 @@ export default function Home() {
     }
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
-    // setSelectedItems([]);
+    //setSelectedItems([]);
   };
 
   const handleReturnHome = () => {
