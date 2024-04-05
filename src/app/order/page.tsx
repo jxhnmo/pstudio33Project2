@@ -171,7 +171,7 @@ export default function Home() {
             {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}
-            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
               Confirm Order
             </button>
 
