@@ -27,8 +27,16 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<Item[]>([]); // Use the Item type for selectedItems
-  const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
+  const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
+  const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
+  const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+
+  useEffect(() => {
+    const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotalPriceInfo({ total, updateKey: Date.now() });
+  }, [selectedItems]); // Recalculate whenever selectedItems changes
 
 
   useEffect(() => {
@@ -47,15 +55,24 @@ export default function Home() {
   }, []);
 
   // Function to load items for a selected category
-  const loadItemsForCategory = async (categoryName: any) => {
+  const loadItemsForCategory = async (categoryName: string) => {
     try {
+
       const items = await fetchItems(categoryName);
       console.log(items);
-      setCurrentCategoryItems(items);
-      setActiveCategory(categoryName);
+      // Temporarily clear items to signal a significant change
+      setCurrentCategoryItems([]);
+      // Introduce a slight delay before showing new items
+       setIsCategoryLoaded(true); // Set to true once items are loaded
+
+      setTimeout(() => {
+        setCurrentCategoryItems(items);
+        setActiveCategory(categoryName);
+      });
+
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
-      setCurrentCategoryItems([]); // Consider resetting or handling the error state differently
+      setCurrentCategoryItems([]); // Reset on error
     }
   };
 
@@ -74,21 +91,25 @@ export default function Home() {
     }
   };
 
-  const handleRemoveItem = (item: Item) => {
-
+  const handleRemoveItem = (index: number) => {
+    const updatedItems = [...selectedItems];
+    updatedItems.splice(index, 1);
+    setSelectedItems(updatedItems);
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
   };
 
   const handleConfirmOrder = () => {
-    const currentTime = new Date();
-    // Store selected items in local storage
-    console.log("printing selected items");
-    console.log(selectedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-    router.push('/orderSummary'); // Adjust the path to your order summary page
-
+    if(selectedItems.length !== 0){
+      const currentTime = new Date();
+      // Store selected items in local storage
+      console.log("printing selected items");
+      console.log(selectedItems);
+      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      router.push('/orderSummary'); // Adjust the path to your order summary page
+    }
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
-    // setSelectedItems([]);
+    //setSelectedItems([]);
   };
 
   const handleReturnHome = () => {
@@ -98,7 +119,7 @@ export default function Home() {
   return (
     <>
       <Sidebar />
-      <div className={styles.main}>
+      <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
         <div className={styles.categories}>
           <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
@@ -120,6 +141,8 @@ export default function Home() {
             <button key={index} onClick={() => handleSelectItem(item)}>
               {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
               {item.name}
+              <br />
+              {'$' + item.price}
             </button> // Adjust to match your item object structure
           ))}
         </div>
@@ -128,17 +151,23 @@ export default function Home() {
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
             <div className={styles.orderList}>
-              {selectedItems.map((item: { name: string, price: number, quantity: number }, index: number) => (
-                <div key={index}>
-                  {item.name} - ${item.price} x {item.quantity}
-                </div>
-              ))}
-            </div>
+            {selectedItems.map((item, index) => (
+              <div key={`${item.id}-${new Date().getTime()}-${index}`}>
+                {item.name} - ${item.price} x {item.quantity}
+                <br />
+                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                    Remove
+                </button>
+              </div>
+            ))}
+          </div>
           </div>
           <div className={styles.currOrderBtm}>
-            <div className={styles.total}>
-              Total: <span>${totalPrice.toFixed(2)}</span>
-            </div>
+          
+          <div key={totalPriceInfo.updateKey} className={styles.total}>
+                Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
+          </div>
+
             {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
               Confirm Order
             </Link> */}
