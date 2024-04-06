@@ -42,8 +42,8 @@ const InventoryOrderSummary = () => {
       await Promise.all(orderPromises);
        localStorage.setItem('inventory', JSON.stringify([]));
        setSelectedItems([]);
-     //  setSelectedItems(selectedItems.map(item => ({ ...item, orderQuantity: 0 })));
-       
+       router.push('/staff/inventoryOrderConfirmed');
+
        
      } catch (error) {
        console.error("Failed to process bulk order:", error);
