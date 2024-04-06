@@ -49,11 +49,13 @@ const InventoryOrderSummary = () => {
        console.error("Failed to process bulk order:", error);
        alert('Failed to process some orders.');
      }
-    // Implementation for confirming the order
   };
 
   const handleRemoveItem = (index: number) => {
-    // Implementation for removing an item from the order
+    const updatedItems = [...selectedItems];
+    updatedItems.splice(index, 1);
+    setSelectedItems(updatedItems);
+    localStorage.setItem('inventory', JSON.stringify(updatedItems)); 
   };
 
   return (
