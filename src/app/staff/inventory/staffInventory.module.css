@@ -11,7 +11,6 @@
   padding: 1rem;
 }
 
-/* This positions the navigation buttons at the bottom */
 .buttonsContainer {
   display: flex;
   justify-content: center;
@@ -23,7 +22,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 5px var(--c7);
   /* Optional: adds a slight shadow for depth */
 }
 
@@ -48,7 +47,6 @@
   color: var(--c6);
   font-weight: bold;
   padding: 10px 10px;
-  margin-top: 20px;
   font-size: 60px;
   text-align: center;
   text-decoration: underline;
@@ -56,7 +54,7 @@
 }
 
 .inventoryTableContainer {
-  max-height: 80vh;
+  max-height: 65vh;
   overflow-y: auto;
   border: 1px solid var(--c7);
 }

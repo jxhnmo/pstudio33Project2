@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 
 import { ChangeEvent, useEffect, useState } from 'react';
 
-import { fetchInventory, addItem } from '../../inventory';
+import { fetchInventory, addItem, updateItemStock } from '../../inventory';
 
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
@@ -19,7 +19,9 @@ interface Item {
   max_stock: number;
   price: number;
   stock: number;
+
   isEditing?: boolean;
+  orderQuantity?: number;
 }
 
 interface NewItem {
@@ -86,6 +88,54 @@ export default function StaffInventory() {
     setInventory(updatedInventory);
   };
 
+  const adjustOrderQuantity = (index: number, adjustment: number) => {
+    const updatedInventory = inventory.map((item, idx) => {
+      if (idx === index) {
+        return { ...item, orderQuantity: (item.orderQuantity || 0) + adjustment };
+      }
+      return item;
+    });
+    setInventory(updatedInventory);
+  };
+
+  const handleOrderQuantityChange = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+    const updatedInventory = inventory.map((item, idx) => {
+      if (idx === index) {
+        return { ...item, orderQuantity: parseInt(event.target.value) };
+      }
+      return item;
+    });
+    setInventory(updatedInventory);
+  };
+
+  const handleBulkOrder = async () => {
+    const orderPromises = inventory.map(item => {
+      if (item.orderQuantity && item.orderQuantity > 0) {
+        return updateItemStock(item.id, item.orderQuantity);
+      }
+      return Promise.resolve();
+    });
+
+    const loadData = async () => {
+      try {
+        const data = await fetchInventory();
+        setInventory(data);
+      }
+      catch (error) {
+        console.error("Failed to fetch:", error);
+      }
+    };
+
+    try {
+      await Promise.all(orderPromises);
+      alert('All orders processed successfully.');
+      setInventory(inventory.map(item => ({ ...item, orderQuantity: 0 })));
+      loadData();
+    } catch (error) {
+      console.error("Failed to process bulk order:", error);
+      alert('Failed to process some orders.');
+    }
+  };
 
   return (
     <>
@@ -105,6 +155,8 @@ export default function StaffInventory() {
                     <th>Max Stock</th>
                     <th>Price</th>
                     <th>Current Stock</th>
+                    <th>Order Stock</th>
+                    <th>Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -135,9 +187,24 @@ export default function StaffInventory() {
                         )}
                       </td>
                       <td>{item.stock}</td>
+
+                      <td>
+                        {/* <th>Order More</th> */}
+                        <button onClick={() => adjustOrderQuantity(index, -50)}>-</button>
+                        <input
+                          type="number"
+                          value={item.orderQuantity || 0}
+                          onChange={(e) => handleOrderQuantityChange(e, index)}
+                          style={{ width: "50px" }}
+                        />
+                        <button onClick={() => adjustOrderQuantity(index, 50)}>+</button>                      </td>
+
                       <td>
                         <button onClick={() => toggleEdit(index)}>{item.isEditing ? 'Save' : 'Edit'}</button>
                       </td>
+
+
+
                     </tr>
                   ))}
 
@@ -150,8 +217,12 @@ export default function StaffInventory() {
                     <td><input type="number" placeholder="Stock" value={newItem.stock || ''} onChange={(e) => setNewItem({ ...newItem, stock: parseInt(e.target.value) })} /></td>
                     <td><button onClick={handleAddNewItem}>Add</button></td>
                   </tr>
+
+
+
                 </tbody>
               </table>
+              <button onClick={handleBulkOrder} className={styles.orderButton}>Process All Orders</button>
             </div>
           </div>
         </div>

@@ -80,28 +80,39 @@
   /* Pushes the total to the bottom */
 }
 
-.confirmOrderButton {
+/* Add this container style to your existing CSS */
+.buttonsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Ensure it spans the full width of its parent container */
+}
+
+.confirmOrderButton, .goBackButton {
   padding: 0.5rem 1rem;
-  /* Reduce vertical padding to make button less tall */
   font-size: 1rem;
   font-weight: bold;
   background-color: var(--c4);
   color: var(--c3);
   transition: background-color 0.3s, transform 0.2s;
   cursor: pointer;
-  align-self: flex-end;
-  /* Align the button to the right */
   border-radius: 8px;
   border-color: var(--c7);
   margin-top: 1rem;
-  /* Ensure there's a margin above the button if the order list is short */
 }
 
-.confirmOrderButton:hover {
+.goBackButton {
+  align-self: flex-start;
+}
+
+.confirmOrderButton {
+  align-self: flex-end;
+}
+
+.confirmOrderButton:hover, .goBackButton:hover {
   background-color: var(--c6);
   color: var(--c4);
 }
-
 /* Adjust the container to accommodate the button and total placement */
 .orderContainer {
   display: flex;

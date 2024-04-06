@@ -44,3 +44,22 @@ export async function addItem(newItem) {
         throw err;
     }
 }
+
+export async function updateItemStock(itemId, orderQuantity) {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        const queryText = 'UPDATE inventory_items SET stock = stock + $1 WHERE id = $2;';
+        const values = [orderQuantity, itemId];
+        await pool.query(queryText, values);
+        await pool.end();
+    } catch (err) {
+        console.error('Failed to update item stock', err);
+    }
+}

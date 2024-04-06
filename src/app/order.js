@@ -43,7 +43,24 @@ export async function fetchItems(categoryName) {
         return [];
     }
 }
+export async function getMaxId(){
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+    try {
+        const queryResult = await pool.query('SELECT MAX(id) as max_id FROM sales_transactions;');
+        await pool.end();
+        return queryResult.rows[0].max_id;
+    } catch (err) {
+        console.error('Failed to fetch categories', err);
+        return [];
+    }
 
+}
 export async function completeTransaction(cost,selectedItems) {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
@@ -93,8 +110,10 @@ export async function completeTransaction(cost,selectedItems) {
         
         await pool3.query(itemQueryText+params);
         await pool3.end();
+        return sales_id;
     } catch (err) {
-        console.error(`Failed`,err);
+        
+        console.error(`Failed completeTransaction`,err);
     }
     
     
