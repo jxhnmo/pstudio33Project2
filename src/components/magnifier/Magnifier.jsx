@@ -11,19 +11,19 @@ const Magnifier = () => {
 
   const zoomIn = () => {
     setZoomLevel(zoomLevel + 10);
-    // Implement actual zoom in functionality here
+    document.body.zoom = zoomLevel / 100;
   };
 
   const zoomOut = () => {
     setZoomLevel(zoomLevel - 10);
-
+    document.body.zoom = zoomLevel / 100;
   };
 
   return (
-    <div>
-      <button onClick={zoomOut}>-</button>
+    <div className="zoomBar">
+      <button className="button" onClick={zoomOut}>-</button>
       <span>ZOOM</span>
-      <button onClick={zoomIn}>+</button>
+      <button className="button" onClick={zoomIn}>+</button>
     </div>
   );
 };
