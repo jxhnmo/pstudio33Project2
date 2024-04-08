@@ -37,4 +37,3 @@ const Magnifier = ({ children }) => {
 };
 
 export default Magnifier;
-
