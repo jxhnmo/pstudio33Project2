@@ -68,7 +68,7 @@ export default function Home() {
       setTimeout(() => {
         setCurrentCategoryItems(items);
         setActiveCategory(categoryName);
-      }, 100);
+      }, 1);
 
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
