@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import './magnifier.css';
 
@@ -10,19 +12,27 @@ const Magnifier = () => {
   const [zoomLevel, setZoomLevel] = useState(100);
 
   const zoomIn = () => {
-    setZoomLevel(zoomLevel + 10);
-    document.body.zoom = zoomLevel / 100;
+    if (zoomLevel < 200) {
+      setZoomLevel(zoomLevel + 10);
+      setZoom();
+    }
   };
 
   const zoomOut = () => {
-    setZoomLevel(zoomLevel - 10);
-    document.body.zoom = zoomLevel / 100;
+    if (zoomLevel > 10) {
+      setZoomLevel(zoomLevel - 10);
+      setZoom();
+    }
   };
+
+  const setZoom = () => {
+    document.body.style.zoom = zoomLevel / 100;
+  }
 
   return (
     <div className="zoomBar">
       <button className="button" onClick={zoomOut}>-</button>
-      <span>ZOOM</span>
+      <span>ZOOM{zoomLevel}</span>
       <button className="button" onClick={zoomIn}>+</button>
     </div>
   );
