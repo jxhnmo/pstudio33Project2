@@ -1,37 +1,29 @@
 import React, { useState } from 'react';
 import './magnifier.css';
 
-const Magnifier = ({ children }) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
 
-  const handleMouseMove = (e) => {
-    const magnifyingLens = e.currentTarget.querySelector('.magnifying-lens');
-    const rect = magnifyingLens.getBoundingClientRect();
-    setPosition({
-      x: e.clientX - rect.left - (rect.width / 2),
-      y: e.clientY - rect.top - (rect.height / 2),
-    });
-    setIsVisible(true);
+if (typeof window !== 'undefined') {
+  // Client-side-only code
+}
+
+const Magnifier = () => {
+  const [zoomLevel, setZoomLevel] = useState(100);
+
+  const zoomIn = () => {
+    setZoomLevel(zoomLevel + 10);
+    // Implement actual zoom in functionality here
   };
 
-  const handleMouseLeave = () => {
-    setIsVisible(false);
+  const zoomOut = () => {
+    setZoomLevel(zoomLevel - 10);
+
   };
 
   return (
-    <div 
-      onMouseMove={handleMouseMove} 
-      onMouseLeave={handleMouseLeave} 
-      className="magnify-container"
-    >
-      {children}
-      <div
-        className={`magnifying-lens ${isVisible ? 'visible' : ''}`}
-        style={{
-          transformOrigin: `${position.x}px ${position.y}px`,
-        }}
-      />
+    <div>
+      <button onClick={zoomOut}>-</button>
+      <span>ZOOM</span>
+      <button onClick={zoomIn}>+</button>
     </div>
   );
 };
