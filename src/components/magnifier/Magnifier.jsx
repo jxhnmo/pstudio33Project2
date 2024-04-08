@@ -1,33 +1,27 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './magnifier.css';
 
-
-if (typeof window !== 'undefined') {
-  // Client-side-only code
-}
 
 const Magnifier = () => {
   const [zoomLevel, setZoomLevel] = useState(100);
 
+  useEffect(() => {
+    document.body.style.zoom = zoomLevel / 100;
+  }, [zoomLevel]);
+
   const zoomIn = () => {
     if (zoomLevel < 200) {
       setZoomLevel(zoomLevel + 10);
-      setZoom();
     }
   };
 
   const zoomOut = () => {
     if (zoomLevel > 10) {
       setZoomLevel(zoomLevel - 10);
-      setZoom();
     }
   };
-
-  const setZoom = () => {
-    document.body.style.zoom = zoomLevel / 100;
-  }
 
   return (
     <div className="zoomBar">
