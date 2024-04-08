@@ -32,7 +32,7 @@ export default function Home() {
   }
 
   return (
-    <Magnifier>
+    <>
       <Sidebar />
       <main>
         <div>
@@ -55,6 +55,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-    </Magnifier>
+    </>
  );
 }
