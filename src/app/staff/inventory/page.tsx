@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
+import { useRouter } from 'next/navigation';
 
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
@@ -33,6 +34,7 @@ interface NewItem {
 
 
 export default function StaffInventory() {
+  const router = useRouter(); 
   const [inventory, setInventory] = useState<Item[]>([]);
   const [newItem, setNewItem] = useState<NewItem>({});
 
@@ -109,15 +111,10 @@ export default function StaffInventory() {
   };
 
   const handleBulkOrder = async () => {
-    const orderPromises = inventory.map(item => {
-      if (item.orderQuantity && item.orderQuantity > 0) {
-        return updateItemStock(item.id, item.orderQuantity);
-      }
-      return Promise.resolve();
-    });
+    
 
     const loadData = async () => {
-      try {
+    try {
         const data = await fetchInventory();
         setInventory(data);
       }
@@ -127,10 +124,9 @@ export default function StaffInventory() {
     };
 
     try {
-      await Promise.all(orderPromises);
-      alert('All orders processed successfully.');
-      setInventory(inventory.map(item => ({ ...item, orderQuantity: 0 })));
-      loadData();
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+     loadData();
+      router.push('/staff/inventoryOrderSummary');
     } catch (error) {
       console.error("Failed to process bulk order:", error);
       alert('Failed to process some orders.');
