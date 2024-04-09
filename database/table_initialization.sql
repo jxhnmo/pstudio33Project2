@@ -2,11 +2,12 @@ DROP TABLE IF EXISTS 'employees';
 CREATE TABLE employees (
     id INT PRIMARY KEY,
     name VARCHAR(50),
-    password VARCHAR(50),
     salary NUMERIC,
     shift_start TIME,
     shift_end TIME,
-    manager BOOLEAN
+    manager BOOLEAN,
+    user VARCHAR(50),
+    password VARCHAR(50)
 );
 
 DROP TABLE IF EXISTS 'inventory_items';
@@ -73,5 +74,4 @@ CREATE TABLE sales_items (
     menu_id INT,
     FOREIGN KEY (sales_id) REFERENCES sales_transactions(id),
     FOREIGN KEY (menu_id) REFERENCES menu_items(id),
-
 );
