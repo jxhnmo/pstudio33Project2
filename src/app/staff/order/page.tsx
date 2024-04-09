@@ -20,6 +20,44 @@ interface Item {
   quantity: number;
 }
 
+const Modal = ({ isOpen, onClose, onAdd }) => {
+  const [newItem, setNewItem] = useState({ name: '', price: 0 });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onAdd(newItem);
+    onClose();
+  };
+
+  return (
+    isOpen && (
+      <div className={styles.modal}>
+        <div className={styles.modalContent}>
+          <span className={styles.close} onClick={onClose}>
+            &times;
+          </span>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Item Name"
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+            />
+            <input
+              type="number"
+              placeholder="Price"
+              value={newItem.price}
+              onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
+            />
+            <button type="submit">Add Item</button>
+          </form>
+        </div>
+      </div>
+    )
+  );
+};
+
+
 export default function Home() {
   const router = useRouter();
 
@@ -31,6 +69,9 @@ export default function Home() {
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
+  //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   localStorage.setItem('role', 'staff');
 
   useEffect(() => {
@@ -107,6 +148,11 @@ export default function Home() {
     router.push('/');
   }
 
+  const handleAddNewItem = (newItem) => {
+    const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
+    setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
+  };
+
   return (
     <>
       <Sidebar />
@@ -136,7 +182,13 @@ export default function Home() {
               {'$' + item.price}
             </button> // Adjust to match your item object structure
           ))}
+
+          <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
+            Add New Item
+          </button>
         </div>
+
+        
         {/* Current Order Column */}
         <div className={styles.currentOrder}>
           <div className={styles.currOrderTop}>
@@ -181,6 +233,12 @@ export default function Home() {
           </Link>
         </div>
       </div>
+
+      <Modal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onAdd={handleAddNewItem}
+    />
     </>
 
   );
