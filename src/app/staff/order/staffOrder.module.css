@@ -61,9 +61,7 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  /* Aligns content at the start, reducing the gap */
   gap: 1rem;
-  /* Adjust styling as needed */
 }
 
 .orderMenu button {
@@ -154,7 +152,6 @@
 }
 
 .buttonsContainer {
-
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -165,7 +162,6 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  box-shadow: 0 -2px 5px var(--c7);
   z-index: 1;
 }
 

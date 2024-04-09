@@ -198,9 +198,6 @@ export default function StaffInventory() {
                       <td>
                         <button onClick={() => toggleEdit(index)}>{item.isEditing ? 'Save' : 'Edit'}</button>
                       </td>
-
-
-
                     </tr>
                   ))}
 
