@@ -10,6 +10,9 @@ import dynamic from 'next/dynamic';
 const Sidebar = dynamic(() => import('../components/sidebar/Sidebar'), {
   ssr: false,
 });
+const Magnifier = dynamic(() => import('../components/magnifier/Magnifier'), {
+  ssr: false,
+});
 
 export default function Home() {
   //Function needs backend connection so that 1. it takes username from DB
@@ -29,7 +32,7 @@ export default function Home() {
   }
 
   return (
-    <>
+    <Magnifier>
       <Sidebar />
       <main>
         <div>
@@ -52,6 +55,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-    </>
+    </Magnifier>
  );
 }
