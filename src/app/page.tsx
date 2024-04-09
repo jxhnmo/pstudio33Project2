@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import styles from "./styles/page.module.css";
-import DBConnection from "./DBConnection"; // Adjust the path as necessary
-import { GetServerSideProps } from 'next';
 import Link from 'next/link';
-import { useState } from "react";
 import dynamic from 'next/dynamic';
+import { loginUser } from './login';
+
 const Sidebar = dynamic(() => import('../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -17,20 +15,21 @@ const Magnifier = dynamic(() => import('../components/magnifier/Magnifier'), {
 export default function Home() {
   //Function needs backend connection so that 1. it takes username from DB
   //  and 2. it passes a boolean to the order page saying if it's a manager or not
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-
-    // Get the values from the form
+  
     const username = event.target.username.value;
-    const password = event.target.password.value;
-
-    if (username === '0' && password === '0') {
-      window.location.href = '/staff/order';
-    } else {
-      alert("Incorrect username or password.");
+    const password = event.target.password.value || '0';
+  
+    try {
+      const { manager } = await loginUser(username, password);
+      window.location.href = `/staff/order?manager=${manager}`;
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Incorrect username or password or an error occurred.");
     }
-  }
-
+  };
+  
   return (
     <>
       <Sidebar />

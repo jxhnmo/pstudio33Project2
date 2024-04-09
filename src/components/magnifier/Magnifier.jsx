@@ -26,7 +26,8 @@ const Magnifier = () => {
   return (
     <div className="zoomBar">
       <button className="button" onClick={zoomOut}>-</button>
-      <span>ZOOM{zoomLevel}</span>
+      
+      <span class= "zoomText">Zoom: {zoomLevel}%</span>
       <button className="button" onClick={zoomIn}>+</button>
     </div>
   );

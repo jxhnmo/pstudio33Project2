@@ -39,7 +39,7 @@
 }
 
 .orderList {
-  color: var(--c3);
+  color: var(--c1);
 
   display: flex;
   flex-direction: column;
@@ -50,9 +50,6 @@
   background-color: var(--c2);
   padding: 1rem;
   border-radius: 8px;
-  /* Add for consistency */
-  /* box-shadow: 0 2px 4px var; */
-  /* Optional, adds depth */
 }
 
 .orderItem {
@@ -85,20 +82,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure it spans the full width of its parent container */
+  width: 100%;
+  /* Ensure it spans the full width of its parent container */
 }
 
-.confirmOrderButton, .goBackButton {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  font-weight: bold;
+.confirmOrderButton,
+.goBackButton {
+  padding: 10px 15px;
   background-color: var(--c4);
   color: var(--c3);
-  transition: background-color 0.3s, transform 0.2s;
-  cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   border-color: var(--c7);
-  margin-top: 1rem;
+  border-style: solid;
+  text-decoration: none;
+  transition: 0.5s;
 }
 
 .goBackButton {
@@ -109,10 +106,13 @@
   align-self: flex-end;
 }
 
-.confirmOrderButton:hover, .goBackButton:hover {
+.confirmOrderButton:hover,
+.goBackButton:hover {
   background-color: var(--c6);
   color: var(--c4);
+  transform: scale(1.1);
 }
+
 /* Adjust the container to accommodate the button and total placement */
 .orderContainer {
   display: flex;

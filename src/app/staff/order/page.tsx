@@ -72,6 +72,7 @@ export default function Home() {
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  localStorage.setItem('role', 'staff');
 
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -135,16 +136,11 @@ export default function Home() {
   const handleConfirmOrder = () => {
     if(selectedItems.length !== 0){
       const currentTime = new Date();
-      // Store selected items in local storage
       console.log("printing selected items");
       console.log(selectedItems);
-      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-
-      //router.push('/staff'); // Adjust the path to your order summary page
+     localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      router.push('../orderSummary');
     }
-    completeTransaction(totalPriceInfo.total.toFixed(2), selectedItems);
-    setSelectedItems([]);
-    localStorage.setItem('selectedItems', JSON.stringify([]));
 
   };
 

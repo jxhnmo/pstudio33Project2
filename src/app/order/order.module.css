@@ -4,15 +4,20 @@
   padding: 1rem;
   gap: 1rem;
   height: 100vh;
-  overflow-y:auto;
-  background-image: url('/images/revCartoon.png'); 
-  background-size: 70%; /* Cover the entire page */
-  background-position: center; /* Center the background image */
+  overflow-y: auto;
+  background-image: url('/images/revCartoon.png');
+  background-size: 70%;
+  /* Cover the entire page */
+  background-position: center;
+  /* Center the background image */
   background-repeat: no-repeat;
 }
+
 .categoryLoaded {
-  background-image: none !important; /* Override to remove the background image */
+  background-image: none !important;
+  /* Override to remove the background image */
 }
+
 .categories {
   flex-basis: 20%;
   display: flex;
@@ -116,9 +121,11 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
-  background-color: var(--c2);
-  height: 100%;
+  background-color: var(--c4);
+  /* color: var(--c1); */
+  height: 95%;
   gap: 10px;
+  padding: 10px;
 }
 
 .currOrderTop {
@@ -160,7 +167,7 @@
 }
 
 .confirmOrderButton:disabled {
-  background-color: #ccc; 
-  color: #666; 
+  background-color: var(--c2);
+  color: var(--c4);
   cursor: not-allowed;
 }

@@ -7,6 +7,10 @@ const ThankYou = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if(localStorage.getItem('role') === 'staff'){
+      const timer = setTimeout(() => router.push('/staff/order'), 5000);
+      return () => clearTimeout(timer);
+    }
     const timer = setTimeout(() => router.push('/order'), 5000);
     return () => clearTimeout(timer);
   }, [router]);

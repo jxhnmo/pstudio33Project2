@@ -72,12 +72,25 @@
 }
 
 .inventoryTable th {
-  background-color: var(--c4);
+  background-color: var(--c2);
+  color: var(--c1);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
 .inventoryTable tr:nth-child(even) {
-  background-color: var(--c2);
+  background-color: var(--c4);
+}
+
+.orderButton {
+  padding: 10px 15px;
+  background-color: var(--c4);
+  color: var(--c3);
+  border-radius: 10px;
+  border-color: var(--c7);
+  border-style: solid;
+  text-decoration: none;
+  transition: 0.5s;
+  margin-left: 80%;
 }

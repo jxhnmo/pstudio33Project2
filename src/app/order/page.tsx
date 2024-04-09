@@ -32,6 +32,7 @@ export default function Home() {
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  localStorage.setItem('role', 'customer');
 
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
