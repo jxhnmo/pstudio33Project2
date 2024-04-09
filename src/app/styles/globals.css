@@ -2,19 +2,19 @@
 
   /* COLOUR THEME */
   /* background */
-  --c1: #191111;
+  --c1: #E3E2DF;
   /* secondary background */
-  --c2: #201314;
+  --c2: #9A1750;
   /* white text */
-  --c3: #EEEEEC;
+  --c3: #000;
   /* object background (buttons) */
-  --c4: #611623;
+  --c4: #e3afbc;
   /* secondary colour */
-  --c5: #7c333a;
+  --c5: #ee4c7c;
   /* object hover */
-  --c6: #FFCA16;
+  --c6: #5d001e;
   /* borders */
-  --c7: #714F19;
+  --c7: #000;
 
 
   --max-width: 1100px;
