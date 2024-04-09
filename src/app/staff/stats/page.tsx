@@ -41,8 +41,6 @@ export default function StaffStats() {
         const data = await fetchData();
         setData(data);
 
-        // Process fetched data
-        // Assuming fetchData returns similar data structures as in Java
         const menuItems = processMenuItems(data.menuItems);
         setMenuItems(menuItems);
 
@@ -70,7 +68,6 @@ export default function StaffStats() {
   }, [startDateTime, endDateTime]);
 
   const processMenuItems = (menuItemsData) => {
-    // Process menu items data as per your requirement
     return menuItemsData.map(item => ({
       id: item.id,
       name: item.name,
@@ -81,7 +78,6 @@ export default function StaffStats() {
   }
 
   const processInventory = (inventoryData) => {
-    // Process inventory data as per your requirement
     return inventoryData.map(item => ({
       id: item.id,
       itemName: item.itemName,
