@@ -6,7 +6,7 @@ CREATE TABLE employees (
     shift_start TIME,
     shift_end TIME,
     manager BOOLEAN,
-    user VARCHAR(50),
+    username VARCHAR(50),
     password VARCHAR(50)
 );
 
