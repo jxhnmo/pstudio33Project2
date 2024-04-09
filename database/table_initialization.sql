@@ -1,12 +1,15 @@
+DROP TABLE IF EXISTS 'employees';
 CREATE TABLE employees (
     id INT PRIMARY KEY,
     name VARCHAR(50),
+    password VARCHAR(50),
     salary NUMERIC,
     shift_start TIME,
     shift_end TIME,
     manager BOOLEAN
 );
 
+DROP TABLE IF EXISTS 'inventory_items';
 CREATE TABLE inventory_items (
     id INT PRIMARY KEY,
     item_name VARCHAR(50),
@@ -14,6 +17,7 @@ CREATE TABLE inventory_items (
     price NUMERIC
 );
 
+DROP TABLE IF EXISTS 'menu_items';
 CREATE TABLE menu_items (
     id INT PRIMARY KEY,
     name VARCHAR(50),
@@ -24,7 +28,7 @@ CREATE TABLE menu_items (
     category VARCHAR(50)
 );
 
-
+DROP TABLE IF EXISTS 'ingredients';
 CREATE TABLE ingredients (
     id INT PRIMARY KEY,
     item_id INT,
@@ -34,6 +38,7 @@ CREATE TABLE ingredients (
     FOREIGN KEY (menu_id) REFERENCES menu_items(id)
 );
 
+DROP TABLE IF EXISTS 'inventory_transactions';
 CREATE TABLE inventory_transactions (
     id INT PRIMARY KEY,
     manager_id INT,
@@ -41,6 +46,7 @@ CREATE TABLE inventory_transactions (
     price NUMERIC
 );
 
+DROP TABLE IF EXISTS 'inventory_item_orders';
 CREATE TABLE inventory_item_orders (
     id INT PRIMARY KEY,
     transaction_id INT,
@@ -51,6 +57,7 @@ CREATE TABLE inventory_item_orders (
     FOREIGN KEY (item_id) REFERENCES inventory_items(id)
 );
 
+DROP TABLE IF EXISTS 'sales_transactions';
 CREATE TABLE sales_transactions (
     id INT PRIMARY KEY,
     cost NUMERIC,
@@ -59,6 +66,7 @@ CREATE TABLE sales_transactions (
     FOREIGN KEY (employee_id) REFERENCES employees(id)
 );
 
+DROP TABLE IF EXISTS 'sales_items';
 CREATE TABLE sales_items (
     id INT PRIMARY KEY,
     sales_id INT,
