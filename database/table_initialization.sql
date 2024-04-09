@@ -72,5 +72,6 @@ CREATE TABLE sales_items (
     sales_id INT,
     menu_id INT,
     FOREIGN KEY (sales_id) REFERENCES sales_transactions(id),
-    FOREIGN KEY (menu_id) REFERENCES menu_items(id)
+    FOREIGN KEY (menu_id) REFERENCES menu_items(id),
+
 );
