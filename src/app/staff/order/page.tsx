@@ -157,12 +157,6 @@ export default function Home() {
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
   };
 
-  // const handleAddNewItem = () => {
-  //   const newItemWithId = { ...newItem, id: Date.now() }; // Generate a unique id
-  //   setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
-  //   setNewItem({ id: -1, name: '', price: 0, quantity: 1 }); // Reset the new item form
-  // };
-
   return (
     <>
       <Sidebar />
@@ -196,23 +190,6 @@ export default function Home() {
           <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
             Add New Item
           </button>
-
-          {/* New item form
-          <div className={styles.newItemForm}>
-              <input
-                type="text"
-                placeholder="Item Name"
-                value={newItem.name}
-                onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                value={newItem.price}
-                onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
-              />
-              <button onClick={handleAddNewItem}>Add Item</button>
-            </div> */}
         </div>
 
         
