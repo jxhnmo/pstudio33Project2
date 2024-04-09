@@ -68,7 +68,7 @@ export default function Home() {
       setTimeout(() => {
         setCurrentCategoryItems(items);
         setActiveCategory(categoryName);
-      });
+      }, 1);
 
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
@@ -168,9 +168,7 @@ export default function Home() {
                 Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
           </div>
 
-            {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
-              Confirm Order
-            </Link> */}
+            
             <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
               Confirm Order
             </button>

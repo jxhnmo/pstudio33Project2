@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import styles from './sidebar.module.css';
 import SetTheme from '../theme/SetTheme';
+import Magnifier from '../magnifier/Magnifier';
 
 // Sidebar component
 const Sidebar = () => {
@@ -48,6 +49,7 @@ const Sidebar = () => {
       </button>
       <div className={styles.settingName}>High Contrast Mode</div>
       <SetTheme />
+      <Magnifier />
       {/* Placeholder for the Google Translate widget */}
       <div id="google_translate_element" style={{ marginTop: '20px' }}></div>
     </div>
