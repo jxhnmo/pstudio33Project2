@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Adjusted import for useRouter
-import styles from '@/app/ThankYou/ThankYou.module.css'; // Adjust the path as necessary
+import styles from '@/app/ThankYou/thankYou.module.css'; // Adjust the path as necessary
 
 const inventoryOrderConfirmed = () => {
   const router = useRouter();
