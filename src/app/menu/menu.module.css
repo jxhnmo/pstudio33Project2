@@ -3,8 +3,7 @@
   margin: auto;
   padding: 1rem;
   gap: 1rem;
-  min-height: 900px;
-  /* Changed from height to min-height */
+  height: 100vh;
 }
 
 
