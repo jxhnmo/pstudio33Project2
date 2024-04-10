@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Adjusted import for useRouter
 import styles from '@/app/ThankYou/thankYou.module.css'; // Adjust the path as necessary
 
-const inventoryOrderConfirmed = () => {
+const InventoryOrderConfirmed = () => {
   const router = useRouter();
 
   useEffect(() => {
@@ -20,4 +20,4 @@ const inventoryOrderConfirmed = () => {
   );
 };
 
-export default inventoryOrderConfirmed;
+export default InventoryOrderConfirmed;

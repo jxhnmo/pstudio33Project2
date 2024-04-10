@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import styles from "@/app/staff/order/staffOrder.module.css";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
 import dynamic from 'next/dynamic';
@@ -20,10 +20,17 @@ interface Item {
   quantity: number;
 }
 
-const Modal = ({ isOpen, onClose, onAdd }) => {
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (item: { name: string; price: number }) => void;
+};
+
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [newItem, setNewItem] = useState({ name: '', price: 0 });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd(newItem);
     onClose();
@@ -162,7 +169,7 @@ export default function Home() {
     router.push('/');
   }
 
-  const handleAddNewItem = (newItem) => {
+  const handleAddNewItem = (newItem: any) => {
     const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
   };
