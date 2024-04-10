@@ -53,6 +53,30 @@ menu_item_costs = {
     "blt burger":9.25,
     "double cheeseburger":8.45
 }
+menu_item_categories = {
+    "bacon cheeseburger":"burgers",
+    "cheeseburger":"burgers",
+    "patty melt":"burgers",
+    "hamburger":"burgers",
+    "aggie chicken club":"sandwiches",
+    "revs grilled chicken sandwich":"sandwiches",
+    "spicy chicken sandwich":"sandwiches",
+    "chicken caesar salad":"entrees",
+    "french fries":"sides",
+    "small drink": "drinks",
+    "large drink": "drinks",
+    "cookies":"desserts",
+    "chicken tenders":"entrees",
+    "corn dogs":"entrees",
+    "hot dogs":"entrees",
+    "chicken wrap":"entrees",
+    "double scoop ice cream":"desserts",
+    "aggie shakes":"desserts",
+    "cookie ice cream melt":"desserts",
+    "yell bbq rib sandwich":"sandwiches",
+    "blt burger":"burgers",
+    "double cheeseburger":"burgers"
+}
 ing_item_costs = {
     "buns": .30,
     "lettuce": .25,
@@ -93,10 +117,10 @@ ing_item_costs = {
 menu_file = open("menu_items.csv","w",newline="")
 menu_csv = writer(menu_file)
 menu_id = 1
-menu_csv.writerow(["id","name","available","price"])
+menu_csv.writerow(["id","name","available","price","category"])
 menu_item_ids = {}
 for x in menu_items:
-    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f")])
+    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f"),menu_item_categories[x]])
     menu_item_ids[x] = menu_id
     menu_id += 1
 menu_file.close()
@@ -115,9 +139,10 @@ item_file = open("inventory_items.csv","w",newline="")
 item_csv = writer(item_file)
 item_id = 1
 item_ids = {}
-item_csv.writerow(["id","item_name","stock","price"])
+item_csv.writerow(["id","item_name","stock","price","max_stock"])
 for x in ingredients:
-    item_csv.writerow([item_id,x,inventory_count[x],format(ing_item_costs[x],".2f")])
+    stock = inventory_count[x]
+    item_csv.writerow([item_id,x,stock,format(ing_item_costs[x],".2f"),round(stock / 50.0) * 50])
     item_ids[x] = item_id
     item_id += 1
 item_file.close()
