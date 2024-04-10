@@ -112,7 +112,9 @@ export default function Home() {
 
     //setSelectedItems([]);
   };
-
+  const handleInfoClick = () => {
+    // Logic to show popup for item
+  };
   const handleReturnHome = () => {
     router.push('/');
   }
@@ -138,15 +140,17 @@ export default function Home() {
         </div>
         {/* Order Menu */}
         <div className={styles.orderMenu}>
-          {currentCategoryItems.map((item, index) => (
-            <button key={index} onClick={() => handleSelectItem(item)}>
-              {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
-              {item.name}
-              <br />
-              {'$' + item.price}
-            </button> // Adjust to match your item object structure
-          ))}
-        </div>
+            {currentCategoryItems.map((item, index) => (
+                <div key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+                    <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+                    <div>{item.name}<br />{'$' + item.price}</div>
+                    <i className={`fas fa-info-circle ${styles.infoIcon}`} onClick={(e) => handleInfoClick()}>
+                      <Image src = {'/images/infoButton.png'} alt = "info" width = {30} height = {30} />
+                    </i>
+              </div>
+  ))}
+</div>
+
         {/* Current Order Column */}
         <div className={styles.currentOrder}>
           <div className={styles.currOrderTop}>

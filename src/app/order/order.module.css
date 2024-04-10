@@ -100,6 +100,41 @@
   color: var(--c4);
 }
 
+.orderMenu .menuItemContainer {
+  position: relative;
+  padding: 1rem;
+  border: 3px solid var(--c7);
+  background-color: var(--c4);
+  color: var(--c3);
+  width: 23%;
+  height: 25%;
+  min-width: 150px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1rem;
+  transition: 0.5s;
+}
+
+.infoIcon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: var(--c3); /* Icon color */
+  cursor: pointer;
+  width: 30px; /* Circle size */
+  height: 30px; /* Circle size */
+  border-radius: 50%; /* Creates the circle shape */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: lightblue; Background color of the circle */
+  font-size: 14px; /* Adjust the size of the icon itself, if necessary */
+  /* border: 2px solid var(--c7); Optional: border for the circle */
+}
 
 .currentOrder {
   flex-basis: 20%;
