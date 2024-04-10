@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import styles from "@/app/order/order.module.css";
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../order';
 import dynamic from 'next/dynamic';
-
+import InfoPopup from '../../components/InfoPopup/InfoPopup'; // Adjust the path as necessary\
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -32,6 +32,8 @@ export default function Home() {
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedItemInfo, setSelectedItemInfo] = useState(null);
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -118,10 +120,21 @@ export default function Home() {
   const handleReturnHome = () => {
     router.push('/');
   }
+  const handleOpenPopup = (item: Item) => {
+    alert("Buton clicked");
+    setSelectedItemInfo(item);
+    setIsPopupOpen(true);
+  };
+  
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   return (
     <>
       <Sidebar />
+      <InfoPopup isOpen={isPopupOpen} itemInfo={selectedItemInfo} onClose={handleClosePopup} />
+
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
         <div className={styles.categories}>
@@ -144,10 +157,12 @@ export default function Home() {
                 <div key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
                     <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
                     <div>{item.name}<br />{'$' + item.price}</div>
-                    <i className={`fas fa-info-circle ${styles.infoIcon}`} onClick={(e) => handleInfoClick()}>
-                      <Image src = {'/images/infoButton.png'} alt = "info" width = {30} height = {30} />
-                    </i>
-              </div>
+                    <div className={`${styles.infoIcon}`} onClick={() => handleOpenPopup(item)} >
+                        <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+                    </div>
+
+                    
+        </div>
   ))}
 </div>
 
