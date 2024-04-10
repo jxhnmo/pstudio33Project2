@@ -61,6 +61,40 @@ export async function getMaxId(){
     }
 
 }
+export async function getItemInfo(itemId){
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+    try {
+        const queryResult = await pool.query('SELECT * FROM menu_items WHERE id = $1;', [itemId]);
+        await pool.end();
+        return queryResult.rows[0];
+    } catch (err) {
+        console.error('Failed to fetch categories', err);
+        return [];
+    }
+}
+export async function getMenuItemIngredients(menuItemId){
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+    try {
+        const queryResult = await pool.query('SELECT item_name FROM inventory_items WHERE id IN (SELECT item_id FROM ingredients WHERE menu_id = $1);', [menuItemId]);
+        await pool.end();
+        return queryResult.rows;
+    } catch (err) {
+        console.error('Failed to fetch categories', err);
+        return [];
+    }
+}
 export async function completeTransaction(cost,selectedItems) {
     const pool = new Pool({
         user: process.env.DATABASE_USER,

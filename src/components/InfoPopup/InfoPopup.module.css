@@ -17,3 +17,15 @@
     border-radius: 5px;
     z-index: 100;
   }
+  /* button */
+  .categoryButton {
+    flex: 1 1 auto;
+    width: 100%;
+    padding: 1rem;
+    border: 3px solid var(--c7);
+    background-color: var(--c7);
+    color: black;
+    font-size: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+  }

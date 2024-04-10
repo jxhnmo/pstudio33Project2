@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import styles from "@/app/order/order.module.css";
-import { SetStateAction, useEffect, useState } from 'react';
+import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems, completeTransaction } from '../order';
+import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients} from '../order';
 import dynamic from 'next/dynamic';
 import InfoPopup from '../../components/InfoPopup/InfoPopup'; // Adjust the path as necessary\
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
@@ -18,6 +18,7 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  ingredients?: string[];
 }
 
 export default function Home() {
@@ -33,7 +34,8 @@ export default function Home() {
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedItemInfo, setSelectedItemInfo] = useState(null);
+  const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
+
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -114,21 +116,23 @@ export default function Home() {
 
     //setSelectedItems([]);
   };
-  const handleInfoClick = () => {
-    // Logic to show popup for item
+
+
+    const handleReturnHome = () => {
+      router.push('/');
+    }
+
+    const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
+      event.stopPropagation(); // Stop event from propagating to parent
+      const menuItemIngredients = await getMenuItemIngredients(item.id);
+      alert(JSON.stringify(menuItemIngredients));
+      setSelectedItemInfo(item);
+      setIsPopupOpen(true);
   };
-  const handleReturnHome = () => {
-    router.push('/');
-  }
-  const handleOpenPopup = (item: Item) => {
-    alert("Buton clicked");
-    setSelectedItemInfo(item);
-    setIsPopupOpen(true);
-  };
-  
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
+    
+    const handleClosePopup = () => {
+      setIsPopupOpen(false);
+    };
 
   return (
     <>
@@ -153,18 +157,16 @@ export default function Home() {
         </div>
         {/* Order Menu */}
         <div className={styles.orderMenu}>
-            {currentCategoryItems.map((item, index) => (
-                <div key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-                    <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
-                    <div>{item.name}<br />{'$' + item.price}</div>
-                    <div className={`${styles.infoIcon}`} onClick={() => handleOpenPopup(item)} >
-                        <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
-                    </div>
-
-                    
+    {currentCategoryItems.map((item, index) => (
+        <div key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+            <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+            <div>{item.name}<br />{'$' + item.price}</div>
+            <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+                <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+            </div>
         </div>
-  ))}
-</div>
+    ))}
+        </div>
 
         {/* Current Order Column */}
         <div className={styles.currentOrder}>
