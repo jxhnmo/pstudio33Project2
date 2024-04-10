@@ -227,6 +227,8 @@
   margin-top: -10%;
   border-radius: 10px;
   display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align the items if desired */
   justify-content: center;
   align-items: center;
   color: var(--c3);
@@ -251,3 +253,11 @@
   align-items: center;
   text-align: center;
 }
+
+.loginError {
+  color: red; /* Or any color indicating an error */
+  margin-top: 10px; /* Space from the form */
+  text-align: center; /* Center the text if desired */
+  /* Additional styling as needed */
+}
+

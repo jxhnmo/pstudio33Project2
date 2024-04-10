@@ -204,3 +204,10 @@
   border: 1px solid #888;
   width: 80%;
 }
+
+.disabled {
+  opacity: 0.5; /* Dim the element to indicate it's not active */
+  cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
+  color: #614e4e; /* Optional: Change the color to a more muted tone */
+  pointer-events: none; /* Prevents click events from reaching the element */
+}

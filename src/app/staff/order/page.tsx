@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import styles from "@/app/staff/order/staffOrder.module.css";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
 import dynamic from 'next/dynamic';
@@ -20,10 +20,17 @@ interface Item {
   quantity: number;
 }
 
-const Modal = ({ isOpen, onClose, onAdd }) => {
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onAdd: (item: { name: string; price: number }) => void;
+};
+
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [newItem, setNewItem] = useState({ name: '', price: 0 });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd(newItem);
     onClose();
@@ -61,6 +68,8 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
 export default function Home() {
   const router = useRouter();
 
+  const [isManager, setIsManager] = useState(false);
+
   // const [categories, setCategories] = useState([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
@@ -73,6 +82,18 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   localStorage.setItem('role', 'staff');
+
+  useEffect(() => {
+    function getCookie(name:any) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      return parts.length === 2 ? parts.pop()?.split(';').shift() ?? '' : '';
+    }
+
+    // Use the getCookie function inside the useEffect hook
+    const managerStatus = getCookie('isManager');
+    setIsManager(managerStatus === 'true'); // Assuming 'true' is stored as a string in the cookie
+  }, []);
 
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -148,7 +169,7 @@ export default function Home() {
     router.push('/');
   }
 
-  const handleAddNewItem = (newItem) => {
+  const handleAddNewItem = (newItem: any) => {
     const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
   };
@@ -222,15 +243,19 @@ export default function Home() {
 
         {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
-          <Link href="/staff/order" legacyBehavior>
-            <a className={styles.navButton}>Staff Order</a>
-          </Link>
-          <Link href="/staff/stats" legacyBehavior>
-            <a className={styles.navButton}>Staff Stats</a>
-          </Link>
-          <Link href="/staff/inventory" legacyBehavior>
-            <a className={styles.navButton}>Staff Inventory</a>
-          </Link>
+          {isManager ? (
+            <>
+              <Link href="/staff/order" passHref><div className={styles.navButton}>Staff Order</div></Link>
+              <Link href="/staff/stats" passHref><div className={styles.navButton}>Staff Stats</div></Link>
+              <Link href="/staff/inventory" passHref><div className={styles.navButton}>Staff Inventory</div></Link>
+            </>
+          ) : (
+            <>
+              <div className={`${styles.navButton} ${styles.disabled}`}>Staff Order</div>
+              <div className={`${styles.navButton} ${styles.disabled}`}>Staff Stats</div>
+              <div className={`${styles.navButton} ${styles.disabled}`}>Staff Inventory</div>
+            </>
+          )}
         </div>
       </div>
 
