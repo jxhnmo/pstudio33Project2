@@ -1,31 +1,63 @@
 .popupBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-  }
-  
-  .popupContent {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 100;
-  }
-  /* button */
-  .categoryButton {
-    flex: 1 1 auto;
-    width: 100%;
-    padding: 1rem;
-    border: 3px solid var(--c7);
-    background-color: var(--c7);
-    color: black;
-    font-size: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.popupContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 100;
+  text-align: center;
+}
+.popupContent ul {
+  list-style-type: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+}
+.popupContent h3 {
+  text-decoration: underline; /* Underline Ingredients */
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.description {
+  margin-bottom: 15px;
+}
+
+.closeButton {
+  width: 100%;
+  padding: 10px 20px;
+  border: 2px solid black;
+  background-color: transparent;
+  color: black;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: black;
+  color: white;
+}
+.ingredientsContainer {
+  border: 1px solid black;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
