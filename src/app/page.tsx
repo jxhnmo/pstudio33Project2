@@ -3,6 +3,7 @@
 import styles from "./styles/page.module.css";
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import React, { useState } from 'react';
 import { loginUser } from './login';
 
 const Sidebar = dynamic(() => import('../components/sidebar/Sidebar'), {
@@ -13,20 +14,22 @@ const Magnifier = dynamic(() => import('../components/magnifier/Magnifier'), {
 });
 
 export default function Home() {
-  //Function needs backend connection so that 1. it takes username from DB
-  //  and 2. it passes a boolean to the order page saying if it's a manager or not
-  const handleSubmit = async (event: any) => {
+  const [loginError, setLoginError] = useState(''); // State for the login error message
+
+  const handleSubmit = async (event:any) => {
     event.preventDefault();
-  
     const username = event.target.username.value;
     const password = event.target.password.value || '0';
-  
+
     try {
       const { manager } = await loginUser(username, password);
-      window.location.href = `/staff/order?manager=${manager}`;
+
+      document.cookie = `isManager=${manager}; path=/; max-age=3600; SameSite=Lax`;
+
+      window.location.href = `/staff/order`;
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Incorrect username or password or an error occurred.");
+      setLoginError("Invalid login, try again."); // Set the error message
     }
   };
   
@@ -35,22 +38,21 @@ export default function Home() {
       <Sidebar />
       <main>
         <div>
-          <div>
-            <h1 className={styles.h1}>Welcome to REV&apos;S</h1>
-          </div>
-          <div className="container">
-            <Link className={styles.square} href="/order"> Customer Order</Link>
-            <Link className={styles.square} href="/menu"> Menu</Link>
-            <div className={styles.square}>
-              <form onSubmit={handleSubmit}>
-                <h1>Staff</h1>
-                <label htmlFor="username">Username:</label><br />
-                <input type="text" id="username" name="username" /> <br />
-                <label htmlFor="password">Password:</label><br />
-                <input type="password" id="password" name="password" /> <br />
-                <button type="submit">Login</button>
-              </form>
-            </div>
+          <h1 className={styles.h1}>Welcome to REV&apos;S</h1>
+        </div>
+        <div className="container">
+          <Link href="/order" className={styles.square}>Customer Order</Link>
+          <Link href="/menu" className={styles.square}>Menu</Link>
+          <div className={styles.square}>
+            <form onSubmit={handleSubmit}>
+              <h1>Staff</h1>
+              <label htmlFor="username">Username:</label><br />
+              <input type="text" id="username" name="username" /><br />
+              <label htmlFor="password">Password:</label><br />
+              <input type="password" id="password" name="password" /><br />
+              <button type="submit">Login</button>
+            </form>
+            {loginError && <div className={styles.loginError}>{loginError}</div>}
           </div>
         </div>
       </main>

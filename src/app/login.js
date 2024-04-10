@@ -15,7 +15,7 @@ export async function loginUser(username, password = '0') {
       const query = `
         SELECT id, manager
         FROM employees
-        WHERE (CAST(id AS TEXT) = $1 OR "username" = $1)  -- Updated to "username"
+        WHERE (CAST(id AS TEXT) = $1 OR "username" = $1)
           AND (password IS NULL OR password = $2 OR $2 = '0');
       `;
       
