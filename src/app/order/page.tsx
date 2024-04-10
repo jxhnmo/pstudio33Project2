@@ -20,6 +20,9 @@ interface Item {
   quantity: number;
   ingredients?: string[];
 }
+interface ingredient {
+  item_name: string;
+}
 
 export default function Home() {
   const router = useRouter();
@@ -31,10 +34,14 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
+  
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
+  const [selectedItemIngredients, setSelectedItemIngredients] = useState<string[]>([]);
+
+
 
   localStorage.setItem('role', 'customer');
 
@@ -122,22 +129,23 @@ export default function Home() {
       router.push('/');
     }
 
-    const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
-      event.stopPropagation(); // Stop event from propagating to parent
-      const menuItemIngredients = await getMenuItemIngredients(item.id);
-      alert(JSON.stringify(menuItemIngredients));
-      setSelectedItemInfo(item);
-      setIsPopupOpen(true);
-  };
-    
-    const handleClosePopup = () => {
-      setIsPopupOpen(false);
-    };
+        const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
+          event.stopPropagation(); 
+          const menuItemIngredients = await getMenuItemIngredients(item.id);
+          const ingredients = menuItemIngredients.map((ingredient: ingredient) => ingredient.item_name);
+          setSelectedItemInfo(item);
+          setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
+          setIsPopupOpen(true);
+      };
+        
+        const handleClosePopup = () => {
+          setIsPopupOpen(false);
+        };
 
   return (
     <>
       <Sidebar />
-      <InfoPopup isOpen={isPopupOpen} itemInfo={selectedItemInfo} onClose={handleClosePopup} />
+      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
 
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
