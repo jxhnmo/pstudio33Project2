@@ -3,8 +3,7 @@
   margin: auto;
   padding: 1rem;
   gap: 1rem;
-  min-height: 900px;
-  /* Changed from height to min-height */
+  height: 100vh;
 }
 
 
@@ -12,7 +11,6 @@
   color: var(--c6);
   font-weight: bold;
   padding: 10px 10px;
-  margin-top: 20px;
   font-size: 60px;
   text-align: center;
   text-decoration: underline;
@@ -29,63 +27,59 @@
 
 .items {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* Creates four columns */
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(20%, auto);
   gap: 20px;
-  /* Keeps the gap between items */
-  width: 100%;
-  /* Maintains the full width */
-  margin: auto;
-  /* Centers the grid within its parent container */
+  row-gap: 5px;
+  justify-content: center;
+  align-items: start;
   padding: 20px;
-  /* Adds padding around the entire grid */
-  overflow-y: auto;
-  /* Enables vertical scrolling */
-  overflow-x: auto;
-  height: 900px;
-  /* Example fixed height */
+  overflow: auto;
 }
 
 .itemContainer {
-  background-color: var(--c4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
   border-radius: 10px;
-  font-size: 20px;
+  background-color: var(--c4);
   border: 2px solid var(--c7);
-  flex-wrap: wrap;
-  justify-content: space-around;
-  text-wrap: wrap;
-  display: flex;
-
-  width: 400px;
-  height: 400px;
+  width: calc(20vw - 40px);
+  height: calc(20vw - 40px);
 }
 
 .itemImage {
-  width: 300px;
-  height: 300px;
+  width: 100%;
+  height: auto;
+  max-height: 70%;
+  object-fit: contain;
   border-radius: 8px;
 }
 
 .itemNamePrice {
-  text-align: center;
-  text-wrap: wrap;
   width: 100%;
+  text-align: center;
+  margin-top: auto;
   padding: 10px;
-  padding-top: 10px;
 }
 
 /* ANIMATIONS and EFFECTS */
-@keyframes fadeIn {
-  from {
+@keyframes fadeOutIn {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
     opacity: 0;
   }
 
-  to {
+  100% {
     opacity: 1;
   }
 }
 
 .fade {
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeOutIn 2s ease-in-out;
 }

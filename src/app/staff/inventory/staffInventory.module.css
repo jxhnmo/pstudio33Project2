@@ -16,13 +16,13 @@
   justify-content: center;
   gap: 10px;
   padding: 20px 0;
-  background-color: var(--c2);
+  /* background-color: var(--c2); */
   /* Or any color that matches your design */
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  box-shadow: 0 -2px 5px var(--c7);
+  /* box-shadow: 0 -2px 5px var(--c7); */
   /* Optional: adds a slight shadow for depth */
 }
 
