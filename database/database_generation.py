@@ -102,7 +102,7 @@ menu_item_descriptions = {
     "double cheeseburger": "Double the beef, double the cheese, for when you’re feeling extra hungry."
 }
 menu_item_calories = {
-    "bacon cheeseburger": 800,  # calories
+    "bacon cheeseburger": 800,  
     "cheeseburger": 600,
     "patty melt": 700,
     "hamburger": 500,
@@ -168,8 +168,8 @@ menu_id = 1
 menu_csv.writerow(["id","name","available","price","category"])
 menu_item_ids = {}
 for x in menu_items:
-    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f"),menu_item_categories[x]]
-                      ,menu_item_descriptions[x],menu_item_calories[x])
+    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f"),menu_item_categories[x]
+                      ,menu_item_descriptions[x],menu_item_calories[x]])
     menu_item_ids[x] = menu_id
     menu_id += 1
 menu_file.close()
