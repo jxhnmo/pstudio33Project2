@@ -8,7 +8,8 @@ import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients} from '../order';
 import dynamic from 'next/dynamic';
-import InfoPopup from '../../components/InfoPopup/InfoPopup'; // Adjust the path as necessary\
+import InfoPopup from '../../components/InfoPopup/InfoPopup';
+import CustomizePopup from '../../components/CustomizePopup/CustomizePopup';
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -42,6 +43,16 @@ export default function Home() {
   const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
   const [selectedItemIngredients, setSelectedItemIngredients] = useState<string[]>([]);
 
+  // CustomizePopup window states and functions:
+  const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
+  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
+  const handleOpenCustomizePopup = (item: Item) => {
+    setSelectedItemForCustomization(item);
+    setIsCustomizePopupOpen(true);
+  };
+  const handleCloseCustomizePopup = () => {
+    setIsCustomizePopupOpen(false);
+  };
 
 
   localStorage.setItem('role', 'customer');
@@ -90,6 +101,8 @@ export default function Home() {
   };
 
   const handleSelectItem = (item: Item) => {
+    handleOpenCustomizePopup(item);
+
     const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
 
     if (existingItem) {
@@ -130,24 +143,28 @@ export default function Home() {
       router.push('/');
     }
 
-        const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
-          event.stopPropagation(); 
-          const menuItemIngredients = await getMenuItemIngredients(item.id);
-          const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+    const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
+      event.stopPropagation(); 
+      const menuItemIngredients = await getMenuItemIngredients(item.id);
+      const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
 
-          setSelectedItemInfo(item);
-          setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
-          setIsPopupOpen(true);
-      };
-        
-        const handleClosePopup = () => {
-          setIsPopupOpen(false);
-        };
+      setSelectedItemInfo(item);
+      setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
+      setIsPopupOpen(true);
+    };
+      
+    const handleClosePopup = () => {
+      setIsPopupOpen(false);
+    };
 
   return (
     <>
       <Sidebar />
       <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+
+      {isCustomizePopupOpen && selectedItemForCustomization && (
+        <CustomizePopup selectedItem={selectedItemForCustomization} onClose={handleCloseCustomizePopup} />
+      )}
 
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
