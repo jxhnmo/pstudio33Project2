@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
+import { addIngredient } from '../../ingredients';
 
 import dynamic from 'next/dynamic';
 
@@ -27,20 +28,29 @@ interface Item {
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (item: { name: string; price: number }) => void;
+  onAdd: (item: { name: string; price: number }, selectedIngredients: string[]) => void;
 };
 
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: ''});
+  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const handleIngredientChange = (ingredient: string, checked: boolean) => {
+  useEffect(() => {
+    const loadInventory = async () => {
+      const items = await fetchInventory();
+      setInventoryItems(items);
+    };
+    loadInventory();
+  }, []);
+
+  const handleIngredientChange = (ingredientId: number, checked: boolean) => {
     if (checked) {
-      setSelectedIngredients([...selectedIngredients, ingredient]);
+      setSelectedIngredients([...selectedIngredients, ingredientId.toString()]);
     } else {
-      setSelectedIngredients(selectedIngredients.filter(i => i !== ingredient));
+      setSelectedIngredients(selectedIngredients.filter(id => id !== ingredientId.toString()));
     }
   };
 
@@ -51,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(newItem);
+    onAdd(newItem, selectedIngredients);
     onClose();
   };
 
@@ -75,19 +85,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
               value={newItem.price}
               onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
             />
-                      <div>
-            <label>Ingredients:</label>
-            {/* List of checkboxes for ingredients (hardcoded for now) */}
             <div>
-              <input type="checkbox" id="ingredient1" name="ingredient1" onChange={e => handleIngredientChange('Ingredient 1', e.target.checked)} />
-              <label htmlFor="ingredient1">Ingredient 1</label>
+              <label>Ingredients:</label>
+              {inventoryItems.map((item) => (
+                <div key={item.id}>
+                  <input
+                    type="checkbox"
+                    id={`ingredient-${item.id}`}
+                    name={`ingredient-${item.id}`}
+                    onChange={(e) => handleIngredientChange(item.id, e.target.checked)}
+                  />
+                  <label htmlFor={`ingredient-${item.id}`} className={styles.checkboxLabel}>{item.name}</label>
+                </div>
+              ))}
             </div>
-            <div>
-              <input type="checkbox" id="ingredient2" name="ingredient2" onChange={e => handleIngredientChange('Ingredient 2', e.target.checked)} />
-              <label htmlFor="ingredient2">Ingredient 2</label>
-            </div>
-            {/* Add more checkboxes for other ingredients */}
-          </div>
           <div>
             <label>Image:</label>
             <input type="file" onChange={handleImageChange} />
@@ -205,20 +216,31 @@ export default function Home() {
     router.push('/');
   }
 
-  const handleAddNewItem = (newItem: any) => {
+
+  const handleAddNewItem = async (newItem: any, selectedIngredients: string[]) => {
     const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
 
-    addItem({
-      name: newItem.name,
-      price: newItem.price,
-      ingredients: newItem.ingredients,
-      // Handle image upload separately if needed
-    }).then(() => {
-      console.log('Item added to inventory');
-    }).catch(error => {
-      console.error('Error adding item to inventory:', error);
-    });
+    try {
+      const addedItem = await addItem({
+        name: newItem.name,
+        price: newItem.price,
+        // Handle image upload separately if needed
+      });
+  
+      // Add each selected ingredient to the ingredients table
+      for (const ingredientId of selectedIngredients) {
+        await addIngredient({
+          item_id: parseInt(ingredientId),
+          menu_id: addedItem.id,
+          num: 1, // Default quantity, adjust as needed
+        });
+      }
+  
+      console.log('Item and ingredients added to inventory');
+    } catch (error) {
+      console.error('Error adding item and ingredients to inventory:', error);
+    }
   };
 
   return (
