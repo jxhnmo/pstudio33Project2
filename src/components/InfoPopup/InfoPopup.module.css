@@ -1,0 +1,73 @@
+.popupBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better focus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s; /* Smooth fade-in effect */
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+.popupContent {
+  background-color: #f9f9f9; /* Lighter background for the popup */
+  width: auto; /* Adjust width */
+  max-width: 500px; /* Maximum width */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  text-align: left; /* Left-align text for a natural reading flow */
+  position: relative; /* For positioning the close button */
+}
+
+.popupContent ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px; /* Spacing before ingredients list */
+}
+
+.popupContent li {
+  margin-bottom: 5px; /* Space between ingredients */
+}
+
+.calories {
+  font-weight: bold; /* Highlight calorie count */
+  color: #333; /* Darker text for emphasis */
+}
+
+.title, .subtitle {
+  color: var(--c6); /* Warm color for titles to grab attention */
+}
+
+.description {
+  color: #666; /* Darker gray for readability */
+  margin-bottom: 20px; /* More space before the ingredients section */
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: black; /* Match title color */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Circular button */
+}
+
+.closeButton:hover {
+  opacity: 0.8; /* Hover effect for the button */
+}
+
+.ingredientsContainer {
+  border-top: 2px solid maroon; /* Decorative line before ingredients */
+  padding-top: 10px; /* Space after the line */
+}

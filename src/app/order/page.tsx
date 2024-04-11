@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import styles from "@/app/order/order.module.css";
-import { useEffect, useState } from 'react';
+import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems, completeTransaction } from '../order';
+import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients} from '../order';
 import dynamic from 'next/dynamic';
-
+import InfoPopup from '../../components/InfoPopup/InfoPopup'; // Adjust the path as necessary\
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -18,6 +18,11 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  ingredients?: string[];
+  calories?: number;
+}
+interface ingredient {
+  item_name: string;
 }
 
 export default function Home() {
@@ -30,8 +35,15 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
+  
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
+  const [selectedItemIngredients, setSelectedItemIngredients] = useState<string[]>([]);
+
+
+
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -113,13 +125,30 @@ export default function Home() {
     //setSelectedItems([]);
   };
 
-  const handleReturnHome = () => {
-    router.push('/');
-  }
+
+    const handleReturnHome = () => {
+      router.push('/');
+    }
+
+        const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
+          event.stopPropagation(); 
+          const menuItemIngredients = await getMenuItemIngredients(item.id);
+          const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+
+          setSelectedItemInfo(item);
+          setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
+          setIsPopupOpen(true);
+      };
+        
+        const handleClosePopup = () => {
+          setIsPopupOpen(false);
+        };
 
   return (
     <>
       <Sidebar />
+      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
         <div className={styles.categories}>
@@ -139,14 +168,16 @@ export default function Home() {
         {/* Order Menu */}
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
-            <button key={index} onClick={() => handleSelectItem(item)}>
-              {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
-              {item.name}
-              <br />
-              {'$' + item.price}
-            </button> // Adjust to match your item object structure
-          ))}
+        <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+            <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+            <div>{item.name}<br />{'$' + item.price}</div>
+            <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+                <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+            </div>
+        </button>
+    ))}
         </div>
+
         {/* Current Order Column */}
         <div className={styles.currentOrder}>
           <div className={styles.currOrderTop}>

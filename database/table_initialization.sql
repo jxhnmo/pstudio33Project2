@@ -29,10 +29,11 @@ CREATE TABLE inventory_items (
 CREATE TABLE menu_items (
     id INT PRIMARY KEY,
     name VARCHAR(50),
-    /* description TEXT,*/
     available BOOLEAN,
     price NUMERIC,
-    category VARCHAR(50)
+    category VARCHAR(50),
+    description TEXT,  -- Added to store a textual description of the menu item
+    calories INT       -- Added to store the calorie count as an integer
 );
 
 CREATE TABLE ingredients (

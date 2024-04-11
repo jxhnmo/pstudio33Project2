@@ -16,11 +16,26 @@ interface orderData {
   cost: number;
   employee_id: number;
   purchase_time: string;
+}
 
+interface MenuItem {
+  id: number;
+  name: string;
+  available: boolean;
+  price: number;
+  category: string;
+}
+
+interface InventoryItem {
+  id: number;
+  itemName: string;
+  stock: number;
+  price: number;
+  maxStock: number;
 }
 
 export default function StaffStats() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [firstSale, setFirstSale] = useState(null);
@@ -67,7 +82,7 @@ export default function StaffStats() {
     updateStatistics();
   }, [startDateTime, endDateTime]);
 
-  const processMenuItems = (menuItemsData) => {
+  const processMenuItems = (menuItemsData: any) => {
     return menuItemsData.map(item => ({
       id: item.id,
       name: item.name,
@@ -77,7 +92,7 @@ export default function StaffStats() {
     }));
   }
 
-  const processInventory = (inventoryData) => {
+  const processInventory = (inventoryData: any) => {
     return inventoryData.map(item => ({
       id: item.id,
       itemName: item.itemName,
@@ -106,7 +121,7 @@ export default function StaffStats() {
     }
   }
 
-  const handleButtonSelect = (option) => {
+  const handleButtonSelect = (option: any) => {
     setSelectedOption(option);
     // Update statistics when a new option is selected
     updateStatistics();
