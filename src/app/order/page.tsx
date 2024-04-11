@@ -19,6 +19,7 @@ interface Item {
   price: number;
   quantity: number;
   ingredients?: string[];
+  calories?: number;
 }
 interface ingredient {
   item_name: string;
@@ -132,7 +133,8 @@ export default function Home() {
         const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
           event.stopPropagation(); 
           const menuItemIngredients = await getMenuItemIngredients(item.id);
-          const ingredients = menuItemIngredients.map((ingredient: ingredient) => ingredient.item_name);
+          const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+
           setSelectedItemInfo(item);
           setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
           setIsPopupOpen(true);

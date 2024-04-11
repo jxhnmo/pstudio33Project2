@@ -4,19 +4,17 @@ import styles from './InfoPopup.module.css';
 const InfoPopup = ({ isOpen, itemIngredients, itemInfo, onClose }) => {
   if (!isOpen) return null;
 
-  // Function to render ingredients list
   const renderIngredientsList = (ingredients) => {
-    // Check if ingredients exist and is not empty
+    // Check if ingredients exist and are not empty
     if (!ingredients || ingredients.length === 0) {
       return <p>No ingredients listed.</p>;
     }
     
+    // Join the ingredients array into a comma-separated string
+    const ingredientsList = ingredients.join(', ');
+    
     return (
-      <ul>
-        {ingredients.map((ingredient, index) => (
-          <li key={index}>{ingredient}</li>
-        ))}
-      </ul>
+      <p>{ingredientsList}</p> // Displaying the ingredients in a paragraph
     );
   };
 
@@ -24,12 +22,14 @@ const InfoPopup = ({ isOpen, itemIngredients, itemInfo, onClose }) => {
     <div className={styles.popupBackground}>
       <div className={styles.popupContent}>
         <h2 className={styles.title}>{itemInfo?.name}</h2>
-        {/* Render ingredients as a list */}
-        <div>
-          <h3 className={styles.subtitle}>Ingredients</h3>
-          {renderIngredientsList(itemIngredients)}
-        </div>
         <p className={styles.description}>{itemInfo?.description}</p>
+        <div className={styles.ingredientsContainer}>
+          <h3 className={styles.subtitle}>Ingredients</h3>
+          {/* Displaying ingredients as a comma-separated list */}
+          {renderIngredientsList(itemIngredients)}
+          {/* Optionally, display calories here or within the list */}
+          <p className={styles.calories}>Calories: {itemInfo?.calories}</p>
+        </div>
         <button className={styles.closeButton} onClick={onClose}>Close</button>
       </div>
     </div>
