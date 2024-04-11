@@ -77,6 +77,54 @@ menu_item_categories = {
     "blt burger":"burgers",
     "double cheeseburger":"burgers"
 }
+menu_item_descriptions = {
+    "bacon cheeseburger": "A succulent beef patty topped with crispy bacon strips and melted cheese, served on a soft bun.",
+    "cheeseburger": "Classic grilled beef patty paired with a slice of creamy cheese, tucked in a toasted bun.",
+    "patty melt": "Grilled beef patty with melted cheese between slices of golden-brown bread.",
+    "hamburger": "Simple yet delicious, this burger comes with a juicy beef patty, fresh lettuce, and ripe tomato.",
+    "aggie chicken club": "Crispy chicken, fresh lettuce, and smoky bacon stacked in a toasted bun.",
+    "revs grilled chicken sandwich": "Tender grilled chicken breast with lettuce and tomato, served on a toasted bun.",
+    "spicy chicken sandwich": "Spicy fried chicken with crisp lettuce on a toasted bun for those who like it hot.",
+    "chicken caesar salad": "Chopped romaine lettuce, grilled chicken, croutons, and Parmesan cheese, all tossed in Caesar dressing.",
+    "french fries": "Golden and crispy on the outside, soft on the inside – the perfect side to any meal.",
+    "small drink": "Your choice of any soft drink in a small cup.",
+    "large drink": "Your choice of any soft drink in a large cup, for those extra thirsty moments.",
+    "cookies": "Two freshly baked cookies, soft in the middle with a slight crunch on the outside.",
+    "chicken tenders": "Crispy on the outside, juicy on the inside, these chicken tenders are a crowd pleaser.",
+    "corn dogs": "Two classic corn dogs, deep-fried to golden perfection.",
+    "hot dogs": "Twin beef wieners in soft buns, a simple pleasure for any meal.",
+    "chicken wrap": "Grilled chicken wrapped in a soft tortilla with salsa and lettuce, for a light yet flavorful meal.",
+    "double scoop ice cream": "Two generous scoops of creamy ice cream, choose your favorite flavor.",
+    "aggie shakes": "A thick and creamy shake topped with whipped cream, perfect for dessert or a treat.",
+    "cookie ice cream melt": "Warm cookies served with a scoop of vanilla ice cream, a heavenly combination.",
+    "yell bbq rib sandwich": "BBQ ribs, caramelized onions, and pickles in a bun, for a tangy and sweet experience.",
+    "blt burger": "A beef patty with crispy bacon, fresh lettuce, and tomato, a classic favorite.",
+    "double cheeseburger": "Double the beef, double the cheese, for when you’re feeling extra hungry."
+}
+menu_item_calories = {
+    "bacon cheeseburger": 800,  # calories
+    "cheeseburger": 600,
+    "patty melt": 700,
+    "hamburger": 500,
+    "aggie chicken club": 750,
+    "revs grilled chicken sandwich": 550,
+    "spicy chicken sandwich": 650,
+    "chicken caesar salad": 400,
+    "french fries": 300,
+    "small drink": 150,
+    "large drink": 250,
+    "cookies": 160,  
+    "chicken tenders": 470,
+    "corn dogs": 220, 
+    "hot dogs": 500,  
+    "chicken wrap": 600,
+    "double scoop ice cream": 450,
+    "aggie shakes": 550,
+    "cookie ice cream melt": 700,
+    "yell bbq rib sandwich": 900,
+    "blt burger": 800,
+    "double cheeseburger": 900
+}
 ing_item_costs = {
     "buns": .30,
     "lettuce": .25,
@@ -120,7 +168,8 @@ menu_id = 1
 menu_csv.writerow(["id","name","available","price","category"])
 menu_item_ids = {}
 for x in menu_items:
-    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f"),menu_item_categories[x]])
+    menu_csv.writerow([menu_id,x,"true",format(menu_item_costs[x],".2f"),menu_item_categories[x]]
+                      ,menu_item_descriptions[x],menu_item_calories[x])
     menu_item_ids[x] = menu_id
     menu_id += 1
 menu_file.close()
