@@ -7,6 +7,8 @@ import styles from "@/app/staff/order/staffOrder.module.css";
 import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
+import { fetchInventory, addItem, updateItemStock } from '../../inventory';
+
 import dynamic from 'next/dynamic';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
@@ -18,6 +20,8 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  ingredients: string[];
+  imageUrl?: string;
 }
 
 type ModalProps = {
@@ -28,7 +32,22 @@ type ModalProps = {
 
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
-  const [newItem, setNewItem] = useState({ name: '', price: 0 });
+  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: ''});
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const handleIngredientChange = (ingredient: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIngredients([...selectedIngredients, ingredient]);
+    } else {
+      setSelectedIngredients(selectedIngredients.filter(i => i !== ingredient));
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setImageFile(file);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +75,23 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
               value={newItem.price}
               onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
             />
+                      <div>
+            <label>Ingredients:</label>
+            {/* List of checkboxes for ingredients (hardcoded for now) */}
+            <div>
+              <input type="checkbox" id="ingredient1" name="ingredient1" onChange={e => handleIngredientChange('Ingredient 1', e.target.checked)} />
+              <label htmlFor="ingredient1">Ingredient 1</label>
+            </div>
+            <div>
+              <input type="checkbox" id="ingredient2" name="ingredient2" onChange={e => handleIngredientChange('Ingredient 2', e.target.checked)} />
+              <label htmlFor="ingredient2">Ingredient 2</label>
+            </div>
+            {/* Add more checkboxes for other ingredients */}
+          </div>
+          <div>
+            <label>Image:</label>
+            <input type="file" onChange={handleImageChange} />
+          </div>
             <button type="submit">Add Item</button>
           </form>
         </div>
@@ -172,6 +208,17 @@ export default function Home() {
   const handleAddNewItem = (newItem: any) => {
     const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
+
+    addItem({
+      name: newItem.name,
+      price: newItem.price,
+      ingredients: newItem.ingredients,
+      // Handle image upload separately if needed
+    }).then(() => {
+      console.log('Item added to inventory');
+    }).catch(error => {
+      console.error('Error adding item to inventory:', error);
+    });
   };
 
   return (
