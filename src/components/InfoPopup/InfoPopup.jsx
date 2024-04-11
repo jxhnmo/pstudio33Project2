@@ -12,7 +12,8 @@ const InfoPopup = ({ isOpen, itemIngredients, itemInfo, onClose }) => {
     
     // Join the ingredients array into a comma-separated string
     const ingredientsList = ingredients.join(', ');
-    
+    ingredients = ingredients.filter(ingredient => !["napkin", "tray", "straw", "shake cup", "large cup","small cup"
+    , "cup lid", "salad bowl"].includes(ingredient));
     return (
       <p>{ingredientsList}</p> // Displaying the ingredients in a paragraph
     );
