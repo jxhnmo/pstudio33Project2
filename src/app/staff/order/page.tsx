@@ -7,6 +7,9 @@ import styles from "@/app/staff/order/staffOrder.module.css";
 import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction } from '../../order';
+import { fetchInventory, addItem, updateItemStock } from '../../inventory';
+import { addIngredient } from '../../ingredients';
+
 import dynamic from 'next/dynamic';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
@@ -18,21 +21,47 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  ingredients: string[];
+  imageUrl?: string;
 }
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (item: { name: string; price: number }) => void;
+  onAdd: (item: { name: string; price: number }, selectedIngredients: string[]) => void;
 };
 
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
-  const [newItem, setNewItem] = useState({ name: '', price: 0 });
+  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: ''});
+  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const loadInventory = async () => {
+      const items = await fetchInventory();
+      setInventoryItems(items);
+    };
+    loadInventory();
+  }, []);
+
+  const handleIngredientChange = (ingredientId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedIngredients([...selectedIngredients, ingredientId.toString()]);
+    } else {
+      setSelectedIngredients(selectedIngredients.filter(id => id !== ingredientId.toString()));
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setImageFile(file);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(newItem);
+    onAdd(newItem, selectedIngredients);
     onClose();
   };
 
@@ -56,6 +85,24 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
               value={newItem.price}
               onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
             />
+            <div>
+              <label>Ingredients:</label>
+              {inventoryItems.map((item) => (
+                <div key={item.id}>
+                  <input
+                    type="checkbox"
+                    id={`ingredient-${item.id}`}
+                    name={`ingredient-${item.id}`}
+                    onChange={(e) => handleIngredientChange(item.id, e.target.checked)}
+                  />
+                  <label htmlFor={`ingredient-${item.id}`} className={styles.checkboxLabel}>{item.name}</label>
+                </div>
+              ))}
+            </div>
+          <div>
+            <label>Image:</label>
+            <input type="file" onChange={handleImageChange} />
+          </div>
             <button type="submit">Add Item</button>
           </form>
         </div>
@@ -169,9 +216,31 @@ export default function Home() {
     router.push('/');
   }
 
-  const handleAddNewItem = (newItem: any) => {
+
+  const handleAddNewItem = async (newItem: any, selectedIngredients: string[]) => {
     const newItemWithId = { ...newItem, id: Date.now(), quantity: 1 };
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
+
+    try {
+      const addedItem = await addItem({
+        name: newItem.name,
+        price: newItem.price,
+        // Handle image upload separately if needed
+      });
+  
+      // Add each selected ingredient to the ingredients table
+      for (const ingredientId of selectedIngredients) {
+        await addIngredient({
+          item_id: parseInt(ingredientId),
+          menu_id: addedItem.id,
+          num: 1, // Default quantity, adjust as needed
+        });
+      }
+  
+      console.log('Item and ingredients added to inventory');
+    } catch (error) {
+      console.error('Error adding item and ingredients to inventory:', error);
+    }
   };
 
   return (
