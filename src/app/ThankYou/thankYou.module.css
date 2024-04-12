@@ -1,4 +1,5 @@
-.container {
+/* Style when weatherData is clear */
+.containerClear {
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -8,7 +9,25 @@
   min-width: 100%;
   width: 900px;
   border-radius: 8px;
-  background-color: var(--c4);
+  background-color: #fff; /* Light background for clear weather */
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Style when weatherData is not clear */
+.containerNotClear {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: 2rem;
+  gap: 1rem;
+  max-width: 100%;
+  min-width: 100%;
+  width: 900px;
+  border-radius: 8px;
+  background-color: #ccc; /* Darker background for non-clear weather */
   align-items: center;
   justify-content: center;
   height: 100vh;
