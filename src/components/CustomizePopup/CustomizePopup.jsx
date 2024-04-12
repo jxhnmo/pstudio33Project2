@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './CustomizePopup.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
 
@@ -29,15 +31,20 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
       <div className={styles.popup}>
         <h2>Customize {selectedItem.name}</h2>
         <div className={styles.ingredientsList}>
-          {ingredients.map((ingredient, index) => (
-            <button
-              key={index}
-              className={`${styles.ingredientButton} ${selectedIngredients.has(ingredient) ? styles.selected : ''}`}
-              onClick={() => toggleIngredient(ingredient)}
-            >
-              {ingredient}
-            </button>
-          ))}
+            {ingredients.map((ingredient, index) => (
+                <React.Fragment key={index}>
+                    <button
+                        key={index}
+                        className={`${styles.ingredientButton} ${selectedIngredients.has(ingredient) ? styles.selected : ''}`}
+                        onClick={() => toggleIngredient(ingredient)}
+                    >
+                        {selectedIngredients.has(ingredient) ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faTimes} />}
+                        <br />
+                        {ingredient}
+                    </button>
+                    {(index + 1) % 3 === 0 && <br />} 
+                </React.Fragment>
+            ))}
         </div>
         <div className={styles.buttonGroup}>
           <button onClick={handleConfirmCustomization}>Confirm</button>
