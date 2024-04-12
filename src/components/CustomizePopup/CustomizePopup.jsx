@@ -3,7 +3,7 @@ import styles from './CustomizePopup.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
+const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConfirmCustomization  }) => {
 
   const ingredients = selectedItemIngredients || [];
   if (!ingredients || ingredients == []) {
@@ -22,7 +22,9 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
   };
 
   const handleConfirmCustomization = () => {
-    console.log('Selected Ingredients:', Array.from(selectedIngredients));
+    // get array of customizations, call parent function (from order/page.tsx), and close window
+    const selectedIngredientsArray = Array.from(selectedIngredients);
+    onConfirmCustomization(selectedIngredientsArray.join(', '));
     onClose();
   };
 

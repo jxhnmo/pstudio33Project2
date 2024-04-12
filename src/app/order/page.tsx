@@ -20,6 +20,7 @@ interface Item {
   price: number;
   quantity: number;
   ingredients?: string[];
+  customization?: string;
   calories?: number;
 }
 
@@ -48,6 +49,36 @@ export default function Home() {
     setIsCustomizePopupOpen(false);
   };
 
+  const handleCustomizationConfirmation = (customization: string) => {
+    if (selectedItemForCustomization) {
+      setSelectedItemForCustomization({
+        ...selectedItemForCustomization,
+        customization: customization, // Ensure the customization property is included
+      });
+  
+      const existingItemIndex = selectedItems.findIndex(
+        (selectedItem) =>
+          selectedItem.id === selectedItemForCustomization.id &&
+          selectedItem.customization === selectedItemForCustomization.customization
+      );
+  
+      if (existingItemIndex !== -1) {
+        // Update the quantity of the existing item
+        const updatedItems = [...selectedItems];
+        updatedItems[existingItemIndex].quantity += 1;
+        setSelectedItems(updatedItems);
+      } else {
+        // Add the new item with a quantity of 1
+        setSelectedItems((prevItems) => [
+          ...prevItems,
+          { ...selectedItemForCustomization, quantity: 1 },
+        ]);
+      }
+    }
+    setIsCustomizePopupOpen(false);
+  };
+  
+  
 
   localStorage.setItem('role', 'customer');
 
@@ -100,19 +131,6 @@ export default function Home() {
     setSelectedItemForCustomization(item);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
-
-    const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
-
-    if (existingItem) {
-      // Update the quantity of the existing item
-      const updatedItems = selectedItems.map(selectedItem =>
-        selectedItem.id === item.id ? { ...selectedItem, quantity: selectedItem.quantity + 1 } : selectedItem
-      );
-      setSelectedItems(updatedItems);
-    } else {
-      // Add the new item with a quantity of 1
-      setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
-    }
   };
 
   const handleRemoveItem = (index: number) => {
@@ -165,6 +183,7 @@ export default function Home() {
           selectedItem={selectedItemForCustomization} 
           selectedItemIngredients={selectedItemIngredients} 
           onClose={handleCloseCustomizePopup} 
+          onConfirmCustomization={handleCustomizationConfirmation} // Pass the function
         />
       )}
 
