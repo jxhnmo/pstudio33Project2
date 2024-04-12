@@ -49,37 +49,36 @@ export default function Home() {
     setIsCustomizePopupOpen(false);
   };
 
-  const handleCustomizationConfirmation = (customization: string) => {
-    if (selectedItemForCustomization) {
-      setSelectedItemForCustomization({
-        ...selectedItemForCustomization,
-        customization: customization, // Ensure the customization property is included
-      });
-  
-      const existingItemIndex = selectedItems.findIndex(
-        (selectedItem) =>
-          selectedItem.id === selectedItemForCustomization.id &&
-          selectedItem.customization === selectedItemForCustomization.customization
-      );
-  
-      if (existingItemIndex !== -1) {
-        // Update the quantity of the existing item
-        const updatedItems = [...selectedItems];
-        updatedItems[existingItemIndex].quantity += 1;
-        setSelectedItems(updatedItems);
-      } else {
-        // Add the new item with a quantity of 1
-        setSelectedItems((prevItems) => [
-          ...prevItems,
-          { ...selectedItemForCustomization, quantity: 1 },
-        ]);
-      }
+  const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
+    if (!item) {
+      // Handle the case where item is undefined
+      return;
     }
+  
+    // Create the customized item object
+    const customizedItem: Item = {
+      ...item,
+      customization: deselectedIngredients && deselectedIngredients.length > 0 ? `NO ${deselectedIngredients.join(', ')}` : undefined
+    };
+  
+    // Find if an item with the same id and customization already exists
+    const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
+  
+    if (existingItemIndex !== -1) {
+      // Update the quantity of the existing item
+      const updatedItems = [...selectedItems];
+      // Ensure quantity property exists and is a number
+      updatedItems[existingItemIndex].quantity = (updatedItems[existingItemIndex].quantity || 1) + 1;
+      setSelectedItems(updatedItems);
+    } else {
+      // Add the new customized item to the selected items list
+      setSelectedItems(prevItems => [...prevItems, {...customizedItem, quantity: 1}]);
+    }
+  
     setIsCustomizePopupOpen(false);
   };
   
   
-
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -125,13 +124,15 @@ export default function Home() {
     }
   };
 
-  const handleSelectItem  = async (item: Item) => {
+  const handleSelectItem = async (item: Item) => {
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+    console.log("Selected Item:", item); // Log the selected item
     setSelectedItemForCustomization(item);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
   };
+  
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = [...selectedItems];
@@ -154,25 +155,42 @@ export default function Home() {
     //setSelectedItems([]);
   };
 
+  const handleReturnHome = () => {
+    router.push('/');
+  }
 
-    const handleReturnHome = () => {
-      router.push('/');
-    }
-
-    const handleOpenPopup = async (event: MouseEvent, item: Item) => {
-      event.stopPropagation(); 
-      const menuItemIngredients = await getMenuItemIngredients(item.id);
-      const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+  const handleOpenPopup = async (event: MouseEvent, item: Item) => {
+    event.stopPropagation(); 
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+  
+    setSelectedItemInfo(item);
+    setSelectedItemIngredients(ingredients);
+    setIsPopupOpen(true);
+  };
     
-      setSelectedItemInfo(item);
-      setSelectedItemIngredients(ingredients);
-      setIsPopupOpen(true);
-    };
-      
-    const handleClosePopup = () => {
-      setIsPopupOpen(false);
-    };
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
 
+  const generateDeselectedIngredientsList = (item: Item): string => {
+    if (!item.customization) {
+      console.log('No item customization available'); // Log deselected ingredients
+      return ''; // Return empty string if no customization exists
+    }
+    
+    // Extract deselected ingredients from customization string
+    const deselectedIngredients = item.customization
+      .split(', ')
+      .filter(customization => customization.startsWith('NO'))
+      .map(customization => customization.substring(3)); // Remove 'NO ' prefix
+    
+      console.log('Deselected Ingredients:', deselectedIngredients); // Log deselected ingredients
+    
+    // Format deselected ingredients list
+    return deselectedIngredients.join(',\n');
+  };
+  
   return (
     <>
       <Sidebar />
@@ -183,7 +201,7 @@ export default function Home() {
           selectedItem={selectedItemForCustomization} 
           selectedItemIngredients={selectedItemIngredients} 
           onClose={handleCloseCustomizePopup} 
-          onConfirmCustomization={handleCustomizationConfirmation} // Pass the function
+          onConfirmCustomization={handleCustomizationConfirmation}
         />
       )}
 
@@ -225,12 +243,13 @@ export default function Home() {
               <div key={`${item.id}-${new Date().getTime()}-${index}`}>
                 {item.name} - ${item.price} x {item.quantity}
                 <br />
+                {generateDeselectedIngredientsList(item)}
                 <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    Remove
+                  Remove
                 </button>
               </div>
             ))}
-          </div>
+            </div>
           </div>
           <div className={styles.currOrderBtm}>
           

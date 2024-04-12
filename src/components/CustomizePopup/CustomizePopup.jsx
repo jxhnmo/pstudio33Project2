@@ -5,6 +5,8 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConfirmCustomization  }) => {
 
+    console.log("CustomizePopup's selectedItem:", JSON.stringify(selectedItem));
+
   const ingredients = selectedItemIngredients || [];
   if (!ingredients || ingredients == []) {
     onClose();
@@ -22,11 +24,15 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConf
   };
 
   const handleConfirmCustomization = () => {
-    // get array of customizations, call parent function (from order/page.tsx), and close window
+    // Get array of selected and deselected ingredients
     const selectedIngredientsArray = Array.from(selectedIngredients);
-    onConfirmCustomization(selectedIngredientsArray.join(', '));
+    const deselectedIngredients = selectedItem.ingredients?.filter(ingredient => !selectedIngredients.has(ingredient)) || [];
+    
+    // Call the parent function with selected and deselected ingredients
+    onConfirmCustomization(selectedIngredientsArray.join(', '), deselectedIngredients, selectedItem);
     onClose();
   };
+  
 
   return (
     <div className={styles.popupBackdrop}>
