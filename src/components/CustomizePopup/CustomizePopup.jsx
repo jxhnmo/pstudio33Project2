@@ -47,8 +47,8 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
             ))}
         </div>
         <div className={styles.buttonGroup}>
-          <button onClick={handleConfirmCustomization}>Confirm</button>
-          <button onClick={onClose}>Cancel</button>
+            <button onClick={onClose} className={styles.cancelButton}>Cancel</button>
+            <button onClick={handleConfirmCustomization} className={styles.confirmButton}>Confirm</button>   
         </div>
       </div>
     </div>
