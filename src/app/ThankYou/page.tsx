@@ -2,9 +2,21 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Adjusted import for useRouter
 import styles from './thankYou.module.css'; // Adjust the path as necessary
-
+import { fetchWeather } from '../weather';
 const ThankYou = () => {
   const router = useRouter();
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+     
+      alert(JSON.stringify(await fetchWeather()));
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+    }
+  };
+fetchData();
+}
+  );
 
   useEffect(() => {
     if(localStorage.getItem('role') === 'staff'){
