@@ -4,8 +4,9 @@ import Link from 'next/link';
 import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import ApexCharts from 'apexcharts'
 
-import { fetchData } from '../../analytics';
+import { fetchData, metadata, fetchRestock, fetchSales } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false,
@@ -30,9 +31,14 @@ interface InventoryItem {
   id: number;
   itemName: string;
   stock: number;
-  price: number;
   maxStock: number;
+  deficit: number;
+  unitCost: number;
+  totalCost: number;
 }
+
+
+
 
 export default function StaffStats() {
   const [data, setData] = useState<any[]>([]);
@@ -63,8 +69,11 @@ export default function StaffStats() {
         setInventory(inventory);
 
         setFirstSale(data.firstSale);
+        // console.log(data.firstSale);
         setLastSale(data.lastSale);
+        // console.log(data.lastSale);
         setLastRestock(data.lastRestock);
+        setSalesTableData();
 
         // Set default start and end dates
         setStartDateTime(data.firstSale);
@@ -101,16 +110,63 @@ export default function StaffStats() {
       maxStock: item.maxStock
     }));
   }
+  setSalesTableData({
+      options: {
+        chart: {
+          type: 'line'
+        },
+        series: [{
+          name: 'Sales',
+          data: [[ 1672552800000, 10 ], [ 1672639200000, 18 ], [ 1672725600000, 22 ],  [ 1672812000000, 41 ], [ 1672898400000, 63 ], [ 1672984800000, 41 ],  [ 1673071200000, 35 ], [ 1673157600000, 10 ], [ 1673244000000, 12 ], [ 1673330400000, 32 ], [ 1673416800000, 37 ]]
+          // data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+        }],
+        xaxis: {
+          x: new Date('01 Jan 2023').getTime(),// ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+          type: 'datetime',
+          min: new Date('01 Jan 2023').getTime()
+        },
+        dataLabels: {
+            enabled: false
+        },
+      },
+      element: document.querySelector('#sales_chart') // Specify the chart container element
+    });
+
+    // Create and render the chart
+    // const chart = new ApexCharts(chartData.element, chartData.options);
 
   const updateStatistics = () => {
     if (selectedOption === 'product_usage') {
       // Update product usage statistics
       // Implement your logic here
     } else if (selectedOption === 'sales_report') {
+        //chart.render();
+        const sales_data = fetchSales(firstSale,lastSale,1);
+        setSalesTableData(prevState => ({
+            options: {
+                chart: {
+                  type: 'line'
+                },
+                series: [{
+                  name: 'Sales',
+                  data: sales_data
+                  // data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+                }],
+                xaxis: {
+                  x: new Date('01 Jan 2023').getTime(),// ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+                  type: 'datetime',
+                  min: new Date('01 Jan 2023').getTime()
+                },
+                dataLabels: {
+                    enabled: false
+                },
+            }
+        }));
       // Update sales report statistics
       // Implement your logic here
     } else if (selectedOption === 'restock_report') {
       // Update restock report statistics
+      
       // Implement your logic here
     } else if (selectedOption === 'excess_report') {
       // Update excess report statistics
@@ -188,7 +244,7 @@ export default function StaffStats() {
             <div>Paired Menu Items Statistics</div>
           )}
         </div>
-
+        <div id="sales_chart"></div>
         {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
           <Link href="/staff/order" legacyBehavior>
