@@ -1,5 +1,3 @@
-/* CustomizePopup.module.css */
-
 .popupBackdrop {
     position: fixed;
     top: 0;
@@ -25,15 +23,25 @@
     width: 100%;
     height: 100px;
     margin-bottom: 10px;
+    justify-content: center;
   }
   
   .popup button {
-    margin-right: 10px;
     background-color: var(--c4);
     color: var(--c3);
-    padding: 5px;
+    padding: 16px 24px;
     margin: 5px;
     border-radius: 4px;
+    font-size: large;
+  }
+  
+  .popup .ingredientButton {
+    background-color: var(--c1);
+  }
+  
+  .popup .ingredientButton.selected {
+    background-color: var(--c6);
+    color: var(--c4);
   }
   
   .buttonGroup {
