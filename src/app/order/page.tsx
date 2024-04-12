@@ -55,11 +55,17 @@ export default function Home() {
       return;
     }
   
+    console.log('Selected Item:', item);
+    console.log('Customization:', customization);
+    console.log('Deselected Ingredients:', deselectedIngredients);
+  
     // Create the customized item object
     const customizedItem: Item = {
       ...item,
       customization: deselectedIngredients && deselectedIngredients.length > 0 ? `NO ${deselectedIngredients.join(', ')}` : undefined
     };
+  
+    console.log('Customized Item:', customizedItem);
   
     // Find if an item with the same id and customization already exists
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
@@ -72,11 +78,12 @@ export default function Home() {
       setSelectedItems(updatedItems);
     } else {
       // Add the new customized item to the selected items list
-      setSelectedItems(prevItems => [...prevItems, {...customizedItem, quantity: 1}]);
+      setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
     }
   
     setIsCustomizePopupOpen(false);
   };
+  
   
   
   localStorage.setItem('role', 'customer');
@@ -128,7 +135,8 @@ export default function Home() {
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
     console.log("Selected Item:", item); // Log the selected item
-    setSelectedItemForCustomization(item);
+    const updatedSelectedItem = { ...item, ingredients: ingredients };
+    setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
   };
@@ -172,10 +180,9 @@ export default function Home() {
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
-
+  
   const generateDeselectedIngredientsList = (item: Item): string => {
     if (!item.customization) {
-      console.log('No item customization available'); // Log deselected ingredients
       return ''; // Return empty string if no customization exists
     }
     
@@ -183,14 +190,14 @@ export default function Home() {
     const deselectedIngredients = item.customization
       .split(', ')
       .filter(customization => customization.startsWith('NO'))
-      .map(customization => customization.substring(3)); // Remove 'NO ' prefix
+      .map(customization => customization.substring(3)) // Remove 'NO ' prefix
+      .map(ingredient => `  NO ${ingredient}`) // Prepend "NO " and indent each ingredient
+      .join(',\n'); // Join deselected ingredients with a comma and newline
     
-      console.log('Deselected Ingredients:', deselectedIngredients); // Log deselected ingredients
-    
-    // Format deselected ingredients list
-    return deselectedIngredients.join(',\n');
+    return deselectedIngredients;
   };
   
+
   return (
     <>
       <Sidebar />
