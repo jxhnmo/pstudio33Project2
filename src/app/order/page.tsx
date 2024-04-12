@@ -143,13 +143,13 @@ export default function Home() {
       router.push('/');
     }
 
-    const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
+    const handleOpenPopup = async (event: MouseEvent, item: Item) => {
       event.stopPropagation(); 
       const menuItemIngredients = await getMenuItemIngredients(item.id);
       const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
-
+    
       setSelectedItemInfo(item);
-      setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
+      setSelectedItemIngredients(ingredients);
       setIsPopupOpen(true);
     };
       
@@ -216,8 +216,6 @@ export default function Home() {
           <div key={totalPriceInfo.updateKey} className={styles.total}>
                 Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
           </div>
-
-            
             <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
               Confirm Order
             </button>
