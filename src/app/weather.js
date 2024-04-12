@@ -2,10 +2,6 @@
 import axios from 'axios';
 
 export async function fetchWeather() {
-    // if (process.env.WEATHER_KEY === undefined) {
-    //     console.log("WEATHER_KEY is undefined");
-    //     return "WEATHER KEY IS UNDEFINED"; // Exit the function if WEATHER_KEY is not defined
-    // }
     const url = `https://api.openweathermap.org/data/2.5/weather?zip=77840,us&appid=${process.env.WEATHER_KEY}`;
 
     try {
