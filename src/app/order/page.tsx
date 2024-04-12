@@ -22,9 +22,6 @@ interface Item {
   ingredients?: string[];
   calories?: number;
 }
-interface ingredient {
-  item_name: string;
-}
 
 export default function Home() {
   const router = useRouter();
@@ -46,10 +43,7 @@ export default function Home() {
   // CustomizePopup window states and functions:
   const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
-  const handleOpenCustomizePopup = (item: Item) => {
-    setSelectedItemForCustomization(item);
-    setIsCustomizePopupOpen(true);
-  };
+
   const handleCloseCustomizePopup = () => {
     setIsCustomizePopupOpen(false);
   };
@@ -101,7 +95,9 @@ export default function Home() {
   };
 
   const handleSelectItem = (item: Item) => {
-    handleOpenCustomizePopup(item);
+
+    setSelectedItemForCustomization(item);
+    setIsCustomizePopupOpen(true);
 
     const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
 
@@ -163,7 +159,11 @@ export default function Home() {
       <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
 
       {isCustomizePopupOpen && selectedItemForCustomization && (
-        <CustomizePopup selectedItem={selectedItemForCustomization} onClose={handleCloseCustomizePopup} />
+        <CustomizePopup 
+          selectedItem={selectedItemForCustomization} 
+          selectedItemIngredients={selectedItemIngredients} 
+          onClose={handleCloseCustomizePopup} 
+        />
       )}
 
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>

@@ -1,17 +1,26 @@
-// CustomizePopup.jsx
-
 import React, { useState } from 'react';
-import styles from './CustomizePopup.module.css'; // Import CSS module for styling
+import styles from './CustomizePopup.module.css';
 
-const CustomizePopup = ({ selectedItem, onClose }) => {
-  const [customization, setCustomization] = useState('');
+const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose }) => {
 
-  const handleCustomizationChange = (e) => {
-    setCustomization(e.target.value);
+  const ingredients = selectedItemIngredients || [];
+  if (!ingredients || ingredients == []) {
+    onClose();
+  }
+  const [selectedIngredients, setSelectedIngredients] = useState(new Set(ingredients));
+
+  const toggleIngredient = (ingredient) => {
+    const newSelectedIngredients = new Set(selectedIngredients);
+    if (newSelectedIngredients.has(ingredient)) {
+      newSelectedIngredients.delete(ingredient);
+    } else {
+      newSelectedIngredients.add(ingredient);
+    }
+    setSelectedIngredients(newSelectedIngredients);
   };
 
   const handleConfirmCustomization = () => {
-    console.log('Customization confirmed:', customization);
+    console.log('Selected Ingredients:', Array.from(selectedIngredients));
     onClose();
   };
 
@@ -19,11 +28,17 @@ const CustomizePopup = ({ selectedItem, onClose }) => {
     <div className={styles.popupBackdrop}>
       <div className={styles.popup}>
         <h2>Customize {selectedItem.name}</h2>
-        <textarea
-          placeholder="Add customization..."
-          value={customization}
-          onChange={handleCustomizationChange}
-        ></textarea>
+        <div className={styles.ingredientsList}>
+          {ingredients.map((ingredient, index) => (
+            <button
+              key={index}
+              className={`${styles.ingredientButton} ${selectedIngredients.has(ingredient) ? styles.selected : ''}`}
+              onClick={() => toggleIngredient(ingredient)}
+            >
+              {ingredient}
+            </button>
+          ))}
+        </div>
         <div className={styles.buttonGroup}>
           <button onClick={handleConfirmCustomization}>Confirm</button>
           <button onClick={onClose}>Cancel</button>
