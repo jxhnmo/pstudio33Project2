@@ -55,17 +55,21 @@ export default function Home() {
       return;
     }
   
-    console.log('Selected Item:', item);
-    console.log('Customization:', customization);
-    console.log('Deselected Ingredients:', deselectedIngredients);
-  
     // Create the customized item object
-    const customizedItem: Item = {
-      ...item,
-      customization: deselectedIngredients && deselectedIngredients.length > 0 ? `NO ${deselectedIngredients.join(', ')}` : undefined
-    };
-  
-    console.log('Customized Item:', customizedItem);
+    let customizedItem: Item;
+    if (deselectedIngredients && deselectedIngredients.length > 0) {
+      const formattedDeselectedIngredients = deselectedIngredients.map(ingredient => `NO ${ingredient}`).join(', ');
+      customizedItem = {
+        ...item,
+        customization: formattedDeselectedIngredients
+      };
+    } else {
+      // If no ingredients are deselected, simply set customization to undefined
+      customizedItem = {
+        ...item,
+        customization: undefined
+      };
+    }
   
     // Find if an item with the same id and customization already exists
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
@@ -83,6 +87,7 @@ export default function Home() {
   
     setIsCustomizePopupOpen(false);
   };
+  
   
   
   
@@ -180,7 +185,7 @@ export default function Home() {
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
-  
+
   const generateDeselectedIngredientsList = (item: Item): string => {
     if (!item.customization) {
       return ''; // Return empty string if no customization exists
@@ -250,7 +255,9 @@ export default function Home() {
               <div key={`${item.id}-${new Date().getTime()}-${index}`}>
                 {item.name} - ${item.price} x {item.quantity}
                 <br />
-                {generateDeselectedIngredientsList(item)}
+                <div className={styles.deselectedIngredients}>
+                  {generateDeselectedIngredientsList(item)}
+                </div>
                 <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
                   Remove
                 </button>
