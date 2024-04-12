@@ -29,6 +29,11 @@
   
   .popup button {
     margin-right: 10px;
+    background-color: var(--c4);
+    color: var(--c3);
+    padding: 5px;
+    margin: 5px;
+    border-radius: 4px;
   }
   
   .buttonGroup {

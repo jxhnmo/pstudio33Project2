@@ -94,9 +94,11 @@ export default function Home() {
     }
   };
 
-  const handleSelectItem = (item: Item) => {
-
+  const handleSelectItem  = async (item: Item) => {
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
     setSelectedItemForCustomization(item);
+    setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
 
     const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
