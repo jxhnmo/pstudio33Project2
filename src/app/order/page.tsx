@@ -20,6 +20,7 @@ interface Item {
   price: number;
   quantity: number;
   ingredients?: string[];
+  customization?: string;
   calories?: number;
 }
 
@@ -48,7 +49,48 @@ export default function Home() {
     setIsCustomizePopupOpen(false);
   };
 
-
+  const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
+    if (!item) {
+      // Handle the case where item is undefined
+      return;
+    }
+  
+    // Create the customized item object
+    let customizedItem: Item;
+    if (deselectedIngredients && deselectedIngredients.length > 0) {
+      const formattedDeselectedIngredients = deselectedIngredients.map(ingredient => `NO ${ingredient}`).join(', ');
+      customizedItem = {
+        ...item,
+        customization: formattedDeselectedIngredients
+      };
+    } else {
+      // If no ingredients are deselected, simply set customization to undefined
+      customizedItem = {
+        ...item,
+        customization: undefined
+      };
+    }
+  
+    // Find if an item with the same id and customization already exists
+    const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
+  
+    if (existingItemIndex !== -1) {
+      // Update the quantity of the existing item
+      const updatedItems = [...selectedItems];
+      // Ensure quantity property exists and is a number
+      updatedItems[existingItemIndex].quantity = (updatedItems[existingItemIndex].quantity || 1) + 1;
+      setSelectedItems(updatedItems);
+    } else {
+      // Add the new customized item to the selected items list
+      setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
+    }
+  
+    setIsCustomizePopupOpen(false);
+  };
+  
+  
+  
+  
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -94,26 +136,16 @@ export default function Home() {
     }
   };
 
-  const handleSelectItem  = async (item: Item) => {
+  const handleSelectItem = async (item: Item) => {
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
-    setSelectedItemForCustomization(item);
+    console.log("Selected Item:", item); // Log the selected item
+    const updatedSelectedItem = { ...item, ingredients: ingredients };
+    setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
-
-    const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
-
-    if (existingItem) {
-      // Update the quantity of the existing item
-      const updatedItems = selectedItems.map(selectedItem =>
-        selectedItem.id === item.id ? { ...selectedItem, quantity: selectedItem.quantity + 1 } : selectedItem
-      );
-      setSelectedItems(updatedItems);
-    } else {
-      // Add the new item with a quantity of 1
-      setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
-    }
   };
+  
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = [...selectedItems];
@@ -136,24 +168,40 @@ export default function Home() {
     //setSelectedItems([]);
   };
 
+  const handleReturnHome = () => {
+    router.push('/');
+  }
 
-    const handleReturnHome = () => {
-      router.push('/');
-    }
-
-    const handleOpenPopup = async (event: MouseEvent, item: Item) => {
-      event.stopPropagation(); 
-      const menuItemIngredients = await getMenuItemIngredients(item.id);
-      const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+  const handleOpenPopup = async (event: MouseEvent, item: Item) => {
+    event.stopPropagation(); 
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+  
+    setSelectedItemInfo(item);
+    setSelectedItemIngredients(ingredients);
+    setIsPopupOpen(true);
+  };
     
-      setSelectedItemInfo(item);
-      setSelectedItemIngredients(ingredients);
-      setIsPopupOpen(true);
-    };
-      
-    const handleClosePopup = () => {
-      setIsPopupOpen(false);
-    };
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const generateDeselectedIngredientsList = (item: Item): string => {
+    if (!item.customization) {
+      return ''; // Return empty string if no customization exists
+    }
+    
+    // Extract deselected ingredients from customization string
+    const deselectedIngredients = item.customization
+      .split(', ')
+      .filter(customization => customization.startsWith('NO'))
+      .map(customization => customization.substring(3)) // Remove 'NO ' prefix
+      .map(ingredient => `  NO ${ingredient}`) // Prepend "NO " and indent each ingredient
+      .join(',\n'); // Join deselected ingredients with a comma and newline
+    
+    return deselectedIngredients;
+  };
+  
 
   return (
     <>
@@ -165,6 +213,7 @@ export default function Home() {
           selectedItem={selectedItemForCustomization} 
           selectedItemIngredients={selectedItemIngredients} 
           onClose={handleCloseCustomizePopup} 
+          onConfirmCustomization={handleCustomizationConfirmation}
         />
       )}
 
@@ -206,12 +255,15 @@ export default function Home() {
               <div key={`${item.id}-${new Date().getTime()}-${index}`}>
                 {item.name} - ${item.price} x {item.quantity}
                 <br />
+                <div className={styles.deselectedIngredients}>
+                  {generateDeselectedIngredientsList(item)}
+                </div>
                 <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    Remove
+                  Remove
                 </button>
               </div>
             ))}
-          </div>
+            </div>
           </div>
           <div className={styles.currOrderBtm}>
           

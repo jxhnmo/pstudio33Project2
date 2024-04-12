@@ -48,4 +48,14 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  .popup .buttonGroup .confirmButton {
+    background-color: var(--c4);
+    color: var(--c3);
+  }
+  
+  .popup .buttonGroup .cancelButton {
+    background-color: var(--c1);
+    color: var(--c3);
+  }
   
