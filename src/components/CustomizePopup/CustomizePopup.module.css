@@ -53,9 +53,22 @@
     background-color: var(--c4);
     color: var(--c3);
   }
+
+  .popup .buttonGroup .confirmButton:disabled {
+    background-color: var(--c2);
+    color: var(--c5);
+  }
   
   .popup .buttonGroup .cancelButton {
     background-color: var(--c1);
     color: var(--c3);
   }
   
+  .popup .irremovableButton {
+    background-color: var(--c6);
+    color: var(--c4);
+    padding: 16px 24px;
+    margin: 5px;
+    border-radius: 4px;
+    font-size: large;
+  }
