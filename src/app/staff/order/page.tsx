@@ -6,9 +6,12 @@ import { useRouter } from 'next/navigation';
 import styles from "@/app/staff/order/staffOrder.module.css";
 import React, { useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems, completeTransaction } from '../../order';
+import { fetchCategories, fetchItems, completeTransaction, getItemInfo, getMenuItemIngredients } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
 import { addIngredient } from '../../ingredients';
+
+import InfoPopup from '../../../components/InfoPopup/InfoPopup';
+import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
 
 import dynamic from 'next/dynamic';
 
@@ -22,6 +25,8 @@ interface Item {
   price: number;
   quantity: number;
   ingredients: string[];
+  customization?: string;
+  calories?: number;
   imageUrl?: string;
 }
 
@@ -124,9 +129,17 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
-  const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
+  const [selectedItemIngredients, setSelectedItemIngredients] = useState<string[]>([]);
+  // CustomizePopup window states and functions:
+  const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
+  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
 
   localStorage.setItem('role', 'staff');
 
@@ -141,6 +154,68 @@ export default function Home() {
     const managerStatus = getCookie('isManager');
     setIsManager(managerStatus === 'true'); // Assuming 'true' is stored as a string in the cookie
   }, []);
+
+  useEffect(() => {
+    const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    setTotalPriceInfo({ total, updateKey: Date.now() });
+  }, [selectedItems]); // Recalculate whenever selectedItems changes
+
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoryObjects = await fetchCategories();
+        console.log(categoryObjects);
+        const categoryNames = categoryObjects.map(obj => obj.category);
+        setCategories(categoryNames);
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  const handleCloseCustomizePopup = () => {
+    setIsCustomizePopupOpen(false);
+  };
+
+  const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
+    if (!item) {
+      // Handle the case where item is undefined
+      return;
+    }
+  
+    // Create the customized item object
+    let customizedItem: Item;
+    if (deselectedIngredients && deselectedIngredients.length > 0) {
+      const formattedDeselectedIngredients = deselectedIngredients.map(ingredient => `NO ${ingredient}`).join(', ');
+      customizedItem = {
+        ...item,
+        customization: formattedDeselectedIngredients
+      };
+    } else {
+      customizedItem = {
+        ...item,
+        customization: undefined
+      };
+    }
+  
+    const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
+  
+    if (existingItemIndex !== -1) {
+      // Update the quantity of the existing item
+      const updatedItems = [...selectedItems];
+      // Ensure quantity property exists and is a number
+      updatedItems[existingItemIndex].quantity = (updatedItems[existingItemIndex].quantity || 1) + 1;
+      setSelectedItems(updatedItems);
+    } else {
+      // Add the new customized item to the selected items list
+      setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
+    }
+  
+    setIsCustomizePopupOpen(false);
+  };
 
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -179,19 +254,14 @@ export default function Home() {
     }
   };
 
-  const handleSelectItem = (item: Item) => {
-    const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
-
-    if (existingItem) {
-      // Update the quantity of the existing item
-      const updatedItems = selectedItems.map(selectedItem =>
-        selectedItem.id === item.id ? { ...selectedItem, quantity: selectedItem.quantity + 1 } : selectedItem
-      );
-      setSelectedItems(updatedItems);
-    } else {
-      // Add the new item with a quantity of 1
-      setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
-    }
+  const handleSelectItem = async (item: Item) => {
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+    console.log("Selected Item:", item); // Log the selected item
+    const updatedSelectedItem = { ...item, ingredients: ingredients };
+    setSelectedItemForCustomization(updatedSelectedItem);
+    setSelectedItemIngredients(ingredients);
+    setIsCustomizePopupOpen(true);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -204,17 +274,48 @@ export default function Home() {
   const handleConfirmOrder = () => {
     if(selectedItems.length !== 0){
       const currentTime = new Date();
+      // Store selected items in local storage
       console.log("printing selected items");
       console.log(selectedItems);
-     localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-      router.push('../orderSummary');
+      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      router.push('/orderSummary'); // Adjust the path to your order summary page
     }
+    //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
+    //setSelectedItems([]);
   };
 
   const handleReturnHome = () => {
     router.push('/');
   }
+
+  const handleOpenPopup = async (event: MouseEvent, item: Item) => {
+    event.stopPropagation(); 
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+  
+    setSelectedItemInfo(item);
+    setSelectedItemIngredients(ingredients);
+    setIsPopupOpen(true);
+  };
+    
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const generateDeselectedIngredientsList = (item: Item): string => {
+    if (!item.customization) {
+      return ''; // Return empty string if no customization exists
+    }
+    
+    const deselectedIngredients = item.customization
+      .split(', ')
+      .filter(customization => customization.startsWith('NO'))
+      .map(customization => customization.substring(3))
+      .map(ingredient => `  NO ${ingredient}`)
+      .join(',\n');
+    return deselectedIngredients;
+  };
 
 
   const handleAddNewItem = async (newItem: any, selectedIngredients: string[]) => {
@@ -246,6 +347,17 @@ export default function Home() {
   return (
     <>
       <Sidebar />
+      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+
+      {isCustomizePopupOpen && selectedItemForCustomization && (
+        <CustomizePopup 
+          selectedItem={selectedItemForCustomization} 
+          selectedItemIngredients={selectedItemIngredients} 
+          onClose={handleCloseCustomizePopup} 
+          onConfirmCustomization={handleCustomizationConfirmation}
+        />
+      )}
+
       <div className={styles.main}>
         {/* Categories Column */}
         <div className={styles.categories}>
@@ -265,12 +377,13 @@ export default function Home() {
         {/* Order Menu */}
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
-            <button key={index} onClick={() => handleSelectItem(item)}>
-              {<Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />}
-              {item.name}
-              <br />
-              {'$' + item.price}
-            </button> // Adjust to match your item object structure
+            <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+                <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+                <div>{item.name}<br />{'$' + item.price}</div>
+                {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+                    <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+          </div>*/}
+            </button>
           ))}
 
           <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
@@ -288,22 +401,22 @@ export default function Home() {
               <div key={`${item.id}-${new Date().getTime()}-${index}`}>
                 {item.name} - ${item.price} x {item.quantity}
                 <br />
+                <div className={styles.deselectedIngredients}>
+                  {generateDeselectedIngredientsList(item)}
+                </div>
                 <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    Remove
+                  Remove
                 </button>
               </div>
             ))}
-          </div>
+            </div>
           </div>
           <div className={styles.currOrderBtm}>
           
           <div key={totalPriceInfo.updateKey} className={styles.total}>
                 Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
           </div>
-            {/* <Link href="/orderSummary" className={styles.confirmOrderButton}>
-              Confirm Order
-            </Link> */}
-            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
               Confirm Order
             </button>
 
@@ -329,10 +442,10 @@ export default function Home() {
       </div>
 
       <Modal
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-      onAdd={handleAddNewItem}
-    />
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddNewItem}
+      />
     </>
 
   );

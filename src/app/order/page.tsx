@@ -231,15 +231,15 @@ export default function Home() {
         </div>
         {/* Order Menu */}
         <div className={styles.orderMenu}>
-          {currentCategoryItems.map((item, index) => (
-        <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-            <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
-            <div>{item.name}<br />{'$' + item.price}</div>
-            <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
-                <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
-            </div>
-        </button>
-    ))}
+        {currentCategoryItems.map((item, index) => (
+          <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <div>{item.name}<br />{'$' + item.price}</div>
+              <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+                  <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+              </div>
+          </button>
+        ))}
         </div>
 
         {/* Current Order Column */}
