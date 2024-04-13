@@ -64,14 +64,12 @@ export default function Home() {
         customization: formattedDeselectedIngredients
       };
     } else {
-      // If no ingredients are deselected, simply set customization to undefined
       customizedItem = {
         ...item,
         customization: undefined
       };
     }
   
-    // Find if an item with the same id and customization already exists
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
   
     if (existingItemIndex !== -1) {
@@ -132,7 +130,7 @@ export default function Home() {
 
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
-      setCurrentCategoryItems([]); // Reset on error
+      setCurrentCategoryItems([]);
     }
   };
 
@@ -191,14 +189,12 @@ export default function Home() {
       return ''; // Return empty string if no customization exists
     }
     
-    // Extract deselected ingredients from customization string
     const deselectedIngredients = item.customization
       .split(', ')
       .filter(customization => customization.startsWith('NO'))
-      .map(customization => customization.substring(3)) // Remove 'NO ' prefix
-      .map(ingredient => `  NO ${ingredient}`) // Prepend "NO " and indent each ingredient
-      .join(',\n'); // Join deselected ingredients with a comma and newline
-    
+      .map(customization => customization.substring(3))
+      .map(ingredient => `  NO ${ingredient}`)
+      .join(',\n');
     return deselectedIngredients;
   };
   
