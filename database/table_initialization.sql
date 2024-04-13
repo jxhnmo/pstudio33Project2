@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS inventory_transactions CASCADE;
 DROP TABLE IF EXISTS inventory_item_orders CASCADE;
 DROP TABLE IF EXISTS sales_transactions CASCADE;
 DROP TABLE IF EXISTS sales_items CASCADE;
+DROP TABLE IF EXISTS irremovable_ingredients CASCADE;
 
 CREATE TABLE employees (
     id INT PRIMARY KEY,
@@ -24,6 +25,10 @@ CREATE TABLE inventory_items (
     stock INT,
     price NUMERIC,
     max_stock INT
+);
+
+CREATE TABLE irremovable_ingredients (
+    name VARCHAR(50) PRIMARY KEY
 );
 
 CREATE TABLE menu_items (

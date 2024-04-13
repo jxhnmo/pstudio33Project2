@@ -13,3 +13,4 @@ VALUES
 \copy inventory_item_orders FROM 'inventory_item_orders.csv' CSV HEADER;
 \copy sales_transactions FROM 'sales_transactions.csv' CSV HEADER;
 \copy sales_items FROM 'sales_items.csv' CSV HEADER;
+\copy irremovable_ingredients FROM 'irremovable_ingredients.csv' CSV HEADER;

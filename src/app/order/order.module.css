@@ -225,3 +225,20 @@
   color: var(--c4);
   cursor: not-allowed;
 }
+
+.removeButton {
+  background-color: var(--c1);
+  color: var(--c3);
+  padding: 5px 10px;
+  border: 1px solid var(--c7);
+  cursor: pointer;
+}
+
+.removeButton:hover {
+  background-color: var(--c6);
+  color: var(--c4);
+}
+
+.deselectedIngredients {
+  margin-left: 20px;
+}
