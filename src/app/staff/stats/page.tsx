@@ -6,11 +6,19 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import ApexCharts from 'apexcharts'
 
-import { fetchData, metadata, fetchRestock, fetchSales } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false,
 });
+
+interface FetchedData {
+  firstSale: string;
+  lastSale: string;
+  lastRestock: string;
+  menuItems: MenuItem[];
+  inventory: InventoryItem[];
+}
 
 interface orderData {
   id: number;
@@ -32,21 +40,22 @@ interface InventoryItem {
   itemName: string;
   stock: number;
   maxStock: number;
-  deficit: number;
+  deficit?: number;
   unitCost: number;
-  totalCost: number;
+  totalCost?: number;
+  price: number;
 }
 
 
 
 
 export default function StaffStats() {
-  const [data, setData] = useState<any[]>([]);
-  const [menuItems, setMenuItems] = useState([]);
-  const [inventory, setInventory] = useState([]);
-  const [firstSale, setFirstSale] = useState(null);
-  const [lastSale, setLastSale] = useState(null);
-  const [lastRestock, setLastRestock] = useState(null);
+  const [data, setData] = useState<FetchedData | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [firstSale, setFirstSale] = useState<string | null>(null);
+  const [lastSale, setLastSale] = useState<string | null>(null);
+  const [lastRestock, setLastRestock] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState('product_usage');
   const [startDateTime, setStartDateTime] = useState(null);
   const [endDateTime, setEndDateTime] = useState(null);
@@ -55,53 +64,72 @@ export default function StaffStats() {
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const loadData = async () => {
+  //     try {
+  //       // Fetch data from the server
+  //       const data = await fetchData();
+  //       setData(data);
+
+  //       const menuItems = processMenuItems(data.menuItems);
+  //       setMenuItems(menuItems);
+
+  //       const inventory = processInventory(data.inventory);
+  //       setInventory(inventory);
+
+  //       setFirstSale(data.firstSale);
+  //       // console.log(data.firstSale);
+  //       setLastSale(data.lastSale);
+  //       // console.log(data.lastSale);
+  //       setLastRestock(data.lastRestock);
+        
+  //       // Set default start and end dates
+  //       setStartDateTime(data.firstSale);
+  //       setEndDateTime(data.lastSale);
+  //       setSalesTableData(prevState => ({
+  //           options: {
+  //               chart: {
+  //                 type: 'line'
+  //               },
+  //               series: [{
+  //                 name: 'Sales',
+  //                 data: fetchSales(firstSale,lastSale,1)
+  //               }],
+  //               xaxis: {
+  //                 x: new Date('01 Jan 2023').getTime(),
+  //                 type: 'datetime',
+  //                 min: new Date('01 Jan 2023').getTime()
+  //               },
+  //               dataLabels: {
+  //                   enabled: false
+  //               },
+  //           }
+  //       }));
+  //       // const chart = new ApexCharts(document.querySelector('#sales_chart'), salesTableData.options);
+  //       // chart.render();
+  //     } catch (error) {
+  //       console.error("Failed to fetch data", error);
+  //     }
+  //   }
+
+  //   loadData();
+  // }, []);
+    useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch data from the server
-        const data = await fetchData();
-        setData(data);
-
-        const menuItems = processMenuItems(data.menuItems);
-        setMenuItems(menuItems);
-
-        const inventory = processInventory(data.inventory);
-        setInventory(inventory);
-
-        setFirstSale(data.firstSale);
-        // console.log(data.firstSale);
-        setLastSale(data.lastSale);
-        // console.log(data.lastSale);
-        setLastRestock(data.lastRestock);
-        
-        // Set default start and end dates
-        setStartDateTime(data.firstSale);
-        setEndDateTime(data.lastSale);
-        setSalesTableData(prevState => ({
-            options: {
-                chart: {
-                  type: 'line'
-                },
-                series: [{
-                  name: 'Sales',
-                  data: fetchSales(firstSale,lastSale,1)
-                }],
-                xaxis: {
-                  x: new Date('01 Jan 2023').getTime(),
-                  type: 'datetime',
-                  min: new Date('01 Jan 2023').getTime()
-                },
-                dataLabels: {
-                    enabled: false
-                },
-            }
-        }));
-        // const chart = new ApexCharts(document.querySelector('#sales_chart'), salesTableData.options);
-        // chart.render();
+        const fetchedData = await fetchData();
+        if (fetchedData) {
+          setData(fetchedData);
+          setMenuItems(fetchedData.menuItems);
+          setInventory(fetchedData.inventory);
+          setFirstSale(fetchedData.firstSale);
+          setLastSale(fetchedData.lastSale);
+          setLastRestock(fetchedData.lastRestock);
+        }
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
-    }
+    };
 
     loadData();
   }, []);
@@ -111,7 +139,7 @@ export default function StaffStats() {
     updateStatistics();
   }, [startDateTime, endDateTime]);
 
-  const processMenuItems = (menuItemsData: any) => {
+  const processMenuItems = (menuItemsData: MenuItem[]) => {
     return menuItemsData.map(item => ({
       id: item.id,
       name: item.name,
@@ -121,15 +149,15 @@ export default function StaffStats() {
     }));
   }
 
-  const processInventory = (inventoryData: any) => {
+  const processInventory = (inventoryData: InventoryItem[]) => {
     return inventoryData.map(item => ({
       id: item.id,
-      itemName: item.item_name,
+      itemName: item.itemName,
       stock: item.stock,
-      maxStock: item.max_stock,
-      deficit: item.max_stock-item.stock,
+      maxStock: item.maxStock,
+      deficit: item.maxStock-item.stock,
       unitCost: item.price,
-      totalCost: item.price*(item.max_stock-item.stock),
+      totalCost: item.price*(item.maxStock-item.stock),
     }));
   }
   /*
@@ -248,7 +276,7 @@ export default function StaffStats() {
                       </tr>
                     </thead>
                     <tbody>
-                      {inventory.map((item: Item, index: number) => (
+                      {inventory.map((item: InventoryItem, index: number) => (
                         <tr key={item.id}>
                           <td>{item.id}</td>
                           <td>{item.itemName}</td>
@@ -273,7 +301,7 @@ export default function StaffStats() {
             <div>Paired Menu Items Statistics</div>
           )}
         </div>
-        // <div id="sales_chart"></div>
+        {/* // <div id="sales_chart"></div> */}
         {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
           <Link href="/staff/order" legacyBehavior>
