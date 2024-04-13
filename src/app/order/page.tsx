@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from "@/app/order/order.module.css";
 import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients} from '../order';
+import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients } from '../order';
 import dynamic from 'next/dynamic';
 import InfoPopup from '../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../components/CustomizePopup/CustomizePopup';
@@ -34,7 +34,7 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
-  
+
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function Home() {
       // Handle the case where item is undefined
       return;
     }
-  
+
     // Create the customized item object
     let customizedItem: Item;
     if (deselectedIngredients && deselectedIngredients.length > 0) {
@@ -69,9 +69,9 @@ export default function Home() {
         customization: undefined
       };
     }
-  
+
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
-  
+
     if (existingItemIndex !== -1) {
       // Update the quantity of the existing item
       const updatedItems = [...selectedItems];
@@ -82,13 +82,13 @@ export default function Home() {
       // Add the new customized item to the selected items list
       setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
     }
-  
+
     setIsCustomizePopupOpen(false);
   };
-  
-  
-  
-  
+
+
+
+
   localStorage.setItem('role', 'customer');
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export default function Home() {
       // Temporarily clear items to signal a significant change
       setCurrentCategoryItems([]);
       // Introduce a slight delay before showing new items
-       setIsCategoryLoaded(true); // Set to true once items are loaded
+      setIsCategoryLoaded(true); // Set to true once items are loaded
 
       setTimeout(() => {
         setCurrentCategoryItems(items);
@@ -143,17 +143,17 @@ export default function Home() {
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
   };
-  
+
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
   };
 
   const handleConfirmOrder = () => {
-    if(selectedItems.length !== 0){
+    if (selectedItems.length !== 0) {
       const currentTime = new Date();
       // Store selected items in local storage
       console.log("printing selected items");
@@ -171,15 +171,15 @@ export default function Home() {
   }
 
   const handleOpenPopup = async (event: MouseEvent, item: Item) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
-  
+
     setSelectedItemInfo(item);
     setSelectedItemIngredients(ingredients);
     setIsPopupOpen(true);
   };
-    
+
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
@@ -188,7 +188,7 @@ export default function Home() {
     if (!item.customization) {
       return ''; // Return empty string if no customization exists
     }
-    
+
     const deselectedIngredients = item.customization
       .split(', ')
       .filter(customization => customization.startsWith('NO'))
@@ -197,18 +197,18 @@ export default function Home() {
       .join(',\n');
     return deselectedIngredients;
   };
-  
+
 
   return (
     <>
       <Sidebar />
-      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+      <InfoPopup isOpen={isPopupOpen} itemInfo={selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
 
       {isCustomizePopupOpen && selectedItemForCustomization && (
-        <CustomizePopup 
-          selectedItem={selectedItemForCustomization} 
-          selectedItemIngredients={selectedItemIngredients} 
-          onClose={handleCloseCustomizePopup} 
+        <CustomizePopup
+          selectedItem={selectedItemForCustomization}
+          selectedItemIngredients={selectedItemIngredients}
+          onClose={handleCloseCustomizePopup}
           onConfirmCustomization={handleCustomizationConfirmation}
         />
       )}
@@ -231,15 +231,15 @@ export default function Home() {
         </div>
         {/* Order Menu */}
         <div className={styles.orderMenu}>
-        {currentCategoryItems.map((item, index) => (
-          <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
+          {currentCategoryItems.map((item, index) => (
+            <button key={index} className={styles.menuItemContainer} onClick={(e: React.MouseEvent) => handleSelectItem(item)}>
               <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
               <div>{item.name}<br />{'$' + item.price}</div>
               <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
-                  <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
+                <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
               </div>
-          </button>
-        ))}
+            </button>
+          ))}
         </div>
 
         {/* Current Order Column */}
@@ -247,26 +247,26 @@ export default function Home() {
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
             <div className={styles.orderList}>
-            {selectedItems.map((item, index) => (
-              <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                {item.name} - ${item.price} x {item.quantity}
-                <br />
-                <div className={styles.deselectedIngredients}>
-                  {generateDeselectedIngredientsList(item)}
+              {selectedItems.map((item, index) => (
+                <div key={`${item.id}-${new Date().getTime()}-${index}`}>
+                  {item.name} - ${item.price} x {item.quantity}
+                  <br />
+                  <div className={styles.deselectedIngredients}>
+                    {generateDeselectedIngredientsList(item)}
+                  </div>
+                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                    Remove
+                  </button>
                 </div>
-                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                  Remove
-                </button>
-              </div>
-            ))}
+              ))}
             </div>
           </div>
           <div className={styles.currOrderBtm}>
-          
-          <div key={totalPriceInfo.updateKey} className={styles.total}>
-                Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
-          </div>
-            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
+
+            <div key={totalPriceInfo.updateKey} className={styles.total}>
+              Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
+            </div>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled={selectedItems.length === 0}>
               Confirm Order
             </button>
 
