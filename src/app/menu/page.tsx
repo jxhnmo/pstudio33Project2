@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation'; // Corrected the import statement
 import styles from "@/app/menu/menu.module.css";
 import { fetchCategories, fetchItems } from '../menu'; // Adjust the import path as needed
 
@@ -30,14 +30,13 @@ const Home: React.FC = () => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     const loadData = async () => {
       const categories = await fetchCategories();
       const menuData = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
-        if (Array.isArray(items)) { // Extra precaution
+        if (Array.isArray(items)) {
           items.forEach((item) => {
             item.imageUrl = `/images/${item.name.replace(/\s/g, '')}.png`;
           });
@@ -49,46 +48,36 @@ const Home: React.FC = () => {
 
     loadData();
 
+    // Rotating categories logic
     const interval = setInterval(() => {
-      setCurrentCategoryIndex((prevIndex) => {
-        const numPages = Math.ceil(menuData[prevIndex]?.items.length / 3) || 0;
-        if (currentPage + 1 < numPages) {
-          setCurrentPage(currentPage + 1);
-        } else {
-          setCurrentPage(0);
-          return (prevIndex + 1) % menuData.length;
-        }
-        return prevIndex;
-      });
+      setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % menuData.length);
     }, 5000);
-  
+
     return () => clearInterval(interval);
-  }, [menuData.length, currentPage]);
+  }, [menuData.length]);
 
   const currentCategory = menuData[currentCategoryIndex] || { category: '', items: [] };
 
   return (
     <>
       <Sidebar />
-      
-        <Link href="/" passHref>
-          <h1 className={styles.heading}>REV&apos;s American Grill</h1>
-        </Link>
-        <div 
-        className={styles.menuContainer} 
+
+      <Link href="/" passHref>
+        <h1 className={styles.heading}>REV&apos;s American Grill</h1>
+      </Link>
+      <div
+        className={styles.menuContainer}
         onClick={() => router.push('/order')} // Redirect to order page on click
       >
         <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
           <h2>{currentCategory.category}</h2>
           <div className={styles.items}>
-            {currentCategory.items
-              .slice(currentPage * 3, (currentPage + 1) * 3)
-              .map((item) => (
-                <div key={item.name} className={styles.itemContainer}>
-                  <img src={item.imageUrl} alt={item.name} className={styles.itemImage}/>
-                  <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
-                </div>
-              ))}
+            {currentCategory.items.map((item) => (
+              <div key={item.name} className={styles.itemContainer}>
+                <img src={item.imageUrl} alt={item.name} className={styles.itemImage} />
+                <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

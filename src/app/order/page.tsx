@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import styles from "@/app/order/order.module.css";
 import { MouseEvent, SetStateAction, useEffect, useState } from 'react';
 
-import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients} from '../order';
+import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients } from '../order';
 import dynamic from 'next/dynamic';
-import InfoPopup from '../../components/InfoPopup/InfoPopup'; // Adjust the path as necessary\
+import InfoPopup from '../../components/InfoPopup/InfoPopup';
+import CustomizePopup from '../../components/CustomizePopup/CustomizePopup';
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -19,10 +20,8 @@ interface Item {
   price: number;
   quantity: number;
   ingredients?: string[];
+  customization?: string;
   calories?: number;
-}
-interface ingredient {
-  item_name: string;
 }
 
 export default function Home() {
@@ -35,12 +34,58 @@ export default function Home() {
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
   const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
-  
+
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedItemInfo, setSelectedItemInfo] = useState<Item | null>(null);
   const [selectedItemIngredients, setSelectedItemIngredients] = useState<string[]>([]);
+
+  // CustomizePopup window states and functions:
+  const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
+  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
+
+  const handleCloseCustomizePopup = () => {
+    setIsCustomizePopupOpen(false);
+  };
+
+  const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
+    if (!item) {
+      // Handle the case where item is undefined
+      return;
+    }
+
+    // Create the customized item object
+    let customizedItem: Item;
+    if (deselectedIngredients && deselectedIngredients.length > 0) {
+      const formattedDeselectedIngredients = deselectedIngredients.map(ingredient => `NO ${ingredient}`).join(', ');
+      customizedItem = {
+        ...item,
+        customization: formattedDeselectedIngredients
+      };
+    } else {
+      customizedItem = {
+        ...item,
+        customization: undefined
+      };
+    }
+
+    const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
+
+    if (existingItemIndex !== -1) {
+      // Update the quantity of the existing item
+      const updatedItems = [...selectedItems];
+      // Ensure quantity property exists and is a number
+      updatedItems[existingItemIndex].quantity = (updatedItems[existingItemIndex].quantity || 1) + 1;
+      setSelectedItems(updatedItems);
+    } else {
+      // Add the new customized item to the selected items list
+      setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
+    }
+
+    setIsCustomizePopupOpen(false);
+  };
+
 
 
 
@@ -76,7 +121,7 @@ export default function Home() {
       // Temporarily clear items to signal a significant change
       setCurrentCategoryItems([]);
       // Introduce a slight delay before showing new items
-       setIsCategoryLoaded(true); // Set to true once items are loaded
+      setIsCategoryLoaded(true); // Set to true once items are loaded
 
       setTimeout(() => {
         setCurrentCategoryItems(items);
@@ -85,34 +130,30 @@ export default function Home() {
 
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
-      setCurrentCategoryItems([]); // Reset on error
+      setCurrentCategoryItems([]);
     }
   };
 
-  const handleSelectItem = (item: Item) => {
-    const existingItem = selectedItems.find(selectedItem => selectedItem.id === item.id);
-
-    if (existingItem) {
-      // Update the quantity of the existing item
-      const updatedItems = selectedItems.map(selectedItem =>
-        selectedItem.id === item.id ? { ...selectedItem, quantity: selectedItem.quantity + 1 } : selectedItem
-      );
-      setSelectedItems(updatedItems);
-    } else {
-      // Add the new item with a quantity of 1
-      setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
-    }
+  const handleSelectItem = async (item: Item) => {
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+    console.log("Selected Item:", item); // Log the selected item
+    const updatedSelectedItem = { ...item, ingredients: ingredients };
+    setSelectedItemForCustomization(updatedSelectedItem);
+    setSelectedItemIngredients(ingredients);
+    setIsCustomizePopupOpen(true);
   };
+
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
   };
 
   const handleConfirmOrder = () => {
-    if(selectedItems.length !== 0){
+    if (selectedItems.length !== 0) {
       const currentTime = new Date();
       // Store selected items in local storage
       console.log("printing selected items");
@@ -125,29 +166,52 @@ export default function Home() {
     //setSelectedItems([]);
   };
 
+  const handleReturnHome = () => {
+    router.push('/');
+  }
 
-    const handleReturnHome = () => {
-      router.push('/');
+  const handleOpenPopup = async (event: MouseEvent, item: Item) => {
+    event.stopPropagation();
+    const menuItemIngredients = await getMenuItemIngredients(item.id);
+    const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+
+    setSelectedItemInfo(item);
+    setSelectedItemIngredients(ingredients);
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const generateDeselectedIngredientsList = (item: Item): string => {
+    if (!item.customization) {
+      return ''; // Return empty string if no customization exists
     }
 
-        const handleOpenPopup = async (event: MouseEvent<HTMLDivElement, MouseEvent>, item: Item) => {
-          event.stopPropagation(); 
-          const menuItemIngredients = await getMenuItemIngredients(item.id);
-          const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
+    const deselectedIngredients = item.customization
+      .split(', ')
+      .filter(customization => customization.startsWith('NO'))
+      .map(customization => customization.substring(3))
+      .map(ingredient => `  NO ${ingredient}`)
+      .join(',\n');
+    return deselectedIngredients;
+  };
 
-          setSelectedItemInfo(item);
-          setSelectedItemIngredients(ingredients); // Fix: Update the type of the state setter to accept a Set<string>
-          setIsPopupOpen(true);
-      };
-        
-        const handleClosePopup = () => {
-          setIsPopupOpen(false);
-        };
 
   return (
     <>
       <Sidebar />
-      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+      <InfoPopup isOpen={isPopupOpen} itemInfo={selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+
+      {isCustomizePopupOpen && selectedItemForCustomization && (
+        <CustomizePopup
+          selectedItem={selectedItemForCustomization}
+          selectedItemIngredients={selectedItemIngredients}
+          onClose={handleCloseCustomizePopup}
+          onConfirmCustomization={handleCustomizationConfirmation}
+        />
+      )}
 
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
@@ -168,14 +232,14 @@ export default function Home() {
         {/* Order Menu */}
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
-        <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-            <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
-            <div>{item.name}<br />{'$' + item.price}</div>
-            <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+            <button key={index} className={styles.menuItemContainer} onClick={(e: React.MouseEvent) => handleSelectItem(item)}>
+              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <div>{item.name}<br />{'$' + item.price}</div>
+              <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                 <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
-            </div>
-        </button>
-    ))}
+              </div>
+            </button>
+          ))}
         </div>
 
         {/* Current Order Column */}
@@ -183,25 +247,26 @@ export default function Home() {
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
             <div className={styles.orderList}>
-            {selectedItems.map((item, index) => (
-              <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                {item.name} - ${item.price} x {item.quantity}
-                <br />
-                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+              {selectedItems.map((item, index) => (
+                <div key={`${item.id}-${new Date().getTime()}-${index}`}>
+                  {item.name} - ${item.price} x {item.quantity}
+                  <br />
+                  <div className={styles.deselectedIngredients}>
+                    {generateDeselectedIngredientsList(item)}
+                  </div>
+                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
                     Remove
-                </button>
-              </div>
-            ))}
-          </div>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
           <div className={styles.currOrderBtm}>
-          
-          <div key={totalPriceInfo.updateKey} className={styles.total}>
-                Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
-          </div>
 
-            
-            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
+            <div key={totalPriceInfo.updateKey} className={styles.total}>
+              Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
+            </div>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled={selectedItems.length === 0}>
               Confirm Order
             </button>
 

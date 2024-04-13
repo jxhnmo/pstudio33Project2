@@ -29,6 +29,9 @@ menu_items = {
     "BLT Burger":["Buns","patty","bacon","Lettuce","tomato","tray","napkin"],
     "Double Cheeseburger":["Buns","patty","patty","cheese","tray","napkin"]
 }
+irremovable_ingredients = {
+    "tray", "napkin", "small cup", "large cup", "cup lid","straw", "ice cream bowl", "shake cup"
+}
 menu_item_costs = {
     "Bacon Cheeseburger":8.65,
     "Cheeseburger":7.45,
@@ -161,6 +164,12 @@ ing_item_costs = {
     "salad bowl":.18
 }
 
+ii = open("irremovable_ingredients.csv","w",newline="")
+ii_csv = writer(ii)
+ii_csv.writerow(["name"])
+for x in irremovable_ingredients:
+    ii_csv.writerow([x])
+ii.close()
 
 menu_file = open("menu_items.csv","w",newline="")
 menu_csv = writer(menu_file)

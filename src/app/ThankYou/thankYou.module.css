@@ -1,4 +1,5 @@
-.container {
+/* Style when weatherData is clear */
+.containerClear {
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -8,11 +9,66 @@
   min-width: 100%;
   width: 900px;
   border-radius: 8px;
-  background-color: var(--c4);
+  background-color: #fff; /* Light background for clear weather */
   align-items: center;
   justify-content: center;
   height: 100vh;
   text-align: center;
+}
+
+/* Enhanced style when weatherData is not clear */
+.containerNotClear {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: 2rem;
+  gap: 1rem;
+  max-width: 100%;
+  min-width: 100%;
+  width: 900px;
+  border-radius: 8px;
+  background-color: #778899; /* Darker background for rainy weather */
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.containerNotClear::before,
+.containerNotClear::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* Adding multiple raindrops with varied animation */
+.containerNotClear::before {
+  left: 50%;
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.5));
+  animation: raindrop 0.5s infinite linear;
+}
+
+.containerNotClear::after {
+  left: 25%;
+  background: linear-gradient(transparent, rgba(255, 255, 255, 0.3));
+  animation: raindrop 0.7s infinite linear;
+}
+
+@keyframes raindrop {
+  0% {
+    transform: translateY(-100%) scaleX(0.25);
+  }
+  30% {
+    transform: translateY(30vh) scaleX(0.5);
+  }
+  100% {
+    transform: translateY(100vh) scaleX(0.25);
+  }
 }
 
 .header {
