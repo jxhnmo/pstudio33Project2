@@ -73,11 +73,31 @@ export default function StaffStats() {
         setLastSale(data.lastSale);
         // console.log(data.lastSale);
         setLastRestock(data.lastRestock);
-        setSalesTableData();
-
+        
         // Set default start and end dates
         setStartDateTime(data.firstSale);
         setEndDateTime(data.lastSale);
+        setSalesTableData(prevState => ({
+            options: {
+                chart: {
+                  type: 'line'
+                },
+                series: [{
+                  name: 'Sales',
+                  data: fetchSales(firstSale,lastSale,1)
+                }],
+                xaxis: {
+                  x: new Date('01 Jan 2023').getTime(),
+                  type: 'datetime',
+                  min: new Date('01 Jan 2023').getTime()
+                },
+                dataLabels: {
+                    enabled: false
+                },
+            }
+        }));
+        // const chart = new ApexCharts(document.querySelector('#sales_chart'), salesTableData.options);
+        // chart.render();
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
@@ -104,12 +124,15 @@ export default function StaffStats() {
   const processInventory = (inventoryData: any) => {
     return inventoryData.map(item => ({
       id: item.id,
-      itemName: item.itemName,
+      itemName: item.item_name,
       stock: item.stock,
-      price: item.price,
-      maxStock: item.maxStock
+      maxStock: item.max_stock,
+      deficit: item.max_stock-item.stock,
+      unitCost: item.price,
+      totalCost: item.price*(item.max_stock-item.stock),
     }));
   }
+  /*
   setSalesTableData({
       options: {
         chart: {
@@ -128,45 +151,21 @@ export default function StaffStats() {
         dataLabels: {
             enabled: false
         },
-      },
-      element: document.querySelector('#sales_chart') // Specify the chart container element
+      }
     });
-
+    */
     // Create and render the chart
-    // const chart = new ApexCharts(chartData.element, chartData.options);
+    
 
   const updateStatistics = () => {
     if (selectedOption === 'product_usage') {
       // Update product usage statistics
       // Implement your logic here
     } else if (selectedOption === 'sales_report') {
-        //chart.render();
-        const sales_data = fetchSales(firstSale,lastSale,1);
-        setSalesTableData(prevState => ({
-            options: {
-                chart: {
-                  type: 'line'
-                },
-                series: [{
-                  name: 'Sales',
-                  data: sales_data
-                  // data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-                }],
-                xaxis: {
-                  x: new Date('01 Jan 2023').getTime(),// ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
-                  type: 'datetime',
-                  min: new Date('01 Jan 2023').getTime()
-                },
-                dataLabels: {
-                    enabled: false
-                },
-            }
-        }));
       // Update sales report statistics
       // Implement your logic here
     } else if (selectedOption === 'restock_report') {
       // Update restock report statistics
-      
       // Implement your logic here
     } else if (selectedOption === 'excess_report') {
       // Update excess report statistics
@@ -233,7 +232,37 @@ export default function StaffStats() {
           )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
-            <div>Restock Report Statistics</div>
+            <div>
+                <div>Restock Report Statistics</div>
+                <div className={styles.tableContainer}>
+                  <table className={styles.restockTable}>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Item Name</th>
+                        <th>Stock</th>
+                        <th>Max Stock</th>
+                        <th>Deficit</th>
+                        <th>Unit Cost</th>
+                        <th>Total Cost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {inventory.map((item: Item, index: number) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.itemName}</td>
+                          <td>{item.stock}</td>
+                          <td>{item.maxStock}</td>
+                          <td>{item.deficit}</td>
+                          <td>{item.unitCost}</td>
+                          <td>{item.totalCost}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
           )}
           {selectedOption === 'excess_report' && (
             // Implement UI for excess report statistics
@@ -244,7 +273,7 @@ export default function StaffStats() {
             <div>Paired Menu Items Statistics</div>
           )}
         </div>
-        <div id="sales_chart"></div>
+        // <div id="sales_chart"></div>
         {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
           <Link href="/staff/order" legacyBehavior>
