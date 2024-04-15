@@ -32,8 +32,7 @@ export default function Home() {
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
-  const storedItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedItems') || '[]') : [];
-  const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
+  const storedItems = typeof window !== 'undefined' ? JSON.parse(window.localStorage.getItem('selectedItems') || '[]') : []; const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
 
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
@@ -89,8 +88,9 @@ export default function Home() {
 
 
 
-  localStorage.setItem('role', 'customer');
-
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('role', 'customer');
+  }
   useEffect(() => {
     const total = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     setTotalPriceInfo({ total, updateKey: Date.now() });
@@ -149,7 +149,9 @@ export default function Home() {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
+    }
   };
 
   const handleConfirmOrder = () => {
@@ -158,8 +160,9 @@ export default function Home() {
       // Store selected items in local storage
       console.log("printing selected items");
       console.log(selectedItems);
-      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-      router.push('/orderSummary'); // Adjust the path to your order summary page
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      } router.push('/orderSummary');
     }
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
