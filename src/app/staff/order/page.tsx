@@ -268,7 +268,9 @@ export default function Home() {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
+    }
   };
 
   const handleConfirmOrder = () => {
