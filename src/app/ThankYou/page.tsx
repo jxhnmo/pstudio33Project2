@@ -10,8 +10,10 @@ const ThankYou = () => {
 
   useEffect(() => {
     // Check if 'weatherData' is clear or not and set style state
-    const weatherData = localStorage.getItem('weatherData');
-    setIsWeatherClear(!weatherData);
+    if (typeof window != 'undefined'){
+      const weatherData = localStorage.getItem('weatherData');
+      setIsWeatherClear(!weatherData);
+    }
 
     if (typeof window !== 'undefined') {
       if(localStorage.getItem('role') === 'staff'){
