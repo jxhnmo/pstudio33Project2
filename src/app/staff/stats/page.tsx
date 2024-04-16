@@ -9,7 +9,10 @@ import ApexCharts from 'apexcharts'
 import { fetchData, fetchRestock, fetchSales } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
-  ssr: false,
+  ssr: false
+});
+const Xreport = dynamic(() => import('../../../components/Xreport/Xreport'), {
+  ssr: false
 });
 
 interface FetchedData {
@@ -228,6 +231,12 @@ export default function StaffStats() {
               Sales Report
             </button>
             <button
+              className={selectedOption === 'x_report' ? styles.selectedOption : styles.option}
+              onClick={() => handleButtonSelect('x_report')}
+            >
+              X-Report
+            </button>
+            <button
               className={selectedOption === 'restock_report' ? styles.selectedOption : styles.option}
               onClick={() => handleButtonSelect('restock_report')}
             >
@@ -256,7 +265,13 @@ export default function StaffStats() {
           )}
           {selectedOption === 'sales_report' && (
             // Implement UI for sales report statistics
-            <div>Sales Report Statistics</div>
+            <div>Sales report</div>
+          )}
+          {selectedOption === 'x_report' && (
+            // Implement UI for sales report statistics
+            <div>
+              <Xreport />
+            </div>
           )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
