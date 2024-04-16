@@ -38,7 +38,7 @@ type ModalProps = {
 
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
-  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: ''});
+  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: '' });
   const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -104,10 +104,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
                 </div>
               ))}
             </div>
-          <div>
-            <label>Image:</label>
-            <input type="file" onChange={handleImageChange} />
-          </div>
+            <div>
+              <label>Image:</label>
+              <input type="file" onChange={handleImageChange} />
+            </div>
             <button type="submit">Add Item</button>
           </form>
         </div>
@@ -127,7 +127,7 @@ export default function Home() {
   const [currentCategoryItems, setCurrentCategoryItems] = useState<Item[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   //make it so if there are items in    JSON.parse(localStorage.getItem('selectedItems') || '[]');, they go into selectedItems
-  const storedItems = JSON.parse(localStorage.getItem('selectedItems') || '[]');
+  const storedItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedItems') || '[]') : [];
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -141,10 +141,14 @@ export default function Home() {
   const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
 
-  localStorage.setItem('role', 'staff');
 
   useEffect(() => {
-    function getCookie(name:any) {
+
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('role', 'staff');
+    }
+
+    function getCookie(name: any) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       return parts.length === 2 ? parts.pop()?.split(';').shift() ?? '' : '';
@@ -185,7 +189,7 @@ export default function Home() {
       // Handle the case where item is undefined
       return;
     }
-  
+
     // Create the customized item object
     let customizedItem: Item;
     if (deselectedIngredients && deselectedIngredients.length > 0) {
@@ -200,9 +204,9 @@ export default function Home() {
         customization: undefined
       };
     }
-  
+
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
-  
+
     if (existingItemIndex !== -1) {
       // Update the quantity of the existing item
       const updatedItems = [...selectedItems];
@@ -213,7 +217,7 @@ export default function Home() {
       // Add the new customized item to the selected items list
       setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
     }
-  
+
     setIsCustomizePopupOpen(false);
   };
 
@@ -268,17 +272,21 @@ export default function Home() {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
+    }
   };
 
   const handleConfirmOrder = () => {
-    if(selectedItems.length !== 0){
+    if (selectedItems.length !== 0) {
       const currentTime = new Date();
       // Store selected items in local storage
-      console.log("printing selected items");
-      console.log(selectedItems);
-      localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-      router.push('/orderSummary'); // Adjust the path to your order summary page
+      if (typeof window !== 'undefined') {
+        console.log("printing selected items");
+        console.log(selectedItems);
+        window.localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+      }
+      router.push('/orderSummary');
     }
     //completeTransaction(totalPrice.toFixed(2), selectedItems);
 
@@ -290,15 +298,15 @@ export default function Home() {
   }
 
   const handleOpenPopup = async (event: MouseEvent, item: Item) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
-  
+
     setSelectedItemInfo(item);
     setSelectedItemIngredients(ingredients);
     setIsPopupOpen(true);
   };
-    
+
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
@@ -307,7 +315,7 @@ export default function Home() {
     if (!item.customization) {
       return ''; // Return empty string if no customization exists
     }
-    
+
     const deselectedIngredients = item.customization
       .split(', ')
       .filter(customization => customization.startsWith('NO'))
@@ -328,7 +336,7 @@ export default function Home() {
         price: newItem.price,
         // Handle image upload separately if needed
       });
-  
+
       // Add each selected ingredient to the ingredients table
       for (const ingredientId of selectedIngredients) {
         await addIngredient({
@@ -337,7 +345,7 @@ export default function Home() {
           num: 1, // Default quantity, adjust as needed
         });
       }
-  
+
       console.log('Item and ingredients added to inventory');
     } catch (error) {
       console.error('Error adding item and ingredients to inventory:', error);
@@ -347,13 +355,13 @@ export default function Home() {
   return (
     <>
       <Sidebar />
-      <InfoPopup isOpen={isPopupOpen} itemInfo = {selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
+      <InfoPopup isOpen={isPopupOpen} itemInfo={selectedItemInfo} itemIngredients={selectedItemIngredients} onClose={handleClosePopup} />
 
       {isCustomizePopupOpen && selectedItemForCustomization && (
-        <CustomizePopup 
-          selectedItem={selectedItemForCustomization} 
-          selectedItemIngredients={selectedItemIngredients} 
-          onClose={handleCloseCustomizePopup} 
+        <CustomizePopup
+          selectedItem={selectedItemForCustomization}
+          selectedItemIngredients={selectedItemIngredients}
+          onClose={handleCloseCustomizePopup}
           onConfirmCustomization={handleCustomizationConfirmation}
         />
       )}
@@ -378,9 +386,9 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-                <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
-                <div>{item.name}<br />{'$' + item.price}</div>
-                {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
+              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <div>{item.name}<br />{'$' + item.price}</div>
+              {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                     <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
           </div>*/}
             </button>
@@ -391,32 +399,32 @@ export default function Home() {
           </button>
         </div>
 
-        
+
         {/* Current Order Column */}
         <div className={styles.currentOrder}>
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
             <div className={styles.orderList}>
-            {selectedItems.map((item, index) => (
-              <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                {item.name} - ${item.price} x {item.quantity}
-                <br />
-                <div className={styles.deselectedIngredients}>
-                  {generateDeselectedIngredientsList(item)}
+              {selectedItems.map((item, index) => (
+                <div key={`${item.id}-${new Date().getTime()}-${index}`}>
+                  {item.name} - ${item.price} x {item.quantity}
+                  <br />
+                  <div className={styles.deselectedIngredients}>
+                    {generateDeselectedIngredientsList(item)}
+                  </div>
+                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                    Remove
+                  </button>
                 </div>
-                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                  Remove
-                </button>
-              </div>
-            ))}
+              ))}
             </div>
           </div>
           <div className={styles.currOrderBtm}>
-          
-          <div key={totalPriceInfo.updateKey} className={styles.total}>
-                Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
-          </div>
-            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled = {selectedItems.length === 0}>
+
+            <div key={totalPriceInfo.updateKey} className={styles.total}>
+              Total: <span>${totalPriceInfo.total.toFixed(2)}</span>
+            </div>
+            <button onClick={handleConfirmOrder} className={styles.confirmOrderButton} disabled={selectedItems.length === 0}>
               Confirm Order
             </button>
 

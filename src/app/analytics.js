@@ -38,7 +38,7 @@ export async function fetchData() {
         };
     } catch (err) {
         console.error('Failed to fetch order data', err);
-        return [];
+        return null;
     }
 }
 

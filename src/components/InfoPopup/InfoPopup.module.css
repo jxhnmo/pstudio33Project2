@@ -71,3 +71,7 @@
   border-top: 2px solid maroon; /* Decorative line before ingredients */
   padding-top: 10px; /* Space after the line */
 }
+.warning {
+  color: red;
+  font-weight: bold;
+}
