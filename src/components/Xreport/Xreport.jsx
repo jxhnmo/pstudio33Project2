@@ -2,7 +2,7 @@ import React from 'react';
 
 const Xreport = () => {
   return (
-    <div></div>
+    <div>This is the X-report</div>
   );
 };
 
