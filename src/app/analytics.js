@@ -42,6 +42,34 @@ export async function fetchData() {
     }
 }
 
+export async function fetchSalesData() {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        // Query to fetch sum of sales per day over a given period
+        const salesQuery = `
+            SELECT DATE_TRUNC('day', purchase_time) AS day, SUM(cost) AS total_sales
+            FROM sales_transactions
+            GROUP BY DATE_TRUNC('day', purchase_time)
+            ORDER BY day;
+        `;
+
+        const result = await pool.query(salesQuery);
+        await pool.end();
+        const salesData = result.rows.map(row => row.total_sales);
+        return salesData;
+    } catch (err) {
+        console.error('Failed to fetch sales data', err);
+        return [];
+    }
+}
+
 export async function fetchRestock(startTime,endTime) {
     const pool = new Pool({
         user: process.env.DATABASE_USER,

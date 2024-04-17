@@ -44,7 +44,7 @@ const Sidebar = () => {
 
   return (
     <div className={isOpen ? `${styles.sidebar} ${styles.open}` : styles.sidebar}>
-      <button onClick={toggleSidebar} className={styles.toggleButton}>
+      <button onClick={toggleSidebar} className={styles.toggleButton} aria-label="Open accessibility options" aria-expanded="false">
         <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
       </button>
       <div className={styles.settingName}>High Contrast Mode</div>

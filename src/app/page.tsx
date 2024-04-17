@@ -62,7 +62,7 @@ export default function Home() {
               <input type="text" id="username" name="username" /><br />
               <label htmlFor="password">Password:</label><br />
               <input type="password" id="password" name="password" /><br />
-              <button type="submit">Login</button>
+              <button type="submit" className={styles.loginButton}>Login</button>
             </form>
             {loginError && <div className={styles.loginError}>{loginError}</div>}
           </div>
