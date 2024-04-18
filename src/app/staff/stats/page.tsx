@@ -5,7 +5,7 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -64,7 +64,7 @@ export default function StaffStats() {
   const [excessTableData, setExcessTableData] = useState([]);
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
-  const [salesData, setSalesData] = useState<number[]>([]);
+  const [salesData, setSalesData] = useState<any[][]>([]);
 
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function StaffStats() {
   }, [selectedOption]); // Fetch data only when certain options are selected
 
   const loadSalesData = async () => {
-    const sales = await fetchSalesData();
+    const sales = await fetchSales();
     setSalesData(sales);
   };
 
