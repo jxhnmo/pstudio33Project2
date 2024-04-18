@@ -64,6 +64,10 @@
   min-width: 100px;
 }
 
+.orderItem div {
+  flex-grow: 1;
+}
+
 .total {
   font-size: 1.25rem;
   font-weight: medium;

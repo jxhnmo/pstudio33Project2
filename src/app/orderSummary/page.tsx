@@ -49,10 +49,10 @@ const OrderSummary = () => {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('selectedItems', JSON.stringify(updatedItems)); 
+    localStorage.setItem('selectedItems', JSON.stringify(updatedItems));
   };
 
-  
+
   return (
     <>
       <Sidebar />
@@ -64,10 +64,10 @@ const OrderSummary = () => {
               <div key={index} className={styles.orderItem}>
                 <div>
                   {item.name} - ${item.price} x {item.quantity}
-                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    Remove
-                  </button>
                 </div>
+                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                  Remove
+                </button>
               </div>
             ))
           ) : (
