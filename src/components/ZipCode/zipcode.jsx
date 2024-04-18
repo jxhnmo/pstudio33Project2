@@ -14,14 +14,15 @@ const ZipCode = () => {
   
   const handleZipCodeChange = (e) => {
 
-    const newZip = e.target.value;
+    const newZip = e.target.value.replace(/[^0-9]/g, '');
+
     setZipCode(newZip); // Set zip code with every change
     if (/^\d{5}$/.test(newZip)) { // Checks if the input is exactly five digits
         if (typeof window !== 'undefined') {
             window.localStorage.setItem('zipCode', newZip);
           }
     }
-    
+
   };
 
   return (

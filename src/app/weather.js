@@ -16,20 +16,22 @@ export async function fetchWeather() {
 }
 
 
-export async function fetchWeatherAllData() {
-    const url = `https://api.openweathermap.org/data/2.5/weather?zip=77840,us&appid=${process.env.WEATHER_KEY}`;
+export async function fetchWeatherAllData(zipcode) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zipcode},us&appid=${process.env.WEATHER_KEY}`;
     try {
         console.log('about to get response');
+        console.log(zipcode);
         const response = await axios.get(url);
+        
         return response.data;
     } catch (error) {
         console.error("Failed to fetch weather data:", error);
         return "NO WEATHER DATA";
     }
 }
+
 /* sample output:
 Weather key is being read in: 
-a85d0102a70cce7af219d15cf0e6b767
 About to get response
 {
   coord: { lon: -96.3123, lat: 30.6045 },

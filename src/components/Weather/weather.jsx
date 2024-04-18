@@ -6,12 +6,25 @@ import { fetchWeatherAllData } from '../../app/weather'; // Adjust the path as n
 const Weather = () => {
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [zipCode, setZipCode] = useState(localStorage.getItem('zipCode') || '77840');
+    const [zipCodeChanged, setZipCodeChanged] = useState(true);
+   
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem('zipCode')) {
+            setZipCode(localStorage.getItem('zipCode'));
+            setZipCodeChanged(true);
+        }
+    }, []);;
 
     useEffect(() => {
         const loadWeatherData = async () => {
             try {
-                const data = await fetchWeatherAllData();
-                setWeatherData(data);
+                if(zipCodeChanged){
+                    data = await fetchWeatherAllData(zipCode);
+                    setWeatherData(data);
+                    setZipCodeChanged(false);
+                }
             } catch (error) {
                 console.error('Error fetching weather data:', error);
                 setWeatherData(null);
