@@ -1,8 +1,8 @@
 "use client";
-import { useRouter } from 'next/navigation'; // Ensure this import is at the top
+import { useRouter } from 'next/navigation';
 
 import { useEffect, useState } from 'react';
-import styles from '@/app/orderSummary/orderSummary.module.css'; // Adjust the path as necessary
+import styles from '@/app/orderSummary/orderSummary.module.css';
 import { completeTransaction, getMaxId } from '../order';
 import { Router } from 'next/router';
 import dynamic from 'next/dynamic';
@@ -10,7 +10,6 @@ const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
 
-// If you're placing this in the same file
 interface Item {
   id: number;
   name: string;
@@ -19,27 +18,22 @@ interface Item {
 }
 
 const OrderSummary = () => {
-  const router = useRouter(); // Use the useRouter hook
+  const router = useRouter();
 
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    // Retrieve and parse the selected items from local storage
     const items = JSON.parse(localStorage.getItem('selectedItems') || '[]');
     setSelectedItems(items);
   }, []);
 
-  // Calculate the total price
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleConfirmOrder = async () => {
     const currentTime: Date = new Date();
-    // console.log(currentTime.toISOString());
     const orderId = await getMaxId() + 1;
     completeTransaction(totalPrice.toFixed(2), selectedItems);
     localStorage.setItem('orderId', JSON.stringify(orderId));
-    //i hope that i can sitll commit
-    // selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     setSelectedItems([]);
     localStorage.setItem('selectedItems', JSON.stringify([]));
     router.push('/ThankYou');
