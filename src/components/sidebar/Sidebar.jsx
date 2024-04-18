@@ -5,6 +5,8 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import styles from './sidebar.module.css';
 import SetTheme from '../theme/SetTheme';
 import Magnifier from '../magnifier/Magnifier';
+import Weather from '../weather/Weather';
+import ZipCode from '../ZipCode/zipcode'; // Import the new ZipCode component
 
 // Sidebar component
 const Sidebar = () => {
@@ -50,8 +52,9 @@ const Sidebar = () => {
       <div className={styles.settingName}>High Contrast Mode</div>
       <SetTheme />
       <Magnifier />
-      {/* Placeholder for the Google Translate widget */}
       <div id="google_translate_element" style={{ marginTop: '20px' }}></div>
+      <Weather /> 
+      <ZipCode />
     </div>
   );
 };
