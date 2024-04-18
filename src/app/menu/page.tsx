@@ -28,7 +28,6 @@ const Home = () => {
   const router = useRouter();
   const [menuData, setMenuData] = useState<MenuCategory[]>([]);
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
   const [fadeState, setFadeState] = useState('in');
 
   useEffect(() => {
