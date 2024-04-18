@@ -126,3 +126,18 @@
   flex-direction: column;
   gap: 1rem;
 }
+
+.removeButton {
+  background-color: var(--c7);
+  color: var(--c4);
+  border-radius: 5px;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.removeButton:hover {
+  background-color: var(--c6);
+  color: var(--c4);
+}
