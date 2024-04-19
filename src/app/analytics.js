@@ -52,22 +52,29 @@ export async function fetchSalesData() {
     });
 
     try {
+        const today = new Date().toISOString().slice(0, 10); // Format today's date to YYYY-MM-DD
         const salesQuery = `
-            SELECT DATE_TRUNC('day', purchase_time) AS day, SUM(cost) AS total_sales
-            FROM sales_transactions
-            GROUP BY DATE_TRUNC('day', purchase_time)
-            ORDER BY day;
+            SELECT st.id AS transaction_id, 
+                   st.cost, 
+                   st.purchase_time, 
+                   e.name AS employee_name, 
+                   e.manager AS manager_status
+            FROM sales_transactions st
+            JOIN employees e ON st.employee_id = e.id
+            WHERE DATE(purchase_time) = $1
+            ORDER BY purchase_time DESC;
         `;
 
-        const result = await pool.query(salesQuery);
+        const result = await pool.query(salesQuery, [today]);
         await pool.end();
-        const salesData = result.rows.map(row => row.total_sales);
-        return salesData;
+        return result.rows;
     } catch (err) {
-        console.error('Failed to fetch sales data', err);
+        console.error('Failed to fetch sales data for today', err);
         return [];
     }
 }
+
+
 
 export async function fetchRestock(startTime,endTime) {
     const pool = new Pool({

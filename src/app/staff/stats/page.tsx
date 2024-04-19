@@ -5,7 +5,7 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -48,6 +48,14 @@ interface InventoryItem {
   price: number;
 }
 
+interface SaleData {
+  transaction_id: number;
+  employee_name: string;
+  manager_status: boolean;
+  cost: number;
+  purchase_time: string;
+}
+
 
 
 export default function StaffStats() {
@@ -57,15 +65,32 @@ export default function StaffStats() {
   const [firstSale, setFirstSale] = useState<string | null>(null);
   const [lastSale, setLastSale] = useState<string | null>(null);
   const [lastRestock, setLastRestock] = useState<string | null>(null);
-  const [selectedOption, setSelectedOption] = useState('product_usage');
-  const [startDateTime, setStartDateTime] = useState(null);
-  const [endDateTime, setEndDateTime] = useState(null);
+  const [startDateTime, setStartDateTime] = useState('');
+  const [endDateTime, setEndDateTime] = useState('');
   const [salesTableData, setSalesTableData] = useState([]);
   const [excessTableData, setExcessTableData] = useState([]);
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
-  const [salesData, setSalesData] = useState<any[][]>([]);
+  const [selectedOption, setSelectedOption] = useState('product_usage');
+  const [salesData, setSalesData] = useState<SaleData[]>([]);
 
+  useEffect(() => {
+    // load sales data for x report
+    const loadSalesData = async () => {
+      if (selectedOption === 'x_report') {
+        try {
+          const response = await fetch('/api/fetchSalesData');
+          const data = await response.json();
+          setSalesData(data);
+        } catch (error) {
+          console.error("Failed to fetch sales data", error);
+          setSalesData([]);
+        }
+      }
+    };
+
+    loadSalesData();
+  }, [selectedOption]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -83,17 +108,8 @@ export default function StaffStats() {
         console.error("Failed to fetch data", error);
       }
     };
-
-    if (selectedOption === 'x_report') {
-      loadSalesData();
-    }
     loadData();
-  }, [selectedOption]); // Fetch data only when certain options are selected
-
-  const loadSalesData = async () => {
-    const sales = await fetchSales();
-    setSalesData(sales);
-  };
+  });
 
   useEffect(() => {
     // Update statistics when startDateTime or endDateTime changes
