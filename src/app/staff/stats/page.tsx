@@ -207,8 +207,8 @@ export default function StaffStats() {
           {selectedOption === 'x_report' && (
             <div>
               <h2>X-Report for Today</h2>
-              <div>
-                <table>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
                   <thead>
                     <tr>
                       <th>Transaction ID</th>
