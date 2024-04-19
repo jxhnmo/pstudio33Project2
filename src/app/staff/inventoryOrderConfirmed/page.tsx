@@ -12,7 +12,6 @@ const InventoryOrderConfirmed = () => {
 
     // Check if the weatherData is not 'clear' and set warning state
     if (weatherData != '"Clear"') {
-      alert(weatherData);
       setWeatherWarning(true);
     }
 

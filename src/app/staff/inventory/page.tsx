@@ -65,7 +65,7 @@ export default function StaffInventory() {
         console.error("Failed to add new item:", error);
       }
     } else {
-      alert('Please fill in all fields.');
+      ('Please fill in all fields.');
     }
   };
 
