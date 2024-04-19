@@ -119,3 +119,37 @@
 .restockTable tr:nth-child(even) {
   background-color: var(--c4);
 }
+
+
+
+
+/* X REPORT STYLING */
+.xreportTableContainer {
+  max-height: 65vh;
+  overflow-y: auto;
+  border: 1px solid var(--c7);
+}
+
+.xreportTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.xreportTable th,
+.xreportTable td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid var(--c7);
+}
+
+.xreportTable th {
+  background-color: var(--c2);
+  color: var(--c1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.xreportTable tr:nth-child(even) {
+  background-color: var(--c4);
+}

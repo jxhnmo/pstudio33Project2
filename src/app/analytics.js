@@ -53,18 +53,7 @@ export async function fetchSalesData() {
 
     try {
         const today = new Date().toISOString().slice(0, 10); // Format today's date to YYYY-MM-DD
-        const salesQuery = `
-            SELECT st.id AS transaction_id, 
-                   st.cost, 
-                   st.purchase_time, 
-                   e.name AS employee_name, 
-                   e.manager AS manager_status
-            FROM sales_transactions st
-            JOIN employees e ON st.employee_id = e.id
-            WHERE DATE(purchase_time) = $1
-            ORDER BY purchase_time DESC;
-        `;
-
+        const salesQuery = 'SELECT * FROM sales_transactions WHERE DATE(purchase_time) = $1 ORDER BY purchase_time DESC';
         const result = await pool.query(salesQuery, [today]);
         await pool.end();
         return result.rows;

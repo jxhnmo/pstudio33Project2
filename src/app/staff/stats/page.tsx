@@ -14,15 +14,7 @@ const Xreport = dynamic(() => import('../../../components/Xreport/Xreport'), {
   ssr: false
 });
 
-interface FetchedData {
-  firstSale: string;
-  lastSale: string;
-  lastRestock: string;
-  menuItems: MenuItem[];
-  inventory: InventoryItem[];
-}
-
-interface orderData {
+interface SalesTransaction {
   id: number;
   cost: number;
   employee_id: number;
@@ -59,7 +51,6 @@ interface SaleData {
 
 
 export default function StaffStats() {
-  const [data, setData] = useState<FetchedData | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [firstSale, setFirstSale] = useState<string | null>(null);
@@ -72,32 +63,28 @@ export default function StaffStats() {
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
-  const [salesData, setSalesData] = useState<SaleData[]>([]);
+  const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
 
   useEffect(() => {
-    // load sales data for x report
     const loadSalesData = async () => {
-      if (selectedOption === 'x_report') {
-        try {
-          const response = await fetch('/api/fetchSalesData');
-          const data = await response.json();
-          setSalesData(data);
-        } catch (error) {
-          console.error("Failed to fetch sales data", error);
-          setSalesData([]);
-        }
+      try {
+        const data = await fetchSalesData();
+        console.log(data);
+        setSalesData(data);
+      } catch (error) {
+        console.error("Failed to fetch sales data", error);
+        setSalesData([]);
       }
     };
 
     loadSalesData();
   }, [selectedOption]);
-
+  
   useEffect(() => {
     const loadData = async () => {
       try {
         const fetchedData = await fetchData();
         if (fetchedData) {
-          setData(fetchedData);
           setMenuItems(fetchedData.menuItems);
           setInventory(fetchedData.inventory);
           setFirstSale(fetchedData.firstSale);
@@ -218,9 +205,30 @@ export default function StaffStats() {
             <div>Sales report</div>
           )}
           {selectedOption === 'x_report' && (
-            // Implement UI for sales report statistics
             <div>
-              <Xreport salesData={salesData} />
+              <h2>X-Report for Today</h2>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                  <thead>
+                    <tr>
+                      <th>Transaction ID</th>
+                      <th>Employee ID</th>
+                      <th>Cost</th>
+                      <th>Time of Transaction</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {salesData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
           {selectedOption === 'restock_report' && (
