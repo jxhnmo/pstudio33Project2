@@ -52,23 +52,29 @@ export async function fetchSalesData() {
     });
 
     try {
-        // Query to fetch sum of sales per day over a given period
+        const today = new Date().toISOString().slice(0, 10); // Format today's date to YYYY-MM-DD
         const salesQuery = `
-            SELECT DATE_TRUNC('day', purchase_time) AS day, SUM(cost) AS total_sales
-            FROM sales_transactions
-            GROUP BY DATE_TRUNC('day', purchase_time)
-            ORDER BY day;
+            SELECT st.id AS transaction_id, 
+                   st.cost, 
+                   st.purchase_time, 
+                   e.name AS employee_name, 
+                   e.manager AS manager_status
+            FROM sales_transactions st
+            JOIN employees e ON st.employee_id = e.id
+            WHERE DATE(purchase_time) = $1
+            ORDER BY purchase_time DESC;
         `;
 
-        const result = await pool.query(salesQuery);
+        const result = await pool.query(salesQuery, [today]);
         await pool.end();
-        const salesData = result.rows.map(row => row.total_sales);
-        return salesData;
+        return result.rows;
     } catch (err) {
-        console.error('Failed to fetch sales data', err);
+        console.error('Failed to fetch sales data for today', err);
         return [];
     }
 }
+
+
 
 export async function fetchRestock(startTime,endTime) {
     const pool = new Pool({
@@ -102,9 +108,9 @@ export async function fetchSales(startTime,endTime,menuId) {
         + "WHERE purchase_time > $1 AND purchase_time < $2 AND sales_items.menu_id = $3 "
         + "GROUP BY DATE_TRUNC('day',purchase_time) ORDER BY purchase_day;", [startTime,endTime,menuId]);
         const data = sales_data.rows.map((row) => {return [row.purchase_day.getTime(),parseInt(row.count)]})
-        // console.log(data)
-        return data
-        // return sales_data.rows;
+        console.log(data)
+        return data;
+        //return sales_data.rows;
     } catch (err) {
         console.error('Failed to fetch sales data',err);
         return [];
