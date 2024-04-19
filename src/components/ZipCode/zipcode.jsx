@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styles from './ZipCode.module.css';
 
 const ZipCode = ({ onZipCodeChange }) => {
-
+    if( typeof window !== 'undefined'){
+        if(localStorage.getItem('role') !== 'staff'){
+            return null;
+        }
+    }
     const [zipCode, setZipCode] = useState('');
   useEffect(() => {
     const storedZipCode = typeof window !== 'undefined' ? localStorage.getItem('zipCode') || '' : '';

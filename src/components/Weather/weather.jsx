@@ -7,7 +7,6 @@ const Weather = ({zipCode}) => {
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(true);
    
-
  
 
     useEffect(() => {
@@ -15,9 +14,7 @@ const Weather = ({zipCode}) => {
             
             try {
                 if(typeof window !== 'undefined'){
-
                     const data = await fetchWeatherAllData(zipCode);
-                
                     setWeatherData(data);
                 }
                 
