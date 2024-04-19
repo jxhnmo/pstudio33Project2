@@ -125,7 +125,7 @@ export default function StaffInventory() {
 
     try {
       localStorage.setItem('inventory', JSON.stringify(inventory));
-     loadData();
+      loadData();
       router.push('/staff/inventoryOrderSummary');
     } catch (error) {
       console.error("Failed to process bulk order:", error);
