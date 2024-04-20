@@ -1,7 +1,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
 
 # Specify the path to your .env.local file
@@ -17,28 +17,20 @@ conn_params = {
     "port": "5432"
 }
 
-def create_employee(conn):
+def fetch_employee_ids(conn):
     with conn.cursor() as cur:
-        insert_employee = """
-            INSERT INTO employees (name, salary, shift_start, shift_end, manager, username, password)
-            VALUES (%s, %s, '08:00', '16:00', %s, %s, 'password') RETURNING id;
-        """
-        employee_name = f"Employee_{random.randint(1000, 9999)}"
-        salary = random.randint(30000, 60000)
-        manager = random.choice([True, False])
-        username = employee_name.lower()
-        cur.execute(insert_employee, (employee_name, salary, manager, username))
-        employee_id = cur.fetchone()[0]
-        conn.commit()
-        return employee_id
-
+        cur.execute("SELECT id FROM employees")
+        employee_ids = [row[0] for row in cur.fetchall()]
+        return employee_ids
 
 def create_sales_transaction(conn, employee_id):
     with conn.cursor() as cur:
         insert_transaction = """
+            SELECT setval('sales_transactions_id_seq', (SELECT MAX(id) FROM sales_transactions));
             INSERT INTO sales_transactions (cost, employee_id, purchase_time)
             VALUES (%s, %s, %s) RETURNING id;
         """
+
         cost = random.uniform(5.0, 200.0)
         purchase_time = datetime.now()
         cur.execute(insert_transaction, (cost, employee_id, purchase_time))
@@ -47,12 +39,13 @@ def create_sales_transaction(conn, employee_id):
         return transaction_id
 
 def main():
+    conn = None
     try:
         conn = psycopg2.connect(**conn_params)
         print("Connected to the database.")
 
-        for _ in range(10):
-            employee_id = create_employee(conn)
+        employee_ids = fetch_employee_ids(conn)
+        for employee_id in employee_ids:
             transaction_id = create_sales_transaction(conn, employee_id)
             print(f"Created transaction {transaction_id} for employee {employee_id}")
 
