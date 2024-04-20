@@ -10,9 +10,6 @@ import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analy
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
 });
-const Xreport = dynamic(() => import('../../../components/Xreport/Xreport'), {
-  ssr: false
-});
 
 interface SalesTransaction {
   id: number;
@@ -48,8 +45,6 @@ interface SaleData {
   purchase_time: string;
 }
 
-
-
 export default function StaffStats() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -73,12 +68,11 @@ export default function StaffStats() {
         setSalesData(data);
       } catch (error) {
         console.error("Failed to fetch sales data", error);
-        setSalesData([]);
       }
     };
 
     loadSalesData();
-  }, [selectedOption]);
+  }, []);
   
   useEffect(() => {
     const loadData = async () => {

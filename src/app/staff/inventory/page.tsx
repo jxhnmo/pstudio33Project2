@@ -20,7 +20,6 @@ interface Item {
   max_stock: number;
   price: number;
   stock: number;
-
   isEditing?: boolean;
   orderQuantity?: number;
 }
