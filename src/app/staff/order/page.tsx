@@ -12,6 +12,7 @@ import { addIngredient } from '../../ingredients';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
+import AddMenuItem from '../../../components/AddItemPopup/AddItemPopup'
 
 import dynamic from 'next/dynamic';
 
@@ -30,92 +31,6 @@ interface Item {
   imageUrl?: string;
 }
 
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onAdd: (item: { name: string; price: number }, selectedIngredients: string[]) => void;
-};
-
-
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
-  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: '' });
-  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    const loadInventory = async () => {
-      const items = await fetchInventory();
-      setInventoryItems(items);
-    };
-    loadInventory();
-  }, []);
-
-  const handleIngredientChange = (ingredientId: number, checked: boolean) => {
-    if (checked) {
-      setSelectedIngredients([...selectedIngredients, ingredientId.toString()]);
-    } else {
-      setSelectedIngredients(selectedIngredients.filter(id => id !== ingredientId.toString()));
-    }
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    setImageFile(file);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onAdd(newItem, selectedIngredients);
-    onClose();
-  };
-
-  return (
-    isOpen && (
-      <div className={styles.modal}>
-        <div className={styles.modalContent}>
-          <span className={styles.close} onClick={onClose}>
-            &times;
-          </span>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Item Name"
-              value={newItem.name}
-              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={newItem.price}
-              onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
-            />
-            <div>
-              <label>Ingredients:</label>
-              {inventoryItems.map((item) => (
-                <div key={item.id}>
-                  <input
-                    type="checkbox"
-                    id={`ingredient-${item.id}`}
-                    name={`ingredient-${item.id}`}
-                    onChange={(e) => handleIngredientChange(item.id, e.target.checked)}
-                  />
-                  <label htmlFor={`ingredient-${item.id}`} className={styles.checkboxLabel}>{item.name}</label>
-                </div>
-              ))}
-            </div>
-            <div>
-              <label>Image:</label>
-              <input type="file" onChange={handleImageChange} />
-            </div>
-            <button type="submit">Add Item</button>
-          </form>
-        </div>
-      </div>
-    )
-  );
-};
-
 
 export default function Home() {
   const router = useRouter();
@@ -130,7 +45,8 @@ export default function Home() {
   const storedItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedItems') || '[]') : [];
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  //const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState(false);
 
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
@@ -334,6 +250,7 @@ export default function Home() {
       const addedItem = await addItem({
         name: newItem.name,
         price: newItem.price,
+        stock: newItem.stock,
         // Handle image upload separately if needed
       });
 
@@ -352,6 +269,7 @@ export default function Home() {
     }
   };
 
+
   return (
     <>
       <Sidebar />
@@ -363,6 +281,15 @@ export default function Home() {
           selectedItemIngredients={selectedItemIngredients}
           onClose={handleCloseCustomizePopup}
           onConfirmCustomization={handleCustomizationConfirmation}
+        />
+      )}
+
+      {isAddMenuItemOpen && ( 
+        <AddMenuItem
+          isOpen={isAddMenuItemOpen}
+          onClose={() => setIsAddMenuItemOpen(false)}
+          onAddNewItem={handleAddNewItem}
+          categoryName={activeCategory}
         />
       )}
 
@@ -394,7 +321,7 @@ export default function Home() {
             </button>
           ))}
 
-          <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
+          <button className={styles.addItemButton} onClick={() => setIsAddMenuItemOpen(true)}>
             Add New Item
           </button>
         </div>
@@ -448,12 +375,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdd={handleAddNewItem}
-      />
     </>
 
   );
