@@ -52,10 +52,9 @@ export async function fetchSalesData() {
     });
 
     try {
-        const today = new Date().toISOString().slice(0, 10); // Format today's date to YYYY-MM-DD
+        const today = new Date().toLocaleString().slice(0, 10); // Format today's date to YYYY-MM-DD
         const query = 'SELECT * FROM sales_transactions WHERE DATE(purchase_time) = $1 ORDER BY purchase_time DESC';
         const result = await pool.query(query, [today]);
-        await pool.end();
         return result.rows;
     } catch (err) {
         console.error('Failed to fetch sales data for today', err);

@@ -66,13 +66,19 @@ export default function StaffStats() {
         const data = await fetchSalesData();
         console.log(data);
         setSalesData(data);
-      } catch (error) {
+      }
+      catch (error) {
         console.error("Failed to fetch sales data", error);
       }
     };
 
     loadSalesData();
-  }, []);
+  }, [selectedOption, salesData]);
+
+  useEffect(() => {
+    console.log('Current sales data:', salesData);
+  }, [salesData]);
+  
   
   useEffect(() => {
     const loadData = async () => {
@@ -212,14 +218,20 @@ export default function StaffStats() {
                     </tr>
                   </thead>
                   <tbody>
-                    {salesData.map((order: SalesTransaction, index: number) => (
-                      <tr key={index}>
-                        <td>{order.id}</td>
-                        <td>{order.employee_id}</td>
-                        <td>{order.cost}</td>
-                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                    {salesData.length > 0 ? (
+                      salesData.map((order: SalesTransaction, index: number) => (
+                        <tr key={index}>
+                          <td>{order.id}</td>
+                          <td>{order.employee_id}</td>
+                          <td>{order.cost}</td>
+                          <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4}>No sales data available for today.</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
