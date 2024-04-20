@@ -16,7 +16,13 @@ interface SalesTransaction {
   cost: number;
   employee_id: number;
   purchase_time: string;
+  name: string;
+  shift_start: string;
+  shift_end: string;
+  manager: boolean;
+  salary: number;
 }
+
 
 interface MenuItem {
   id: number;
@@ -209,30 +215,40 @@ export default function StaffStats() {
               <h2>X-Report for Today</h2>
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
-                  <thead>
-                    <tr>
-                      <th>Transaction ID</th>
-                      <th>Employee ID</th>
-                      <th>Cost</th>
-                      <th>Time of Transaction</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {salesData.length > 0 ? (
-                      salesData.map((order: SalesTransaction, index: number) => (
-                        <tr key={index}>
-                          <td>{order.id}</td>
-                          <td>{order.employee_id}</td>
-                          <td>{order.cost}</td>
-                          <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={4}>No sales data available for today.</td>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Shift Start</th>
+                    <th>Shift End</th>
+                    <th>Manager</th>
+                    <th>Salary</th>
+                    <th>Cost</th>
+                    <th>Time of Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesData && salesData.length > 0 ? (
+                    salesData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.name}</td>
+                        <td>{order.shift_start}</td>
+                        <td>{order.shift_end}</td>
+                        <td>{order.manager ? 'Yes' : 'No'}</td>
+                        <td>{order.salary}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
                       </tr>
-                    )}
-                  </tbody>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9}>No sales data available for today.</td>
+                    </tr>
+                  )}
+                </tbody>
                 </table>
               </div>
             </div>

@@ -52,8 +52,15 @@ export async function fetchSalesData() {
     });
 
     try {
-        const today = new Date().toLocaleString().slice(0, 10); // Format today's date to YYYY-MM-DD
-        const query = 'SELECT * FROM sales_transactions WHERE DATE(purchase_time) = $1 ORDER BY purchase_time DESC';
+        const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
+        const query = `
+            SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
+                   e.name, e.shift_start, e.shift_end, e.manager, e.salary
+            FROM sales_transactions AS st
+            JOIN employees AS e ON st.employee_id = e.id
+            WHERE DATE(st.purchase_time) = $1
+            ORDER BY st.purchase_time DESC;
+        `;
         const result = await pool.query(query, [today]);
         return result.rows;
     } catch (err) {
@@ -61,6 +68,7 @@ export async function fetchSalesData() {
         return [];
     }
 }
+
 
 
 
