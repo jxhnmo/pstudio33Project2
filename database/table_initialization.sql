@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS sales_items CASCADE;
 DROP TABLE IF EXISTS irremovable_ingredients CASCADE;
 
 CREATE TABLE employees (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50),
     salary NUMERIC,
     shift_start TIME,
@@ -68,7 +68,7 @@ CREATE TABLE inventory_item_orders (
 );
 
 CREATE TABLE sales_transactions (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     cost NUMERIC,
     employee_id INT,
     purchase_time TIMESTAMP,

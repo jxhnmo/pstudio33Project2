@@ -14,3 +14,6 @@ VALUES
 \copy sales_transactions FROM 'sales_transactions.csv' CSV HEADER;
 \copy sales_items FROM 'sales_items.csv' CSV HEADER;
 \copy irremovable_ingredients FROM 'irremovable_ingredients.csv' CSV HEADER;
+
+SELECT setval('sales_transactions_id_seq', (SELECT MAX(id) FROM sales_transactions));
+SELECT setval('employees_id_seq', (SELECT MAX(id) FROM employees));
