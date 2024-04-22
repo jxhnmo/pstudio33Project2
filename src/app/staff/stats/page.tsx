@@ -168,16 +168,16 @@ export default function StaffStats() {
               Product Usage
             </button>
             <button
-              className={selectedOption === 'sales_report' ? styles.selectedOption : styles.option}
-              onClick={() => handleButtonSelect('sales_report')}
-            >
-              Sales Report
-            </button>
-            <button
               className={selectedOption === 'x_report' ? styles.selectedOption : styles.option}
               onClick={() => handleButtonSelect('x_report')}
             >
               X-Report
+            </button>
+            <button
+              className={selectedOption === 'z_report' ? styles.selectedOption : styles.option}
+              onClick={() => handleButtonSelect('z_report')}
+            >
+              Z-Report
             </button>
             <button
               className={selectedOption === 'restock_report' ? styles.selectedOption : styles.option}
@@ -205,10 +205,6 @@ export default function StaffStats() {
           {selectedOption === 'product_usage' && (
             // Implement UI for product usage statistics
             <div>Product Usage Statistics</div>
-          )}
-          {selectedOption === 'sales_report' && (
-            // Implement UI for sales report statistics
-            <div>Sales report</div>
           )}
           {selectedOption === 'x_report' && (
             <div>
@@ -252,6 +248,10 @@ export default function StaffStats() {
                 </table>
               </div>
             </div>
+          )}
+          {selectedOption === 'z_report' && (
+            // Implement UI for z report statistics
+            <div>Z-Report</div>
           )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
