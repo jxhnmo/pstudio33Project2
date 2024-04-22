@@ -21,6 +21,7 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  category: string;
   ingredients?: string[];
   customization?: string;
   calories?: number;
@@ -51,7 +52,9 @@ export default function Home() {
 
   const handleCloseCustomizePopup = () => {
     setIsCustomizePopupOpen(false);
-    setIsMealUpgradePopupOpen(true);
+    if (['burgers', 'entrees', 'sandwiches'].includes(selectedItemForCustomization?.category ?? '')) {
+      setIsMealUpgradePopupOpen(true);
+    }
   };
 
   const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
@@ -238,8 +241,6 @@ export default function Home() {
           selectedItem={selectedItemForCustomization}
         />
       )}
-
-
 
       <div className={`${styles.main} ${isCategoryLoaded ? styles.categoryLoaded : ''}`}>
         {/* Categories Column */}
