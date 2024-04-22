@@ -8,7 +8,6 @@ const InventoryOrderConfirmed = () => {
   const [weatherWarning, setWeatherWarning] = useState(false);
 
   useEffect(() => {
-    // Retrieve the weather data from local storage
     const weatherData = localStorage.getItem('weatherData');
 
     // Check if the weatherData is not 'clear' and set warning state
@@ -16,14 +15,14 @@ const InventoryOrderConfirmed = () => {
       setWeatherWarning(true);
     }
 
-    const timer = setTimeout(() => router.push('/'), 5000);
+    const timer = setTimeout(() => router.push('/staff/inventory'), 5000);
     return () => clearTimeout(timer);
   }, [router]);
 
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>Your order is confirmed</h1>
-      {weatherWarning && ( <p className = {styles.warning}> Warning: Weather conditions may affect restock times. </p> )}
+      {weatherWarning && (<p className={styles.warning}> Warning: Weather conditions may affect restock times. </p>)}
       <p className={styles.message}>Restock coming soon</p>
     </div>
   );
