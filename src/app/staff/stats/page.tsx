@@ -5,7 +5,7 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchSalesData, fetchIngredientsUsedToday } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -71,6 +71,7 @@ export default function StaffStats() {
       try {
         const data = await fetchSalesData();
         console.log(data);
+        alert(await fetchIngredientsUsedToday());
         setSalesData(data);
       }
       catch (error) {
@@ -151,6 +152,7 @@ export default function StaffStats() {
   }
 
   const handleButtonSelect = (option: any) => {
+    alert()
     setSelectedOption(option);
     updateStatistics();
   }
