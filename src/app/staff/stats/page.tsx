@@ -51,6 +51,11 @@ interface SaleData {
   purchase_time: string;
 }
 
+interface ProductUsage {
+  item_name: string;
+  stock: number;
+}
+
 export default function StaffStats() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -65,13 +70,14 @@ export default function StaffStats() {
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
   const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
+  const [productUsageData, setProductUsageData] = useState<ProductUsage[]>([]);
+
 
   useEffect(() => {
     const loadSalesData = async () => {
       try {
         const data = await fetchSalesData();
         console.log(data);
-        alert(await fetchIngredientsUsedToday());
         setSalesData(data);
       }
       catch (error) {
@@ -85,6 +91,10 @@ export default function StaffStats() {
   useEffect(() => {
     console.log('Current sales data:', salesData);
   }, [salesData]);
+  const updateProductUsageStatistics = () => {
+    // Here you can place any additional logic if needed to process or refresh the product usage data
+  };
+  
   
   
   useEffect(() => {
@@ -119,7 +129,20 @@ export default function StaffStats() {
       category: item.category
     }));
   }
-
+  useEffect(() => {
+    const fetchProductUsage = async () => {
+      try {
+        const usageData = await fetchIngredientsUsedToday();
+        setProductUsageData(usageData);
+      } catch (error) {
+        console.error("Failed to fetch product usage data", error);
+      }
+    };
+  
+    if (selectedOption === 'product_usage') {
+      fetchProductUsage();
+    }
+  }, [selectedOption]);
   const processInventory = (inventoryData: InventoryItem[]) => {
     return inventoryData.map(item => ({
       id: item.id,
@@ -205,40 +228,34 @@ export default function StaffStats() {
         <div className={styles.statsContent}>
           {/* Display statistics based on selected option */}
           {selectedOption === 'product_usage' && (
-            <div>
-            <div>Product Usage Statistics</div>
-              <div>
-                <h2>Product Usage Chart for Today</h2>
-                <div className={styles.xreportTableContainer}>
-                  <table className={styles.xreportTable}>
-                    <thead>
-                      <tr>
-                        <th>Inventory Item</th>
-                        <th>Amount Used Today</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* {salesData.length > 0 ? (
-                        salesData.map((order: SalesTransaction, index: number) => (
-                          <tr key={index}>
-                            <td>{order.id}</td>
-                            <td>{order.employee_id}</td>
-                            <td>{order.cost}</td>
-                            <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={4}>No sales data available for today.</td>
-                        </tr>
-                      )} */}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              </div>
-            )
-        }
+  <div>
+    <h2>Product Usage Statistics</h2>
+    <div className={styles.xreportTableContainer}>
+      <table className={styles.xreportTable}>
+        <thead>
+          <tr>
+            <th>Inventory Item</th>
+            <th>Amount Used Today</th>
+          </tr>
+        </thead>
+        <tbody>
+          {productUsageData.length > 0 ? (
+            productUsageData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.item_name}</td>
+                <td>{item.stock}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={2}>No product usage data available for today.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
           
           
           {selectedOption === 'sales_report' && (

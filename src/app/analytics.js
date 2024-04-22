@@ -80,82 +80,14 @@ export async function fetchIngredientsUsedToday(){
 
     try {
         const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
-        //hoping this
-        /*
-        SELECT inventory_item.name, inventory items used today) 
-        
-
-        SELECT inventory_item.name, inventory items used today
-        FROM inventory_item
-
-        SELECT inventory_item.name
-        */
-        // const query = `
-        // SELECT DISTINCT
-        //     inv.id AS inventory_id,
-        //     inv.item_name,
-        //     inv.stock,
-        //     inv.price,
-        //     inv.max_stock
-        //     FROM
-        //         sales_transactions st
-        //         JOIN
-        //             sales_items si ON st.id = si.sales_id
-        //         JOIN
-        //             ingredients ingr ON si.menu_id = ingr.menu_id
-        //         JOIN
-        //             inventory_items inv ON ingr.item_id = inv.id
-        //         WHERE
-        //             DATE(st.purchase_time) = $0;
-    
-        // `;
-        // const query = `
-        // SELECT * FROM 
-        //     sales_transactions st
-        //     JOIN
-        //         sales_items si ON st.id = si.sales_id`;
-        // const query = `
-        // SELECT * FROM
-        //     sales_transactions
-        //     JOIN
-        //         sales_items ON sales_transactions.id = sales_items.sales_id
-        //         JOIN 
-        //             menu_items ON sales_items.menu_id = menu_items.id
-        //         JOIN 
-        //             ingredients ON menu_items.id = ingredients.menu_id
-        //         JOIN 
-        //             inventory_items ON ingredients.item_id = inventory_items.id
-        //         `
-        const query = `SELECT * FROM sales_transactions JOIN sales_items ON sales_transactions.id = sales_items.sales_id JOIN menu_items on sales_items.menu_id = menu_items.id JOIN ingredients ON menu_items.id = ingredients.menu_id
-        ;`;
-        // const query = `
-        // SELECT *
-        // FROM
-        //     sales_transactions st
-        //     JOIN
-        //         sales_items si ON st.id = sales_id
-        //     JOIN
-        //         menu_items mi ON si.menu_id = mi.id
-        //     JOIN
-        //         ingredients ingr ON mi.id = ingr.menu_id
-            
-        // `;
-        // const query = `
-        // SELECT DISTINCT
-        //     inv.item_name,
-        //     inv.stock
-        // FROM
-        //     sales_transactions st
-        //     JOIN
-        //         sales_items si ON st.id = sales_id
-        //     JOIN
-        //         menu_items mi ON si.menu_id = mi.id
-        //     JOIN
-        //         ingredients ingr ON mi.id = ingr.menu_id
-        //     WHERE
-        //         DATE(st.purchase_time) = $0;
-        // `;
-        const result = await pool.query(query);
+        const query = `
+        SELECT inventory_items.item_name, inventory_items.stock FROM sales_transactions 
+            JOIN sales_items ON sales_transactions.id = sales_items.sales_id
+            JOIN menu_items on sales_items.menu_id = menu_items.id
+            JOIN ingredients ON menu_items.id = ingredients.menu_id
+            JOIN inventory_items ON ingredients.menu_id = inventory_items.id
+            WHERE DATE(sales_transactions.purchase_time) = DATE($1);`;
+        const result = await pool.query(query, [today]);
         return result.rows;
     } catch (err) {
         console.error('Failed to fetch ingredients used today', err);
