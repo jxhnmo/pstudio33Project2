@@ -250,13 +250,52 @@ export default function StaffStats() {
             </div>
           )}
           {selectedOption === 'z_report' && (
-            // Implement UI for z report statistics
-            <div>Z-Report</div>
+            <div>
+              <h2>Z-Report for All Time</h2>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Shift Start</th>
+                    <th>Shift End</th>
+                    <th>Manager</th>
+                    <th>Salary</th>
+                    <th>Cost</th>
+                    <th>Time of Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesData && salesData.length > 0 ? (
+                    salesData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.name}</td>
+                        <td>{order.shift_start}</td>
+                        <td>{order.shift_end}</td>
+                        <td>{order.manager ? 'Yes' : 'No'}</td>
+                        <td>{order.salary}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9}>No sales data available for today.</td>
+                    </tr>
+                  )}
+                </tbody>
+                </table>
+              </div>
+            </div>
           )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
             <div>
-                <div>Restock Report Statistics</div>
+                <h2>Restock Report Statistics</h2>
                 <div className={styles.tableContainer}>
                   <table className={styles.restockTable}>
                     <thead>
