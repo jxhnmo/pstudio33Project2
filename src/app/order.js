@@ -169,7 +169,7 @@ export async function completeTransaction(cost,selectedItems) {
         
         
         
-        const queryText = 'INSERT INTO sales_transactions VALUES ($1,$2,0,$3);';
+        const queryText = 'INSERT INTO sales_transactions VALUES ($1,$2,1,$3);';
         await pool2.query(queryText, [sales_id,cost,currentTime.toISOString()]);
         await pool2.end();
         
