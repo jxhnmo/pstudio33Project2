@@ -5,29 +5,24 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchXData, fetchZData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
 });
-const Xreport = dynamic(() => import('../../../components/Xreport/Xreport'), {
-  ssr: false
-});
 
-interface FetchedData {
-  firstSale: string;
-  lastSale: string;
-  lastRestock: string;
-  menuItems: MenuItem[];
-  inventory: InventoryItem[];
-}
-
-interface orderData {
+interface SalesTransaction {
   id: number;
   cost: number;
   employee_id: number;
   purchase_time: string;
+  name: string;
+  shift_start: string;
+  shift_end: string;
+  manager: boolean;
+  salary: number;
 }
+
 
 interface MenuItem {
   id: number;
@@ -48,31 +43,83 @@ interface InventoryItem {
   price: number;
 }
 
-
+interface SaleData {
+  transaction_id: number;
+  employee_name: string;
+  manager_status: boolean;
+  cost: number;
+  purchase_time: string;
+}
 
 export default function StaffStats() {
-  const [data, setData] = useState<FetchedData | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [firstSale, setFirstSale] = useState<string | null>(null);
   const [lastSale, setLastSale] = useState<string | null>(null);
   const [lastRestock, setLastRestock] = useState<string | null>(null);
-  const [selectedOption, setSelectedOption] = useState('product_usage');
-  const [startDateTime, setStartDateTime] = useState(null);
-  const [endDateTime, setEndDateTime] = useState(null);
+  const [startDateTime, setStartDateTime] = useState('');
+  const [endDateTime, setEndDateTime] = useState('');
   const [salesTableData, setSalesTableData] = useState([]);
   const [excessTableData, setExcessTableData] = useState([]);
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
-  const [salesData, setSalesData] = useState<number[]>([]);
+  const [selectedOption, setSelectedOption] = useState('product_usage');
+  const [xData, setXData] = useState<SalesTransaction[]>([]);
+  const [zData, setZData] = useState<SalesTransaction[]>([]);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+  
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
+  
+  useEffect(() => {
+    const loadXData = async () => {
+      try {
+        const data = await fetchXData();
+        console.log(data);
+        setXData(data);
+      }
+      catch (error) {
+        console.error("Failed to fetch sales data", error);
+      }
+    };
 
+    if (selectedOption === 'x_report') {
+      loadXData();
+    }
+  }, [selectedOption, xData]);
 
+  useEffect(() => {
+    const loadZData = async () => {
+      if (!startDate || !endDate) {
+        return;
+      }
+      try {
+        const data = await fetchZData(startDate, endDate);
+        console.log(data);
+        setZData(data);
+      } catch (error) {
+        console.error("Failed to fetch sales data", error);
+      }
+    };
+  
+    if (selectedOption === 'z_report') {
+      loadZData();
+    }
+  }, [selectedOption, startDate, endDate, zData]);
+  
+  
+  
   useEffect(() => {
     const loadData = async () => {
       try {
         const fetchedData = await fetchData();
         if (fetchedData) {
-          setData(fetchedData);
           setMenuItems(fetchedData.menuItems);
           setInventory(fetchedData.inventory);
           setFirstSale(fetchedData.firstSale);
@@ -83,17 +130,8 @@ export default function StaffStats() {
         console.error("Failed to fetch data", error);
       }
     };
-
-    if (selectedOption === 'x_report') {
-      loadSalesData();
-    }
     loadData();
-  }, [selectedOption]); // Fetch data only when certain options are selected
-
-  const loadSalesData = async () => {
-    const sales = await fetchSalesData();
-    setSalesData(sales);
-  };
+  });
 
   useEffect(() => {
     // Update statistics when startDateTime or endDateTime changes
@@ -159,16 +197,16 @@ export default function StaffStats() {
               Product Usage
             </button>
             <button
-              className={selectedOption === 'sales_report' ? styles.selectedOption : styles.option}
-              onClick={() => handleButtonSelect('sales_report')}
-            >
-              Sales Report
-            </button>
-            <button
               className={selectedOption === 'x_report' ? styles.selectedOption : styles.option}
               onClick={() => handleButtonSelect('x_report')}
             >
               X-Report
+            </button>
+            <button
+              className={selectedOption === 'z_report' ? styles.selectedOption : styles.option}
+              onClick={() => handleButtonSelect('z_report')}
+            >
+              Z-Report
             </button>
             <button
               className={selectedOption === 'restock_report' ? styles.selectedOption : styles.option}
@@ -197,20 +235,102 @@ export default function StaffStats() {
             // Implement UI for product usage statistics
             <div>Product Usage Statistics</div>
           )}
-          {selectedOption === 'sales_report' && (
-            // Implement UI for sales report statistics
-            <div>Sales report</div>
-          )}
           {selectedOption === 'x_report' && (
-            // Implement UI for sales report statistics
             <div>
-              <Xreport salesData={salesData} />
+              <h2>X-Report for Today</h2>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Shift Start</th>
+                    <th>Shift End</th>
+                    <th>Manager</th>
+                    <th>Salary</th>
+                    <th>Cost</th>
+                    <th>Time of Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {xData && xData.length > 0 ? (
+                    xData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.name}</td>
+                        <td>{order.shift_start}</td>
+                        <td>{order.shift_end}</td>
+                        <td>{order.manager ? 'Yes' : 'No'}</td>
+                        <td>{order.salary}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9}>No sales data available for today.</td>
+                    </tr>
+                  )}
+                </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {selectedOption === 'z_report' && (
+            <div>
+              <h2>Z-Report</h2>
+              <div>
+                <label>Start Date:</label>
+                <input type="date" id="startDate" onChange={handleStartDateChange} />
+                <label>End Date:</label>
+                <input type="date" id="endDate" onChange={handleEndDateChange} />
+              </div>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Shift Start</th>
+                    <th>Shift End</th>
+                    <th>Manager</th>
+                    <th>Salary</th>
+                    <th>Cost</th>
+                    <th>Time of Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {zData && zData.length > 0 ? (
+                    zData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.name}</td>
+                        <td>{order.shift_start}</td>
+                        <td>{order.shift_end}</td>
+                        <td>{order.manager ? 'Yes' : 'No'}</td>
+                        <td>{order.salary}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9}>No sales data available for selected dates.</td>
+                    </tr>
+                  )}
+                </tbody>
+                </table>
+              </div>
             </div>
           )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
             <div>
-                <div>Restock Report Statistics</div>
+                <h2>Restock Report Statistics</h2>
                 <div className={styles.tableContainer}>
                   <table className={styles.restockTable}>
                     <thead>

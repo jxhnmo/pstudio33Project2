@@ -10,6 +10,8 @@ import { fetchCategories, fetchItems, getItemInfo, getMenuItemIngredients } from
 import dynamic from 'next/dynamic';
 import InfoPopup from '../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../components/CustomizePopup/CustomizePopup';
+import MealPopup from '../../components/MakeItAMeal/MakeItAMeal';
+
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
   ssr: false,
 });
@@ -19,6 +21,7 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  category: string;
   ingredients?: string[];
   customization?: string;
   calories?: number;
@@ -44,8 +47,14 @@ export default function Home() {
   const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
 
+  const [isMealUpgradePopupOpen, setIsMealUpgradePopupOpen] = useState(false);
+
+
   const handleCloseCustomizePopup = () => {
     setIsCustomizePopupOpen(false);
+    if (['burgers', 'entrees', 'sandwiches'].includes(selectedItemForCustomization?.category ?? '')) {
+      setIsMealUpgradePopupOpen(true);
+    }
   };
 
   const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
@@ -201,6 +210,14 @@ export default function Home() {
     return deselectedIngredients;
   };
 
+  const handleMealUpgradeConfirmation = (items: any[]) => {
+    setIsMealUpgradePopupOpen(false);
+    setSelectedItems(prevItems => [
+      ...prevItems,
+      ...items.map((item: any) => ({ ...item, quantity: 1 }))
+    ]);
+  };
+
 
   return (
     <>
@@ -213,6 +230,15 @@ export default function Home() {
           selectedItemIngredients={selectedItemIngredients}
           onClose={handleCloseCustomizePopup}
           onConfirmCustomization={handleCustomizationConfirmation}
+        />
+      )}
+
+      {isMealUpgradePopupOpen && (
+        <MealPopup
+          isOpen={isMealUpgradePopupOpen}
+          onClose={() => setIsMealUpgradePopupOpen(false)}
+          onConfirmMeal={handleMealUpgradeConfirmation}
+          selectedItem={selectedItemForCustomization}
         />
       )}
 

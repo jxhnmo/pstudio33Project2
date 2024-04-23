@@ -20,7 +20,7 @@ interface Item {
 }
 
 const InventoryOrderSummary = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   useEffect(() => {
     // Filter out items where orderQuantity is zero or undefined
@@ -40,22 +40,22 @@ const InventoryOrderSummary = () => {
     try {
 
       await Promise.all(orderPromises);
-       localStorage.setItem('inventory', JSON.stringify([]));
-       setSelectedItems([]);
-       router.push('/staff/inventoryOrderConfirmed');
+      localStorage.setItem('inventory', JSON.stringify([]));
+      setSelectedItems([]);
+      router.push('/staff/inventoryOrderConfirmed');
 
-       
-     } catch (error) {
-       console.error("Failed to process bulk order:", error);
-       alert('Failed to process some orders.');
-     }
+
+    } catch (error) {
+      console.error("Failed to process bulk order:", error);
+      alert('Failed to process some orders.');
+    }
   };
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
-    localStorage.setItem('inventory', JSON.stringify(updatedItems)); 
+    localStorage.setItem('inventory', JSON.stringify(updatedItems));
   };
 
   return (
@@ -67,12 +67,12 @@ const InventoryOrderSummary = () => {
           {selectedItems.length > 0 ? (
             selectedItems.map((item, index) => (
               <div key={index} className={styles.orderItem}>
-                <div>
+                <div className={styles.itemDetails}>
                   {item.item_name} - ${item.price} x {item.orderQuantity}
-                  <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
-                    Remove
-                  </button>
                 </div>
+                <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
+                  Remove
+                </button>
               </div>
             ))
           ) : (

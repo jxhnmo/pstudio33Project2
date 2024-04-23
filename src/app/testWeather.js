@@ -1,37 +1,27 @@
-'use server';
-import axios from 'axios';
+require('dotenv').config();
+const axios = require('axios');
 
-export async function fetchWeather() {
+// Define an async function to use await
+async function fetchWeather() {
+    console.log("Weather key is being read in: ");
+    console.log(process.env.WEATHER_KEY);  // Make sure this prints your key
+
     const url = `https://api.openweathermap.org/data/2.5/weather?zip=77840,us&appid=${process.env.WEATHER_KEY}`;
+    console.log('About to get response');
 
     try {
-
-        console.log('about to get response');
         const response = await axios.get(url);
-        return response.data.weather[0].main;
+        console.log(response.data);  // Assuming you want to see the full response
     } catch (error) {
-        console.error("Failed to fetch weather data:", error);
-        return "NO WEATHER DATA";
+        console.error("Error fetching weather data:", error);
     }
 }
 
-
-export async function fetchWeatherAllData(zipcode) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?zip=${zipcode},us&appid=${process.env.WEATHER_KEY}`;
-    try {
-        console.log('about to get response');
-        console.log(zipcode);
-        const response = await axios.get(url);
-        
-        return response.data;
-    } catch (error) {
-        console.error("Failed to fetch weather data:", error);
-        return "NO WEATHER DATA";
-    }
-}
+fetchWeather();
 
 /* sample output:
 Weather key is being read in: 
+a85d0102a70cce7af219d15cf0e6b767
 About to get response
 {
   coord: { lon: -96.3123, lat: 30.6045 },

@@ -20,7 +20,6 @@ interface Item {
   max_stock: number;
   price: number;
   stock: number;
-
   isEditing?: boolean;
   orderQuantity?: number;
 }
@@ -65,7 +64,7 @@ export default function StaffInventory() {
         console.error("Failed to add new item:", error);
       }
     } else {
-      alert('Please fill in all fields.');
+      ('Please fill in all fields.');
     }
   };
 
@@ -125,7 +124,7 @@ export default function StaffInventory() {
 
     try {
       localStorage.setItem('inventory', JSON.stringify(inventory));
-     loadData();
+      loadData();
       router.push('/staff/inventoryOrderSummary');
     } catch (error) {
       console.error("Failed to process bulk order:", error);

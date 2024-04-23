@@ -1,7 +1,8 @@
 {
   "name": "pstudio33_project2",
   "version": "0.1.0",
-  "homepage": "https://jxhnmo.github.io/pstudio33Project2",
+  "homepage": "https://pstudio33-project2-host.vercel.app",
+  "repository": "https://github.com/jxhnmo/pstudio33Project2",
   "private": true,
   "scripts": {
     "dev": "next dev",

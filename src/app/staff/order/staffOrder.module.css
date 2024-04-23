@@ -206,8 +206,25 @@
 }
 
 .disabled {
-  opacity: 0.5; /* Dim the element to indicate it's not active */
-  cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
-  color: #614e4e; /* Optional: Change the color to a more muted tone */
-  pointer-events: none; /* Prevents click events from reaching the element */
+  opacity: 0.5;
+  /* Dim the element to indicate it's not active */
+  cursor: not-allowed;
+  /* Change the cursor to indicate it's not clickable */
+  color: #614e4e;
+  /* Optional: Change the color to a more muted tone */
+  pointer-events: none;
+  /* Prevents click events from reaching the element */
+}
+
+.removeButton {
+  background-color: var(--c1);
+  color: var(--c3);
+  padding: 5px 10px;
+  border: 1px solid var(--c7);
+  cursor: pointer;
+}
+
+.removeButton:hover {
+  background-color: var(--c6);
+  color: var(--c4);
 }

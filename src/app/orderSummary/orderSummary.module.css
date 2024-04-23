@@ -1,5 +1,3 @@
-/* OrderSummary.module.css Adjustments */
-
 .main {
   display: flex;
   flex-direction: column;
@@ -8,8 +6,8 @@
   gap: 1rem;
   max-width: 100%;
   min-width: 100%;
+  height: 100vh;
   width: 900px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   border-radius: 8px;
   background-color: var(--c4);
   align-items: stretch;
@@ -22,7 +20,6 @@
   padding: 1rem;
   background-color: var(--c2);
   border-radius: 5px;
-  /* box-shadow: 0 2px 4px var(--c1); */
 }
 
 .orderSummaryHeader {
@@ -33,7 +30,6 @@
   color: var(--c3);
   text-align: center;
   margin-bottom: 0;
-  /* Remove bottom margin to close gap */
   padding-bottom: 1rem;
   border-bottom: 2px solid var(--c3);
 }
@@ -50,6 +46,7 @@
   background-color: var(--c2);
   padding: 1rem;
   border-radius: 8px;
+  height: 100%;
 }
 
 .orderItem {
@@ -64,6 +61,10 @@
   min-width: 100px;
 }
 
+.orderItem div {
+  flex-grow: 1;
+}
+
 .total {
   font-size: 1.25rem;
   font-weight: medium;
@@ -74,16 +75,13 @@
   padding-top: 1rem;
   border-top: 2px dashed var(--c3);
   margin-top: auto;
-  /* Pushes the total to the bottom */
 }
 
-/* Add this container style to your existing CSS */
 .buttonsContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  /* Ensure it spans the full width of its parent container */
 }
 
 .confirmOrderButton,
@@ -113,16 +111,29 @@
   transform: scale(1.1);
 }
 
-/* Adjust the container to accommodate the button and total placement */
 .orderContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* New class to adjust layout if needed */
 .orderDetails {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.removeButton {
+  background-color: var(--c7);
+  color: var(--c4);
+  border-radius: 5px;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.removeButton:hover {
+  background-color: var(--c6);
+  color: var(--c4);
 }

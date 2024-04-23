@@ -42,7 +42,7 @@ export async function fetchData() {
     }
 }
 
-export async function fetchSalesData() {
+export async function fetchXData() {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
@@ -52,23 +52,52 @@ export async function fetchSalesData() {
     });
 
     try {
-        // Query to fetch sum of sales per day over a given period
-        const salesQuery = `
-            SELECT DATE_TRUNC('day', purchase_time) AS day, SUM(cost) AS total_sales
-            FROM sales_transactions
-            GROUP BY DATE_TRUNC('day', purchase_time)
-            ORDER BY day;
+        const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
+        const query = `
+            SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
+                   e.name, e.shift_start, e.shift_end, e.manager, e.salary
+            FROM sales_transactions AS st
+            JOIN employees AS e ON st.employee_id = e.id
+            WHERE DATE(st.purchase_time) = $1
+            ORDER BY st.purchase_time DESC;
         `;
-
-        const result = await pool.query(salesQuery);
-        await pool.end();
-        const salesData = result.rows.map(row => row.total_sales);
-        return salesData;
+        const result = await pool.query(query, [today]);
+        return result.rows;
     } catch (err) {
-        console.error('Failed to fetch sales data', err);
+        console.error('Failed to fetch sales data for today', err);
         return [];
     }
 }
+
+export async function fetchZData(startDate, endDate) {
+    const pool = new Pool({
+      user: process.env.DATABASE_USER,
+      host: process.env.DATABASE_HOST,
+      database: process.env.DATABASE_NAME,
+      password: process.env.DATABASE_PASSWORD,
+      port: 5432,
+    });
+  
+    try {
+      const query = `
+        SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
+               e.name, e.shift_start, e.shift_end, e.manager, e.salary
+        FROM sales_transactions AS st
+        JOIN employees AS e ON st.employee_id = e.id
+        WHERE st.purchase_time BETWEEN $1 AND $2
+        ORDER BY st.purchase_time DESC;
+      `;
+      const result = await pool.query(query, [startDate, endDate + ' 23:59:59']);
+      return result.rows;
+    } catch (err) {
+      console.error('Failed to fetch sales data for the selected period', err);
+      return [];
+    }
+  }
+  
+
+
+
 
 export async function fetchRestock(startTime,endTime) {
     const pool = new Pool({
@@ -102,9 +131,9 @@ export async function fetchSales(startTime,endTime,menuId) {
         + "WHERE purchase_time > $1 AND purchase_time < $2 AND sales_items.menu_id = $3 "
         + "GROUP BY DATE_TRUNC('day',purchase_time) ORDER BY purchase_day;", [startTime,endTime,menuId]);
         const data = sales_data.rows.map((row) => {return [row.purchase_day.getTime(),parseInt(row.count)]})
-        // console.log(data)
-        return data
-        // return sales_data.rows;
+        console.log(data)
+        return data;
+        //return sales_data.rows;
     } catch (err) {
         console.error('Failed to fetch sales data',err);
         return [];

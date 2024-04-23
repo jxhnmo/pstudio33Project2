@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; // Corrected the import statement
 import styles from "@/app/menu/menu.module.css";
-import { fetchCategories, fetchItems } from '../menu'; // Adjust the import path as needed
+import { fetchCategories, fetchItems } from '../menu';
 
 import dynamic from 'next/dynamic';
 const Sidebar = dynamic(() => import('../../components/sidebar/Sidebar'), {
@@ -24,17 +24,16 @@ interface SelectedItem extends MenuItem {
   quantity: number;
 }
 
-const Home: React.FC = () => {
-  const router = useRouter(); // Use useRouter hook for navigation
+const Home = () => {
+  const router = useRouter();
   const [menuData, setMenuData] = useState<MenuCategory[]>([]);
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
-  const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const [fadeState, setFadeState] = useState('in');
 
   useEffect(() => {
-    const loadData = async () => {
+    async function loadData() {
       const categories = await fetchCategories();
-      const menuData = await Promise.all(categories.map(async (category) => {
+      const data = await Promise.all(categories.map(async (category) => {
         const items = await fetchItems(category.category);
         if (Array.isArray(items)) {
           items.forEach((item) => {
@@ -43,36 +42,42 @@ const Home: React.FC = () => {
         }
         return { category: category.category, items };
       }));
-      setMenuData(menuData);
-    };
+      setMenuData(data);
+    }
 
     loadData();
+  }, []);
 
-    // Rotating categories logic
+  useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentCategoryIndex((prevIndex) => (prevIndex + 1) % menuData.length);
+      setFadeState('out');
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [menuData.length]);
+  }, []);
+
+  useEffect(() => {
+    if (fadeState === 'out') {
+      setTimeout(() => {
+        setCurrentCategoryIndex(prev => (prev + 1) % menuData.length);
+        setFadeState('in');
+      }, 500);
+    }
+  }, [fadeState]);
 
   const currentCategory = menuData[currentCategoryIndex] || { category: '', items: [] };
 
   return (
     <>
       <Sidebar />
-
       <Link href="/" passHref>
         <h1 className={styles.heading}>REV&apos;s American Grill</h1>
       </Link>
-      <div
-        className={styles.menuContainer}
-        onClick={() => router.push('/order')} // Redirect to order page on click
-      >
-        <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles.fade}`}>
+      <div className={styles.menuContainer} onClick={() => router.push('/order')}>
+        <div key={currentCategory.category} className={`${styles.categoryContainer} ${styles[fadeState]}`}>
           <h2>{currentCategory.category}</h2>
           <div className={styles.items}>
-            {currentCategory.items.map((item) => (
+            {currentCategory.items.map(item => (
               <div key={item.name} className={styles.itemContainer}>
                 <img src={item.imageUrl} alt={item.name} className={styles.itemImage} />
                 <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
