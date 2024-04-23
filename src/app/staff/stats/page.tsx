@@ -5,7 +5,7 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchXData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchXData, fetchZData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -65,6 +65,7 @@ export default function StaffStats() {
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
   const [xData, setXData] = useState<SalesTransaction[]>([]);
+  const [zData, setZData] = useState<SalesTransaction[]>([]);
 
   useEffect(() => {
     const loadXData = async () => {
@@ -79,9 +80,9 @@ export default function StaffStats() {
     };
     const loadZData = async () => {
       try {
-        const data = await fetchXData();
+        const data = await fetchZData();
         console.log(data);
-        setXData(data);
+        setZData(data);
       }
       catch (error) {
         console.error("Failed to fetch sales data", error);
@@ -92,7 +93,7 @@ export default function StaffStats() {
       loadXData();
     }
     if (selectedOption === 'z_report') {
-      loadXData();
+      loadZData();
     }
   }, [selectedOption, xData]);
 
