@@ -160,23 +160,20 @@ export async function completeTransaction(cost,selectedItems) {
     const currentTime = new Date();
     try {
         console.log(`Fetching id value from sales_transactions`); // Debugging
-        const result = await pool.query('SELECT MAX(id)+1 AS max_id FROM sales_transactions;');
-        const result2 = await pool.query('SELECT MAX(id)+1 AS max_id FROM sales_items;');
+        const result = await pool.query('SELECT (MAX(id)+1)%1000 FROM sales_transactions;');
+        console.log('here');
         await pool.end();
-        const sales_id = result.rows[0].max_id;
-        var sales_item_id = result2.rows[0].max_id
-        console.log(`${sales_id}`);
+        var sales_id = result.rows[0].max_id;
         
         
-        
-        const queryText = 'INSERT INTO sales_transactions VALUES ($1,$2,0,$3);';
-        await pool2.query(queryText, [sales_id,cost,currentTime.toISOString()]);
+        const queryText = 'INSERT INTO sales_transactions VALUES ((SELECT MAX(id) + 1 FROM sales_transactions),$1,1,$2);';
+        await pool2.query(queryText, [cost,currentTime.toISOString()]);
         await pool2.end();
         
-        const itemQueryText = 'INSERT INTO sales_items VALUES ';
+        const itemQueryText = 'INSERT INTO sales_items (id, sales_id, menu_id) VALUES ';
         var idx = 1;
-        const params = selectedItems.map((item,index) => '('+sales_item_id+index+','+sales_id+','+item.id+')').join(',');
-        console.log(params)
+        const params = selectedItems.map((item,index) => '('+`(SELECT MAX(id)+1+${index} FROM sales_items)`+',\n'+'(SELECT MAX(id) FROM sales_transactions), '+'\n'+item.id+');').join(',');
+        console.log(itemQueryText + params)
         
         await pool3.query(itemQueryText+params);
         await pool3.end();
@@ -185,15 +182,4 @@ export async function completeTransaction(cost,selectedItems) {
         
         console.error(`Failed completeTransaction`,err);
     }
-    
-    
-    /*
-    try {
-        const queryText = 'INSERT INTO sales_transactions VALUES ((SELECT MAX(id)+1 FROM SALES_TRANSACTIONS),$1,0,$2);';
-        await pool.query(queryText, [cost,currentTime.toISOString()]);
-        await pool.end();
-    
-    } catch (err) {
-        console.error(`Failed to fetch items for category`, err);
-    }*/
 }
