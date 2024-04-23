@@ -46,7 +46,8 @@ export default function Home() {
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
   //const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState(false);
+  const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState<string | null>(null);
+
 
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
@@ -182,6 +183,7 @@ export default function Home() {
     setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
+    setIsAddMenuItemOpen(null);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -284,14 +286,15 @@ export default function Home() {
         />
       )}
 
-      {isAddMenuItemOpen && ( 
-        <AddMenuItem
-          isOpen={isAddMenuItemOpen}
-          onClose={() => setIsAddMenuItemOpen(false)}
-          onAddNewItem={handleAddNewItem}
-          categoryName={activeCategory}
-        />
-      )}
+{isAddMenuItemOpen && ( 
+  <AddMenuItem
+    isOpen={isAddMenuItemOpen !== null}
+    onClose={() => setIsAddMenuItemOpen(null)}
+    onAddNewItem={handleAddNewItem}
+    categoryName={isAddMenuItemOpen || ""}
+  />
+)}
+
 
       <div className={styles.main}>
         {/* Categories Column */}
@@ -321,7 +324,7 @@ export default function Home() {
             </button>
           ))}
 
-          <button className={styles.addItemButton} onClick={() => setIsAddMenuItemOpen(true)}>
+          <button className={styles.addItemButton} onClick={() => setIsAddMenuItemOpen(() => activeCategory)}>
             Add New Item
           </button>
         </div>

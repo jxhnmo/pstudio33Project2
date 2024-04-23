@@ -10,13 +10,28 @@ export async function addIngredient(ingredient) {
         port: 5432,
     });
 
+    // try {
+    //     const insertQuery = 'INSERT INTO ingredients(item_id, menu_id, num) VALUES($1, $2, $3) RETURNING *;';
+    //     const values = [ingredient.item_id, ingredient.menu_id, ingredient.num];
+    //     const insertResult = await pool.query(insertQuery, values);
+
+    //     await pool.end();
+    //     return insertResult.rows[0];
+    // } catch (err) {
+    //     console.error('Failed to add ingredient', err);
+    //     throw err;
+    // }
     try {
         const insertQuery = 'INSERT INTO ingredients(item_id, menu_id, num) VALUES($1, $2, $3) RETURNING *;';
         const values = [ingredient.item_id, ingredient.menu_id, ingredient.num];
-        const insertResult = await pool.query(insertQuery, values);
 
-        await pool.end();
-        return insertResult.rows[0];
+        if (!values.includes(null)) { // Check if any value is null
+            const insertResult = await pool.query(insertQuery, values);
+            await pool.end();
+            return insertResult.rows[0];
+        } else {
+            throw new Error('item_id, menu_id, or num cannot be null');
+        }
     } catch (err) {
         console.error('Failed to add ingredient', err);
         throw err;
