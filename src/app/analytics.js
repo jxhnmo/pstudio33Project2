@@ -81,13 +81,19 @@ export async function fetchIngredientsUsedToday(){
     try {
         const today = new Date().toISOString().split('T')[0]; 
         const query = `
-        SELECT inventory_items.item_name, COUNT(inventory_items.item_name) AS count FROM sales_transactions 
-        JOIN sales_items ON sales_transactions.id = sales_items.sales_id
-        JOIN menu_items on sales_items.menu_id = menu_items.id
-        JOIN ingredients ON menu_items.id = ingredients.menu_id
-        JOIN inventory_items ON ingredients.menu_id = inventory_items.id
+        SELECT inventory_items.item_name, COUNT(inventory_items.item_name) AS count FROM sales_items 
+        LEFT JOIN sales_transactions ON sales_transactions.id = sales_items.sales_id
+        LEFT JOIN menu_items ON sales_items.menu_id = menu_items.id
+        LEFT JOIN ingredients ON menu_items.id = ingredients.menu_id
+        LEFT JOIN inventory_items ON ingredients.item_id = inventory_items.id
         WHERE DATE(sales_transactions.purchase_time) = DATE($1)
         GROUP BY inventory_items.item_name;`;
+        // RIGHT JOIN sales_items ON sales_transactions.id = sales_items.sales_id
+        // LEFT JOIN menu_items on sales_items.menu_id = menu_items.id
+        // JOIN ingredients ON menu_items.id = ingredients.menu_id
+        // JOIN inventory_items ON ingredients.menu_id = inventory_items.id
+        // WHERE DATE(sales_transactions.purchase_time) = DATE($1)
+        // GROUP BY inventory_items.item_name;`;
         const result = await pool.query(query, [today]);
         return result.rows;
     } catch (err) {
@@ -96,16 +102,7 @@ export async function fetchIngredientsUsedToday(){
     }
 
 }
-/*
 
-       SELECT inventory_items.item_name, COUNT(inventory_items.item_name) FROM sales_transactions 
-            JOIN sales_items ON sales_transactions.id = sales_items.sales_id
-            JOIN menu_items on sales_items.menu_id = menu_items.id
-            JOIN ingredients ON menu_items.id = ingredients.menu_id
-            JOIN inventory_items ON ingredients.menu_id = inventory_items.id
-            WHERE DATE(sales_transactions.purchase_time) = DATE('2024-04-22')
-            GROUP BY inventory_items.item_name;
-*/
 
 
 
