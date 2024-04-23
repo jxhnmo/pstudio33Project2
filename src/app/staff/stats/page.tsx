@@ -66,7 +66,17 @@ export default function StaffStats() {
   const [selectedOption, setSelectedOption] = useState('product_usage');
   const [xData, setXData] = useState<SalesTransaction[]>([]);
   const [zData, setZData] = useState<SalesTransaction[]>([]);
-
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+  
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
+  
   useEffect(() => {
     const loadXData = async () => {
       try {
@@ -78,28 +88,31 @@ export default function StaffStats() {
         console.error("Failed to fetch sales data", error);
       }
     };
-    const loadZData = async () => {
-      try {
-        const data = await fetchZData();
-        console.log(data);
-        setZData(data);
-      }
-      catch (error) {
-        console.error("Failed to fetch sales data", error);
-      }
-    };
 
     if (selectedOption === 'x_report') {
       loadXData();
     }
-    if (selectedOption === 'z_report') {
-      loadZData();
-    }
   }, [selectedOption, xData]);
 
   useEffect(() => {
-    console.log('Current sales data:', xData);
-  }, [xData]);
+    const loadZData = async () => {
+      if (!startDate || !endDate) {
+        return;
+      }
+      try {
+        const data = await fetchZData(startDate, endDate);
+        console.log(data);
+        setZData(data);
+      } catch (error) {
+        console.error("Failed to fetch sales data", error);
+      }
+    };
+  
+    if (selectedOption === 'z_report') {
+      loadZData();
+    }
+  }, [selectedOption, startDate, endDate, zData]);
+  
   
   
   useEffect(() => {
@@ -267,7 +280,13 @@ export default function StaffStats() {
           )}
           {selectedOption === 'z_report' && (
             <div>
-              <h2>Z-Report for All Time</h2>
+              <h2>Z-Report</h2>
+              <div>
+                <label>Start Date:</label>
+                <input type="date" id="startDate" onChange={handleStartDateChange} />
+                <label>End Date:</label>
+                <input type="date" id="endDate" onChange={handleEndDateChange} />
+              </div>
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
                 <thead>
@@ -284,8 +303,8 @@ export default function StaffStats() {
                   </tr>
                 </thead>
                 <tbody>
-                  {xData && xData.length > 0 ? (
-                    xData.map((order: SalesTransaction, index: number) => (
+                  {zData && zData.length > 0 ? (
+                    zData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
                         <td>{order.employee_id}</td>
@@ -300,7 +319,7 @@ export default function StaffStats() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={9}>No sales data available for today.</td>
+                      <td colSpan={9}>No sales data available for selected dates.</td>
                     </tr>
                   )}
                 </tbody>
