@@ -2,7 +2,6 @@
 
 import { google } from 'googleapis';
 import { Pool } from 'pg'; // Connect to PostgreSQL
-import { handleOAuthCallback } from './googleCallback'; // Import the existing handler for callback
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -25,12 +24,17 @@ export async function getGoogleAuthURL() {
     'https://www.googleapis.com/auth/userinfo.profile',
   ];
 
-  return oauth2Client.generateAuthUrl({
+  const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: scopes.join(' '),
   });
+
+  console.log("Generated Google OAuth URL:", authUrl); // Print the generated OAuth URL to the console
+
+  return authUrl; // Return the generated OAuth URL
 }
+
 
 // Handle OAuth Callback and validate email
 export async function validateEmailAndLogin(code) {
