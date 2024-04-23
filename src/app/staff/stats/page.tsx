@@ -6,10 +6,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
 
-import { fetchData, fetchRestock, fetchSales, fetchSalesData, fetchIngredientsUsedToday } from '../../analytics';
-
-import { fetchData, fetchRestock, fetchSales, fetchXData, fetchZData } from '../../analytics';
-
+import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -110,14 +107,11 @@ export default function StaffStats() {
     }
   }, [selectedOption, xData]);
 
-  useEffect(() => {
-
-    console.log('Current sales data:', salesData);
-  }, [salesData]);
   const updateProductUsageStatistics = () => {
     // Here you can place any additional logic if needed to process or refresh the product usage data
   };
 
+  useEffect(() => {
     const loadZData = async () => {
       if (!startDate || !endDate) {
         return;
