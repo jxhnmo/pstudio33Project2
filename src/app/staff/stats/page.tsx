@@ -53,7 +53,7 @@ interface SaleData {
 
 interface ProductUsage {
   item_name: string;
-  stock: number;
+  count: number;
 }
 
 export default function StaffStats() {
@@ -175,7 +175,6 @@ export default function StaffStats() {
   }
 
   const handleButtonSelect = (option: any) => {
-    alert()
     setSelectedOption(option);
     updateStatistics();
   }
@@ -243,7 +242,7 @@ export default function StaffStats() {
             productUsageData.map((item, index) => (
               <tr key={index}>
                 <td>{item.item_name}</td>
-                <td>{item.stock}</td>
+                <td>{item.count}</td>
               </tr>
             ))
           ) : (

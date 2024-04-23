@@ -18,7 +18,6 @@ CREATE TABLE employees (
     username VARCHAR(50),
     password VARCHAR(50)
 );
-
 CREATE TABLE inventory_items (
     id INT PRIMARY KEY,
     item_name VARCHAR(50),
@@ -26,11 +25,9 @@ CREATE TABLE inventory_items (
     price NUMERIC,
     max_stock INT
 );
-
 CREATE TABLE irremovable_ingredients (
     name VARCHAR(50) PRIMARY KEY
 );
-
 CREATE TABLE menu_items (
     id INT PRIMARY KEY,
     name VARCHAR(50),
@@ -40,7 +37,6 @@ CREATE TABLE menu_items (
     description TEXT,  -- Added to store a textual description of the menu item
     calories INT       -- Added to store the calorie count as an integer
 );
-
 CREATE TABLE ingredients (
     id INT PRIMARY KEY,
     item_id INT,
@@ -49,14 +45,12 @@ CREATE TABLE ingredients (
     FOREIGN KEY (item_id) REFERENCES inventory_items(id),
     FOREIGN KEY (menu_id) REFERENCES menu_items(id)
 );
-
 CREATE TABLE inventory_transactions (
     id INT PRIMARY KEY,
     manager_id INT,
     transaction_date TIMESTAMP,
     price NUMERIC
 );
-
 CREATE TABLE inventory_item_orders (
     id INT PRIMARY KEY,
     transaction_id INT,
@@ -66,7 +60,6 @@ CREATE TABLE inventory_item_orders (
     FOREIGN KEY (transaction_id) REFERENCES inventory_transactions(id),
     FOREIGN KEY (item_id) REFERENCES inventory_items(id)
 );
-
 CREATE TABLE sales_transactions (
     id SERIAL PRIMARY KEY,
     cost NUMERIC,
@@ -74,7 +67,6 @@ CREATE TABLE sales_transactions (
     purchase_time TIMESTAMP,
     FOREIGN KEY (employee_id) REFERENCES employees(id)
 );
-
 CREATE TABLE sales_items (
     id INT PRIMARY KEY,
     sales_id INT,
