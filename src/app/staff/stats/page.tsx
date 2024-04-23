@@ -5,7 +5,7 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchSalesData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchXData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -64,26 +64,41 @@ export default function StaffStats() {
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
-  const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
+  const [xData, setXData] = useState<SalesTransaction[]>([]);
 
   useEffect(() => {
-    const loadSalesData = async () => {
+    const loadXData = async () => {
       try {
-        const data = await fetchSalesData();
+        const data = await fetchXData();
         console.log(data);
-        setSalesData(data);
+        setXData(data);
+      }
+      catch (error) {
+        console.error("Failed to fetch sales data", error);
+      }
+    };
+    const loadZData = async () => {
+      try {
+        const data = await fetchXData();
+        console.log(data);
+        setXData(data);
       }
       catch (error) {
         console.error("Failed to fetch sales data", error);
       }
     };
 
-    loadSalesData();
-  }, [selectedOption, salesData]);
+    if (selectedOption === 'x_report') {
+      loadXData();
+    }
+    if (selectedOption === 'z_report') {
+      loadXData();
+    }
+  }, [selectedOption, xData]);
 
   useEffect(() => {
-    console.log('Current sales data:', salesData);
-  }, [salesData]);
+    console.log('Current sales data:', xData);
+  }, [xData]);
   
   
   useEffect(() => {
@@ -225,8 +240,8 @@ export default function StaffStats() {
                   </tr>
                 </thead>
                 <tbody>
-                  {salesData && salesData.length > 0 ? (
-                    salesData.map((order: SalesTransaction, index: number) => (
+                  {xData && xData.length > 0 ? (
+                    xData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
                         <td>{order.employee_id}</td>
@@ -268,8 +283,8 @@ export default function StaffStats() {
                   </tr>
                 </thead>
                 <tbody>
-                  {salesData && salesData.length > 0 ? (
-                    salesData.map((order: SalesTransaction, index: number) => (
+                  {xData && xData.length > 0 ? (
+                    xData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
                         <td>{order.employee_id}</td>

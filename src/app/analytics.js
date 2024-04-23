@@ -42,7 +42,7 @@ export async function fetchData() {
     }
 }
 
-export async function fetchSalesData() {
+export async function fetchXData() {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
