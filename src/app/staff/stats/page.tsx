@@ -44,14 +44,6 @@ interface InventoryItem {
   price: number;
 }
 
-interface SaleData {
-  transaction_id: number;
-  employee_name: string;
-  manager_status: boolean;
-  cost: number;
-  purchase_time: string;
-}
-
 interface ProductUsage {
   item_name: string;
   count: number;
@@ -74,18 +66,16 @@ export default function StaffStats() {
   const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
   const [productUsageData, setProductUsageData] = useState<ProductUsage[]>([]);
 
-
-
   const [xData, setXData] = useState<SalesTransaction[]>([]);
   const [zData, setZData] = useState<SalesTransaction[]>([]);
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   
-  const handleStartDateChange = (event) => {
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartDate(event.target.value);
   };
   
-  const handleEndDateChange = (event) => {
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
   };
   
