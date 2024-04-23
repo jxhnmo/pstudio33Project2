@@ -69,6 +69,42 @@ export async function fetchXData() {
     }
 }
 
+
+export async function fetchIngredientsUsedToday(){
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        const today = new Date().toISOString().split('T')[0]; 
+        const query = `
+        SELECT inventory_items.item_name, COUNT(inventory_items.item_name) AS count FROM sales_items 
+        LEFT JOIN sales_transactions ON sales_transactions.id = sales_items.sales_id
+        LEFT JOIN menu_items ON sales_items.menu_id = menu_items.id
+        LEFT JOIN ingredients ON menu_items.id = ingredients.menu_id
+        LEFT JOIN inventory_items ON ingredients.item_id = inventory_items.id
+        WHERE DATE(sales_transactions.purchase_time) = DATE($1)
+        GROUP BY inventory_items.item_name;`;
+        // RIGHT JOIN sales_items ON sales_transactions.id = sales_items.sales_id
+        // LEFT JOIN menu_items on sales_items.menu_id = menu_items.id
+        // JOIN ingredients ON menu_items.id = ingredients.menu_id
+        // JOIN inventory_items ON ingredients.menu_id = inventory_items.id
+        // WHERE DATE(sales_transactions.purchase_time) = DATE($1)
+        // GROUP BY inventory_items.item_name;`;
+        const result = await pool.query(query, [today]);
+        return result.rows;
+    } catch (err) {
+        console.error('Failed to fetch ingredients used today', err);
+        return [];
+    }
+
+}
+
+
 export async function fetchZData(startDate, endDate) {
     const pool = new Pool({
       user: process.env.DATABASE_USER,
@@ -95,6 +131,7 @@ export async function fetchZData(startDate, endDate) {
     }
   }
   
+
 
 
 

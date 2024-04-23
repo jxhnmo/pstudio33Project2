@@ -1,13 +1,15 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import styles from './ZipCode.module.css';
 
 const ZipCode = ({ onZipCodeChange }) => {
+  const [zipCode, setZipCode] = useState('');
+
     if( typeof window !== 'undefined'){
         if(localStorage.getItem('role') !== 'staff'){
             return null;
         }
     }
-    const [zipCode, setZipCode] = useState('');
   useEffect(() => {
     const storedZipCode = typeof window !== 'undefined' ? localStorage.getItem('zipCode') || '' : '';
     if (storedZipCode) {

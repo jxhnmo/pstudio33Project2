@@ -16,7 +16,7 @@ conn_params = {
     "host": os.getenv("DATABASE_HOST"),
     "port": "5432"
 }
-
+print('here')
 def fetch_employee_ids(conn):
     with conn.cursor() as cur:
         cur.execute("SELECT id FROM employees")
