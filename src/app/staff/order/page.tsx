@@ -12,6 +12,7 @@ import { addIngredient } from '../../ingredients';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
+import MealPopup from '../../../components/MakeItAMeal/MakeItAMeal';
 
 import dynamic from 'next/dynamic';
 
@@ -24,6 +25,7 @@ interface Item {
   name: string;
   price: number;
   quantity: number;
+  category: string;
   ingredients: string[];
   customization?: string;
   calories?: number;
@@ -42,6 +44,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
+
 
   useEffect(() => {
     const loadInventory = async () => {
@@ -141,6 +144,7 @@ export default function Home() {
   const [isCustomizePopupOpen, setIsCustomizePopupOpen] = useState(false);
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<Item | null>(null);
 
+  const [isMealUpgradePopupOpen, setIsMealUpgradePopupOpen] = useState(false);
 
   useEffect(() => {
 
@@ -182,6 +186,9 @@ export default function Home() {
 
   const handleCloseCustomizePopup = () => {
     setIsCustomizePopupOpen(false);
+    if (['burgers', 'entrees', 'sandwiches'].includes(selectedItemForCustomization?.category ?? '')) {
+      setIsMealUpgradePopupOpen(true);
+    }
   };
 
   const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
@@ -352,6 +359,14 @@ export default function Home() {
     }
   };
 
+  const handleMealUpgradeConfirmation = (items: any[]) => {
+    setIsMealUpgradePopupOpen(false);
+    setSelectedItems(prevItems => [
+      ...prevItems,
+      ...items.map((item: any) => ({ ...item, quantity: 1 }))
+    ]);
+  };
+
   return (
     <>
       <Sidebar />
@@ -363,6 +378,15 @@ export default function Home() {
           selectedItemIngredients={selectedItemIngredients}
           onClose={handleCloseCustomizePopup}
           onConfirmCustomization={handleCustomizationConfirmation}
+        />
+      )}
+
+      {isMealUpgradePopupOpen && (
+        <MealPopup
+          isOpen={isMealUpgradePopupOpen}
+          onClose={() => setIsMealUpgradePopupOpen(false)}
+          onConfirmMeal={handleMealUpgradeConfirmation}
+          selectedItem={selectedItemForCustomization}
         />
       )}
 
