@@ -5,7 +5,11 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
+
 import { fetchData, fetchRestock, fetchSales, fetchSalesData, fetchIngredientsUsedToday } from '../../analytics';
+
+import { fetchData, fetchRestock, fetchSales, fetchXData, fetchZData } from '../../analytics';
+
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -69,31 +73,69 @@ export default function StaffStats() {
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
+
   const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
   const [productUsageData, setProductUsageData] = useState<ProductUsage[]>([]);
 
 
+
+  const [xData, setXData] = useState<SalesTransaction[]>([]);
+  const [zData, setZData] = useState<SalesTransaction[]>([]);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+  
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
+  
+
   useEffect(() => {
-    const loadSalesData = async () => {
+    const loadXData = async () => {
       try {
-        const data = await fetchSalesData();
+        const data = await fetchXData();
         console.log(data);
-        setSalesData(data);
+        setXData(data);
       }
       catch (error) {
         console.error("Failed to fetch sales data", error);
       }
     };
 
-    loadSalesData();
-  }, [selectedOption, salesData]);
+    if (selectedOption === 'x_report') {
+      loadXData();
+    }
+  }, [selectedOption, xData]);
 
   useEffect(() => {
+
     console.log('Current sales data:', salesData);
   }, [salesData]);
   const updateProductUsageStatistics = () => {
     // Here you can place any additional logic if needed to process or refresh the product usage data
   };
+
+    const loadZData = async () => {
+      if (!startDate || !endDate) {
+        return;
+      }
+      try {
+        const data = await fetchZData(startDate, endDate);
+        console.log(data);
+        setZData(data);
+      } catch (error) {
+        console.error("Failed to fetch sales data", error);
+      }
+    };
+  
+    if (selectedOption === 'z_report') {
+      loadZData();
+    }
+  }, [selectedOption, startDate, endDate, zData]);
+
   
   
   
@@ -192,16 +234,16 @@ export default function StaffStats() {
               Product Usage
             </button>
             <button
-              className={selectedOption === 'sales_report' ? styles.selectedOption : styles.option}
-              onClick={() => handleButtonSelect('sales_report')}
-            >
-              Sales Report
-            </button>
-            <button
               className={selectedOption === 'x_report' ? styles.selectedOption : styles.option}
               onClick={() => handleButtonSelect('x_report')}
             >
               X-Report
+            </button>
+            <button
+              className={selectedOption === 'z_report' ? styles.selectedOption : styles.option}
+              onClick={() => handleButtonSelect('z_report')}
+            >
+              Z-Report
             </button>
             <button
               className={selectedOption === 'restock_report' ? styles.selectedOption : styles.option}
@@ -250,6 +292,7 @@ export default function StaffStats() {
               <td colSpan={2}>No product usage data available for today.</td>
             </tr>
           )}
+
         </tbody>
       </table>
     </div>
@@ -261,6 +304,7 @@ export default function StaffStats() {
             // Implement UI for sales report statistics
             <div>Sales report</div>
           )}
+
           {selectedOption === 'x_report' && (
             <div>
               <h2>X-Report for Today</h2>
@@ -280,8 +324,8 @@ export default function StaffStats() {
                   </tr>
                 </thead>
                 <tbody>
-                  {salesData && salesData.length > 0 ? (
-                    salesData.map((order: SalesTransaction, index: number) => (
+                  {xData && xData.length > 0 ? (
+                    xData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
                         <td>{order.employee_id}</td>
@@ -304,10 +348,59 @@ export default function StaffStats() {
               </div>
             </div>
           )}
+          {selectedOption === 'z_report' && (
+            <div>
+              <h2>Z-Report</h2>
+              <div>
+                <label>Start Date:</label>
+                <input type="date" id="startDate" onChange={handleStartDateChange} />
+                <label>End Date:</label>
+                <input type="date" id="endDate" onChange={handleEndDateChange} />
+              </div>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Employee ID</th>
+                    <th>Employee Name</th>
+                    <th>Shift Start</th>
+                    <th>Shift End</th>
+                    <th>Manager</th>
+                    <th>Salary</th>
+                    <th>Cost</th>
+                    <th>Time of Transaction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {zData && zData.length > 0 ? (
+                    zData.map((order: SalesTransaction, index: number) => (
+                      <tr key={index}>
+                        <td>{order.id}</td>
+                        <td>{order.employee_id}</td>
+                        <td>{order.name}</td>
+                        <td>{order.shift_start}</td>
+                        <td>{order.shift_end}</td>
+                        <td>{order.manager ? 'Yes' : 'No'}</td>
+                        <td>{order.salary}</td>
+                        <td>{order.cost}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9}>No sales data available for selected dates.</td>
+                    </tr>
+                  )}
+                </tbody>
+                </table>
+              </div>
+            </div>
+          )}
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
             <div>
-                <div>Restock Report Statistics</div>
+                <h2>Restock Report Statistics</h2>
                 <div className={styles.tableContainer}>
                   <table className={styles.restockTable}>
                     <thead>

@@ -42,7 +42,7 @@ export async function fetchData() {
     }
 }
 
-export async function fetchSalesData() {
+export async function fetchXData() {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
@@ -68,6 +68,7 @@ export async function fetchSalesData() {
         return [];
     }
 }
+
 
 export async function fetchIngredientsUsedToday(){
     const pool = new Pool({
@@ -103,6 +104,33 @@ export async function fetchIngredientsUsedToday(){
 
 }
 
+
+export async function fetchZData(startDate, endDate) {
+    const pool = new Pool({
+      user: process.env.DATABASE_USER,
+      host: process.env.DATABASE_HOST,
+      database: process.env.DATABASE_NAME,
+      password: process.env.DATABASE_PASSWORD,
+      port: 5432,
+    });
+  
+    try {
+      const query = `
+        SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
+               e.name, e.shift_start, e.shift_end, e.manager, e.salary
+        FROM sales_transactions AS st
+        JOIN employees AS e ON st.employee_id = e.id
+        WHERE st.purchase_time BETWEEN $1 AND $2
+        ORDER BY st.purchase_time DESC;
+      `;
+      const result = await pool.query(query, [startDate, endDate + ' 23:59:59']);
+      return result.rows;
+    } catch (err) {
+      console.error('Failed to fetch sales data for the selected period', err);
+      return [];
+    }
+  }
+  
 
 
 
