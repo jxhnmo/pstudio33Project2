@@ -347,9 +347,11 @@ export default function StaffStats() {
                           <td>{order.name}</td>
                           <td>{order.shift_start}</td>
                           <td>{order.shift_end}</td>
+                          <td className="centered-cell">
                           <button onClick={() => handleDelete(order.id)} className={styles.deleteButton}>
                               {order.valid ? "Delete" : "Add"}
                           </button>
+                          </td>
                         </tr>
                       ))
                     ) : (
@@ -407,9 +409,11 @@ export default function StaffStats() {
                         <td>{order.name}</td>
                         <td>{order.shift_start}</td>
                         <td>{order.shift_end}</td>
+                        <td className="centered-cell">
                         <button onClick={() => handleDelete(order.id)} className={styles.deleteButton}>
                             {order.valid ? "Delete" : "Add"}
                         </button>
+                        </td>
                       </tr>
                     ))
                   ) : (
