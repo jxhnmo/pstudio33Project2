@@ -575,7 +575,8 @@ def populate_sales_transactions(conn):
         start_date = datetime.now() - timedelta(days=90)
         end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)
 
-        sql_commands = []
+        transaction_commands = []
+        item_commands = []
         transaction_id = 1
 
         while start_date < end_date:
@@ -584,22 +585,39 @@ def populate_sales_transactions(conn):
 
             for hour in hours:
                 num_transactions = random.randint(3, 5) if hour in [12, 13, 18, 19] else random.randint(1, 2)
+                transactions_this_hour = []
+                
                 for _ in range(num_transactions):
                     employee_id = random.choice(employee_ids)
-                    minute, second = random.randint(0, 59), random.randint(0, 59)
-                    transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
-                    total_cost = sum(random.choice(list(menu_items_with_prices.values())) for _ in range(random.randint(1, 5)))
-
-                    sql_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');")
+                    
+                    # Generate sequential minutes and seconds for each transaction in this hour
+                    times_this_hour = [(random.randint(0, 59), random.randint(0, 59)) for _ in range(num_transactions)]
+                    times_this_hour.sort()  # Sort times to ensure chronological order
+                    
+                    for minute, second in times_this_hour:
+                        transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
+                        num_items = random.randint(1, 5)
+                        items = random.choices(list(menu_items_with_prices.items()), k=num_items)
+                        total_cost = sum(item[1] for item in items)
+                        
+                        transactions_this_hour.append((total_cost, employee_id, transaction_date, items))
+                
+                # Add transactions in sequential order
+                for total_cost, employee_id, transaction_date, items in transactions_this_hour:
+                    transaction_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');")
+                    for item in items:
+                        item_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {item[0]});")
                     transaction_id += 1
 
             start_date += timedelta(days=1)
 
+        # Write and execute SQL commands
         with open('sales_transactions.sql', 'w') as file:
-            file.write("\n".join(sql_commands))
+            file.write("\n".join(transaction_commands + item_commands))
 
         with open('sales_transactions.sql', 'r') as file:
             cur.execute(file.read())
+
         conn.commit()
         os.remove('sales_transactions.sql')
 

@@ -155,3 +155,10 @@
 .xreportTable tr:nth-child(even) {
   background-color: var(--c4);
 }
+
+
+.spinner {
+  size: 50px;
+  padding: 10px;
+  color: var(--c6);
+}
