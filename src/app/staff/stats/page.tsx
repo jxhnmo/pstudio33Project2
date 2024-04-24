@@ -19,9 +19,8 @@ interface SalesTransaction {
   name: string;
   shift_start: string;
   shift_end: string;
-  items: string;
+  items: string[];
 }
-
 
 interface MenuItem {
   id: number;
@@ -283,40 +282,44 @@ export default function StaffStats() {
               <h2>X-Report for Today</h2>
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
-                <thead>
-                  <tr>
-                    <th>Transaction ID</th>
-                    <th>Items Ordered</th>
-                    <th>Cost</th>
-                    <th>Time</th>
-                    <th>Date</th>
-                    <th>Employee</th>
-                    <th>Shift Start</th>
-                    <th>Shift End</th>
-                    <th>Delete Order</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {xData && xData.length > 0 ? (
-                    xData.map((order: SalesTransaction, index: number) => (
-                      <tr key={index}>
-                        <td>{order.id}</td>
-                        <td>{order.items}</td>
-                        <td>{order.cost}</td>
-                        <td>{order.purchase_time}</td>
-                        <td>{order.purchase_time}</td>
-                        <td>{order.shift_start ? 'Yes' : 'No'}</td>
-                        <td>{order.shift_end}</td>
-                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
-                        <td><button>Delete</button></td>
-                      </tr>
-                    ))
-                  ) : (
+                  <thead>
                     <tr>
-                      <td colSpan={9}>No sales data available for today.</td>
+                      <th>Transaction ID</th>
+                      <th>Items Ordered</th>
+                      <th>Cost</th>
+                      <th>Time</th>
+                      <th>Date</th>
+                      <th>Employee</th>
+                      <th>Shift Start</th>
+                      <th>Shift End</th>
+                      <th>Delete Order</th>
                     </tr>
-                  )}
-                </tbody>
+                  </thead>
+                  <tbody>
+                    {xData && xData.length > 0 ? (
+                      xData.map((order: SalesTransaction, index: number) => (
+                        <tr key={index}>
+                          <td>{order.id}</td>
+                          <td>
+                            {order.items.map((item, idx) => (
+                              <div key={idx}>{item}</div> // Each item is a string formatted as "2x Burger"
+                            ))}
+                          </td>
+                          <td>{Number(order.cost).toFixed(2)}</td>
+                          <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                          <td>{new Date(order.purchase_time).toLocaleDateString()}</td>
+                          <td>{order.name}</td>
+                          <td>{order.shift_start}</td>
+                          <td>{order.shift_end}</td>
+                          <td><button /*onClick={() => handleDelete(order.id)}*/>Delete</button></td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={9}>No sales data available for today.</td>
+                      </tr>
+                    )}
+                  </tbody>
                 </table>
               </div>
             </div>
