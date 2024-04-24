@@ -16,7 +16,8 @@ CREATE TABLE employees (
     shift_end TIME,
     manager BOOLEAN,
     username VARCHAR(50),
-    password VARCHAR(50)
+    password VARCHAR(50),
+    email VARCHAR(50)
 );
 CREATE TABLE inventory_items (
     id SERIAL PRIMARY KEY,
