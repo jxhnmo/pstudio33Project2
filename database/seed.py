@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import random
 import sys
+from zoneinfo import ZoneInfo  # Python 3.9 and later
 
 faker = Faker()
 dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env.local')
@@ -520,7 +521,7 @@ def populate_inventory_transactions(conn):
         item_data = [(row[0], row[1], row[2]) for row in cur.fetchall()]
 
         # Define the date range for transactions
-        start_date = datetime.now() - timedelta(days=182) # 6 months ago
+        start_date = datetime.now() - timedelta(days=90) # 6 months ago
         end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
 
         transaction_id = 1
@@ -563,7 +564,6 @@ def populate_inventory_transactions(conn):
 
 def populate_sales_transactions(conn):
     with conn.cursor() as cur:
-        # Fetch all necessary data at once
         cur.execute("SELECT id FROM employees;")
         employee_ids = [row[0] for row in cur.fetchall()]
 
@@ -571,52 +571,32 @@ def populate_sales_transactions(conn):
         menu_items_with_prices = {row[0]: row[1] for row in cur.fetchall()}
 
         # Define operation hours and date range
-        weekday_hours = range(10, 21)  # 10 AM to 9 PM
-        weekend_hours = range(11, 20)  # 11 AM to 8 PM
-        peak_hours = [12, 13, 18, 19]  # Peak hours
+        start_date = datetime.now - timedelta(days=90)
+        end_date = datetime.now.replace(hour=23, minute=59, second=59) + timedelta(days=1)
 
-        start_date = datetime.now() - timedelta(days=182)  # 6 months ago
-        end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
-
-        # Initialize SQL command list
         sql_commands = []
-
         transaction_id = 1
+
         while start_date < end_date:
             weekday = start_date.weekday()
-            hours = weekend_hours if weekday >= 5 else weekday_hours
+            hours = range(11, 20) if weekday >= 5 else range(10, 21)
 
             for hour in hours:
-                num_transactions = random.randint(3, 5) if hour in peak_hours else random.randint(1, 2)
-
+                num_transactions = random.randint(3, 5) if hour in [12, 13, 18, 19] else random.randint(1, 2)
                 for _ in range(num_transactions):
                     employee_id = random.choice(employee_ids)
-                    minute = random.randint(0, 59)
-                    second = random.randint(0, 59)
-                    transaction_date = datetime(start_date.year, start_date.month, start_date.day, hour, minute, second).isoformat()
-                    num_items = random.randint(1, 5)
-                    total_cost = 0
+                    minute, second = random.randint(0, 59), random.randint(0, 59)
+                    transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
+                    total_cost = sum(random.choice(list(menu_items_with_prices.values())) for _ in range(random.randint(1, 5)))
 
-                    transaction_sql = f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');\n"
-                    sql_commands.append(transaction_sql)
-
-                    for _ in range(num_items):
-                        menu_id = random.choice(list(menu_items_with_prices.keys()))
-                        item_price = menu_items_with_prices[menu_id]
-                        total_cost += item_price
-                        sql_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {menu_id});\n")
-
-                    # Update the total cost after all items are added
-                    sql_commands.append(f"UPDATE sales_transactions SET cost = {total_cost} WHERE id = {transaction_id};\n")
+                    sql_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');")
                     transaction_id += 1
 
             start_date += timedelta(days=1)
 
-        # Write commands to a file
         with open('sales_transactions.sql', 'w') as file:
-            file.writelines(sql_commands)
+            file.write("\n".join(sql_commands))
 
-        # Execute SQL file
         with open('sales_transactions.sql', 'r') as file:
             cur.execute(file.read())
         conn.commit()
