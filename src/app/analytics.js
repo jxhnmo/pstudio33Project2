@@ -54,15 +54,27 @@ export async function fetchXData() {
     try {
         const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
         const query = `
-            SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
-                   e.name, e.shift_start, e.shift_end, e.manager, e.salary
+            SELECT st.id, st.cost, st.purchase_time, 
+                   e.name, e.shift_start, e.shift_end,
+                   array_agg(json_build_object('menu_id', si.menu_id)) AS items
+                   
             FROM sales_transactions AS st
             JOIN employees AS e ON st.employee_id = e.id
+            LEFT JOIN sales_items si ON si.sales_id = st.id
             WHERE DATE(st.purchase_time) = $1
+            GROUP BY st.id, e.name, e.shift_start, e.shift_end
             ORDER BY st.purchase_time DESC;
         `;
         const result = await pool.query(query, [today]);
-        return result.rows;
+        return result.rows.map(row => ({
+            id: row.id,
+            cost: row.cost,
+            purchase_time: row.purchase_time,
+            name: row.name,
+            shift_start: row.shift_start,
+            shift_end: row.shift_end,
+            items: row.items.map(item => item.menu_id) // Assuming you need the list of menu_ids
+        }));
     } catch (err) {
         console.error('Failed to fetch sales data for today', err);
         return [];

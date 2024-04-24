@@ -15,13 +15,11 @@ const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
 interface SalesTransaction {
   id: number;
   cost: number;
-  employee_id: number;
   purchase_time: string;
   name: string;
   shift_start: string;
   shift_end: string;
-  manager: boolean;
-  salary: number;
+  items: string;
 }
 
 
@@ -185,9 +183,6 @@ export default function StaffStats() {
     if (selectedOption === 'product_usage') {
       // Update product usage statistics
       // Implement your logic here
-    } else if (selectedOption === 'sales_report') {
-      // Update sales report statistics
-      // Implement your logic here
     } else if (selectedOption === 'restock_report') {
       // Update restock report statistics
       // Implement your logic here
@@ -253,40 +248,34 @@ export default function StaffStats() {
         <div className={styles.statsContent}>
           {/* Display statistics based on selected option */}
           {selectedOption === 'product_usage' && (
-  <div>
-    <h2>Product Usage Statistics</h2>
-    <div className={styles.xreportTableContainer}>
-      <table className={styles.xreportTable}>
-        <thead>
-          <tr>
-            <th>Inventory Item</th>
-            <th>Amount Used Today</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productUsageData.length > 0 ? (
-            productUsageData.map((item, index) => (
-              <tr key={index}>
-                <td>{item.item_name}</td>
-                <td>{item.count}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={2}>No product usage data available for today.</td>
-            </tr>
-          )}
+            <div>
+              <h2>Product Usage Statistics</h2>
+              <div className={styles.xreportTableContainer}>
+                <table className={styles.xreportTable}>
+                  <thead>
+                    <tr>
+                      <th>Inventory Item</th>
+                      <th>Amount Used Today</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productUsageData.length > 0 ? (
+                      productUsageData.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.item_name}</td>
+                          <td>{item.count}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={2}>No product usage data available for today.</td>
+                      </tr>
+                    )}
 
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
-          
-          
-          {selectedOption === 'sales_report' && (
-            // Implement UI for sales report statistics
-            <div>Sales report</div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
 
           {selectedOption === 'x_report' && (
@@ -297,14 +286,14 @@ export default function StaffStats() {
                 <thead>
                   <tr>
                     <th>Transaction ID</th>
-                    <th>Employee ID</th>
-                    <th>Employee Name</th>
+                    <th>Items Ordered</th>
+                    <th>Cost</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                    <th>Employee</th>
                     <th>Shift Start</th>
                     <th>Shift End</th>
-                    <th>Manager</th>
-                    <th>Salary</th>
-                    <th>Cost</th>
-                    <th>Time of Transaction</th>
+                    <th>Delete Order</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -312,14 +301,14 @@ export default function StaffStats() {
                     xData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
-                        <td>{order.employee_id}</td>
-                        <td>{order.name}</td>
-                        <td>{order.shift_start}</td>
-                        <td>{order.shift_end}</td>
-                        <td>{order.manager ? 'Yes' : 'No'}</td>
-                        <td>{order.salary}</td>
+                        <td>{order.items}</td>
                         <td>{order.cost}</td>
+                        <td>{order.purchase_time}</td>
+                        <td>{order.purchase_time}</td>
+                        <td>{order.shift_start ? 'Yes' : 'No'}</td>
+                        <td>{order.shift_end}</td>
                         <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                        <td><button>Delete</button></td>
                       </tr>
                     ))
                   ) : (
