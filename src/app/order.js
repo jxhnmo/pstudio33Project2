@@ -172,8 +172,15 @@ export async function completeTransaction(cost,selectedItems) {
         
         const itemQueryText = 'INSERT INTO sales_items (id, sales_id, menu_id) VALUES ';
         var idx = 1;
-        const params = selectedItems.map((item,index) => '('+`(SELECT MAX(id)+1+${index} FROM sales_items)`+',\n'+'(SELECT MAX(id) FROM sales_transactions), '+'\n'+item.id+');').join(',');
-        console.log(itemQueryText + params)
+        const params = selectedItems.map((item, index) => {
+            return '(' + 
+              `(SELECT COALESCE(MAX(id), 0) + 1 + ${index} FROM sales_items), ` + 
+              `(SELECT MAX(id) FROM sales_transactions), ` + 
+              `${item.id}` + 
+              ')';
+          }).join(',');
+
+        console.log(itemQueryText + params);
         
         await pool3.query(itemQueryText+params);
         await pool3.end();
