@@ -38,9 +38,9 @@ employees = [
     (6, 'John Mo', 31.5, '10:00:00', '23:30:00', True, 'username', 'pwd', 'johnmo@tamu.edu'),
     (7, 'Ethan Van', 15.0, '10:00:00', '23:30:00', False, 'etUser', 'etPwd', 'etvan13@tamu.edu'),
     (8, 'Grant Oxford', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw', 'grantwoxford@tamu.edu'),
-    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'thomasbolf1@tamu.edu'),
-    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jcheung@tamu.edu'),
-    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jtchau7@tamu.edu')
+    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'one', 'pw', 'thomasbolf1@tamu.edu'),
+    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'two', 'pw', 'jcheung@tamu.edu'),
+    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'three', 'pw', 'jtchau7@tamu.edu')
 ]
 
 menu_items = {
