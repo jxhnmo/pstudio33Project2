@@ -571,8 +571,8 @@ def populate_sales_transactions(conn):
         menu_items_with_prices = {row[0]: row[1] for row in cur.fetchall()}
 
         # Define operation hours and date range
-        start_date = datetime.now - timedelta(days=90)
-        end_date = datetime.now.replace(hour=23, minute=59, second=59) + timedelta(days=1)
+        start_date = datetime.now() - timedelta(days=90)
+        end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)
 
         sql_commands = []
         transaction_id = 1
@@ -641,9 +641,9 @@ def main():
         populate_irremovable_ingredients(conn)
         populate_menu_items(conn)
         populate_ingredients(conn)
-        print("(Populating inventory transactions takes a while...)")
+        print("(Populating inventory transactions sometimes takes a while...)")
         populate_inventory_transactions(conn)
-        print("(Populating sales transactions (last one!) takes even longer...)")
+        print("(Populating sales transactions sometimes takes a while...)")
         populate_sales_transactions(conn)
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"An error occurred: {error}")
