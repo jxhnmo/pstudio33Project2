@@ -193,11 +193,9 @@ export default function Home() {
 
   const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
     if (!item) {
-      // Handle the case where item is undefined
       return;
     }
 
-    // Create the customized item object
     let customizedItem: Item;
     if (deselectedIngredients && deselectedIngredients.length > 0) {
       const formattedDeselectedIngredients = deselectedIngredients.map(ingredient => `NO ${ingredient}`).join(', ');
@@ -215,13 +213,10 @@ export default function Home() {
     const existingItemIndex = selectedItems.findIndex(selectedItem => selectedItem.id === item.id && selectedItem.customization === customizedItem.customization);
 
     if (existingItemIndex !== -1) {
-      // Update the quantity of the existing item
       const updatedItems = [...selectedItems];
-      // Ensure quantity property exists and is a number
       updatedItems[existingItemIndex].quantity = (updatedItems[existingItemIndex].quantity || 1) + 1;
       setSelectedItems(updatedItems);
     } else {
-      // Add the new customized item to the selected items list
       setSelectedItems(prevItems => [...prevItems, { ...customizedItem, quantity: 1 }]);
     }
 
@@ -249,26 +244,23 @@ export default function Home() {
     loadCategories();
   }, []);
 
-  // Function to load items for a selected category
   const loadItemsForCategory = async (categoryName: string) => {
     try {
       const items = await fetchItems(categoryName);
       console.log(items);
-      // Temporarily clear items to signal a significant change
       setCurrentCategoryItems([]);
-      // Introduce a slight delay before showing new items
       setTimeout(() => setCurrentCategoryItems(items), 100);
       setActiveCategory(categoryName);
     } catch (error) {
       console.error(`Failed to fetch items for category ${categoryName}:`, error);
-      setCurrentCategoryItems([]); // Reset on error
+      setCurrentCategoryItems([]);
     }
   };
 
   const handleSelectItem = async (item: Item) => {
     const menuItemIngredients = await getMenuItemIngredients(item.id);
     const ingredients = (menuItemIngredients || []).map((ingredient) => ingredient.item_name);
-    console.log("Selected Item:", item); // Log the selected item
+    console.log("Selected Item:", item);
     const updatedSelectedItem = { ...item, ingredients: ingredients };
     setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
@@ -287,7 +279,6 @@ export default function Home() {
   const handleConfirmOrder = () => {
     if (selectedItems.length !== 0) {
       const currentTime = new Date();
-      // Store selected items in local storage
       if (typeof window !== 'undefined') {
         console.log("printing selected items");
         console.log(selectedItems);
@@ -320,7 +311,7 @@ export default function Home() {
 
   const generateDeselectedIngredientsList = (item: Item): string => {
     if (!item.customization) {
-      return ''; // Return empty string if no customization exists
+      return '';
     }
 
     const deselectedIngredients = item.customization
@@ -341,15 +332,13 @@ export default function Home() {
       const addedItem = await addItem({
         name: newItem.name,
         price: newItem.price,
-        // Handle image upload separately if needed
       });
 
-      // Add each selected ingredient to the ingredients table
       for (const ingredientId of selectedIngredients) {
         await addIngredient({
           item_id: parseInt(ingredientId),
           menu_id: addedItem.id,
-          num: 1, // Default quantity, adjust as needed
+          num: 1,
         });
       }
 
@@ -391,7 +380,6 @@ export default function Home() {
       )}
 
       <div className={styles.main}>
-        {/* Categories Column */}
         <div className={styles.categories}>
           <h2 className={styles.categoriesHeader} onClick={handleReturnHome}>Categories</h2>
           <div className={styles.categoriesList}>
@@ -406,7 +394,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-        {/* Order Menu */}
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
@@ -423,8 +410,6 @@ export default function Home() {
           </button>
         </div>
 
-
-        {/* Current Order Column */}
         <div className={styles.currentOrder}>
           <div className={styles.currOrderTop}>
             <h2 className={styles.currentOrderTitle}>Current Order</h2>
@@ -455,7 +440,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
           {isManager ? (
             <>
