@@ -67,7 +67,8 @@ export default function StaffStats() {
   const [zData, setZData] = useState<SalesTransaction[]>([]);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartDate(event.target.value);
   };
@@ -77,6 +78,7 @@ export default function StaffStats() {
   };
   
 
+  // X report data effect
   useEffect(() => {
     const loadXData = async () => {
       try {
@@ -98,27 +100,28 @@ export default function StaffStats() {
     // Here you can place any additional logic if needed to process or refresh the product usage data
   };
 
+  // Z report data effect
   useEffect(() => {
     const loadZData = async () => {
-      if (!startDate || !endDate || startDate > endDate) {
-        return;
-      }
-      try {
-        const data = await fetchZData(startDate, endDate);
-        console.log(data);
-        setZData(data);
-      } catch (error) {
-        console.error("Failed to fetch sales data", error);
-      }
+        if (!startDate || !endDate || startDate > endDate) {
+            return;
+        }
+        setIsLoading(true); // Set loading to true when fetch begins
+        try {
+            const data = await fetchZData(startDate, endDate);
+            setZData(data);
+            setIsLoading(false); // Set loading to false when fetch completes
+        } catch (error) {
+            console.error("Failed to fetch sales data", error);
+            setIsLoading(false); // Ensure loading is turned off if there's an error
+        }
     };
-  
-    if (selectedOption === 'z_report') {
-      loadZData();
-    }
-  }, [selectedOption, startDate, endDate, zData]);
 
-  
-  
+    if (selectedOption === 'z_report') {
+        loadZData();
+    }
+}, [selectedOption, startDate, endDate]);
+
   
   useEffect(() => {
     const loadData = async () => {

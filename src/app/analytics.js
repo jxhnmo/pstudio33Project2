@@ -42,6 +42,40 @@ export async function fetchData() {
     }
 }
 
+export async function fetchIngredientsUsedToday(){
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        const today = new Date().toISOString().split('T')[0]; 
+        const query = `
+        SELECT inventory_items.item_name, COUNT(inventory_items.item_name) AS count FROM sales_items 
+        LEFT JOIN sales_transactions ON sales_transactions.id = sales_items.sales_id
+        LEFT JOIN menu_items ON sales_items.menu_id = menu_items.id
+        LEFT JOIN ingredients ON menu_items.id = ingredients.menu_id
+        LEFT JOIN inventory_items ON ingredients.item_id = inventory_items.id
+        WHERE DATE(sales_transactions.purchase_time) = DATE($1)
+        GROUP BY inventory_items.item_name;`;
+        // RIGHT JOIN sales_items ON sales_transactions.id = sales_items.sales_id
+        // LEFT JOIN menu_items on sales_items.menu_id = menu_items.id
+        // JOIN ingredients ON menu_items.id = ingredients.menu_id
+        // JOIN inventory_items ON ingredients.menu_id = inventory_items.id
+        // WHERE DATE(sales_transactions.purchase_time) = DATE($1)
+        // GROUP BY inventory_items.item_name;`;
+        const result = await pool.query(query, [today]);
+        return result.rows;
+    } catch (err) {
+        console.error('Failed to fetch ingredients used today', err);
+        return [];
+    }
+}
+
+
 export async function fetchXData() {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
@@ -88,42 +122,6 @@ export async function fetchXData() {
     }
 }
 
-
-export async function fetchIngredientsUsedToday(){
-    const pool = new Pool({
-        user: process.env.DATABASE_USER,
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        password: process.env.DATABASE_PASSWORD,
-        port: 5432,
-    });
-
-    try {
-        const today = new Date().toISOString().split('T')[0]; 
-        const query = `
-        SELECT inventory_items.item_name, COUNT(inventory_items.item_name) AS count FROM sales_items 
-        LEFT JOIN sales_transactions ON sales_transactions.id = sales_items.sales_id
-        LEFT JOIN menu_items ON sales_items.menu_id = menu_items.id
-        LEFT JOIN ingredients ON menu_items.id = ingredients.menu_id
-        LEFT JOIN inventory_items ON ingredients.item_id = inventory_items.id
-        WHERE DATE(sales_transactions.purchase_time) = DATE($1)
-        GROUP BY inventory_items.item_name;`;
-        // RIGHT JOIN sales_items ON sales_transactions.id = sales_items.sales_id
-        // LEFT JOIN menu_items on sales_items.menu_id = menu_items.id
-        // JOIN ingredients ON menu_items.id = ingredients.menu_id
-        // JOIN inventory_items ON ingredients.menu_id = inventory_items.id
-        // WHERE DATE(sales_transactions.purchase_time) = DATE($1)
-        // GROUP BY inventory_items.item_name;`;
-        const result = await pool.query(query, [today]);
-        return result.rows;
-    } catch (err) {
-        console.error('Failed to fetch ingredients used today', err);
-        return [];
-    }
-
-}
-
-
 export async function fetchZData(startDate, endDate) {
     const pool = new Pool({
       user: process.env.DATABASE_USER,
@@ -134,10 +132,19 @@ export async function fetchZData(startDate, endDate) {
     });
   
     try {
-        const start = new Date(startDate);
-        start.setHours(12, 0, 0, 0);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+        // Convert input dates to ISO format with a fixed timezone (UTC)
+        const start = new Date(`${startDate}T00:00:00Z`); // Start of the selected day in UTC
+        const end = new Date(`${endDate}T23:59:59Z`); // End of the selected day in UTC
+
+        if (startDate === endDate) {
+            // If the same day, include the entire day from midnight to just before midnight in UTC
+            start.setUTCHours(0, 0, 0, 0);
+            end.setUTCHours(23, 59, 59, 999);
+        } else {
+            // For different days, adjust to cover from noon of the start day to the end of the end day in UTC
+            start.setUTCHours(12, 0, 0, 0); // Noon UTC might not correspond to noon local time
+            end.setUTCHours(23, 59, 59, 999);
+        }
     
         const query = `
             SELECT st.id, st.cost, st.purchase_time, 
@@ -157,10 +164,9 @@ export async function fetchZData(startDate, endDate) {
             ORDER BY st.id ASC;
         `;
 
-        // Formatting dates to ISO strings for SQL query
         const result = await pool.query(query, [
-            new Date(formattedStartDate).toISOString(),
-            new Date(formattedEndDate).toISOString()
+            start.toISOString(),
+            end.toISOString()
         ]);
         return result.rows.map(row => ({
             id: row.id,
@@ -169,13 +175,15 @@ export async function fetchZData(startDate, endDate) {
             name: row.employee_name,
             shift_start: row.shift_start,
             shift_end: row.shift_end,
-            items: row.items.map(name => `${name}`) // Assuming each sales item has a quantity of 1
+            items: row.items.map(name => `${name}`)
         }));
     } catch (err) {
       console.error('Failed to fetch sales data for the selected period', err);
       return [];
     }
-  }
+}
+
+
   
 
 
