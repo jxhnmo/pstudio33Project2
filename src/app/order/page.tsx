@@ -278,7 +278,7 @@ export default function Home() {
             <div className={styles.orderList}>
               {selectedItems.map((item, index) => (
                 <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                  {item.name} - ${item.price} x {item.quantity}
+                  {item.name} - ${Number(item.price).toFixed(2)} x {item.quantity}
                   <br />
                   <div className={styles.deselectedIngredients}>
                     {generateDeselectedIngredientsList(item)}
