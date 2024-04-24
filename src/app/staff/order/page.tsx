@@ -186,9 +186,7 @@ export default function Home() {
 
   const handleCloseCustomizePopup = () => {
     setIsCustomizePopupOpen(false);
-    if (['burgers', 'entrees', 'sandwiches'].includes(selectedItemForCustomization?.category ?? '')) {
-      setIsMealUpgradePopupOpen(true);
-    }
+
   };
 
   const handleCustomizationConfirmation = (customization: string, deselectedIngredients: string[] = [], item: Item) => {
@@ -221,6 +219,9 @@ export default function Home() {
     }
 
     setIsCustomizePopupOpen(false);
+    if (['burgers', 'entrees', 'sandwiches'].includes(selectedItemForCustomization?.category ?? '')) {
+      setIsMealUpgradePopupOpen(true);
+    }
   };
 
   useEffect(() => {
