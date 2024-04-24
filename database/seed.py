@@ -33,7 +33,7 @@ employees = [
     (1, 'Chee Surger', 31.5, '9:30:00', '23:30:00', True, 'burger_man', '0', 'chee@domain.com'),
     (2, 'Chic Ken', 14.5, '10:00:00', '23:30:00', False, 'chickman', 'password', 'chic@domain.com'),
     (3, 'Tenz Ders', 11.5, '10:00:00', '23:30:00', False, 'user1', 'pw1', 'tenz@domain.com'),
-    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'zero', 'zero', 'man@domain.com'),
+    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'ManGer', 'zero', 'man@domain.com'),
     (5, 'Han Surger', 12.0, '10:00:00', '23:30:00', False, 'ilovekids', 'password', 'han@domain.com'),
     (6, 'John Mo', 31.5, '10:00:00', '23:30:00', True, 'username', 'pwd', 'johnmo@tamu.edu'),
     (7, 'Ethan Van', 15.0, '10:00:00', '23:30:00', False, 'etUser', 'etPwd', 'etvan13@tamu.edu'),
