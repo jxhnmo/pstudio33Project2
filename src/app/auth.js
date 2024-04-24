@@ -30,8 +30,6 @@ export async function getGoogleAuthURL() {
     scope: scopes.join(' '),
   });
 
-  console.log("Generated Google OAuth URL:", authUrl); // Print the generated OAuth URL to the console
-
   return authUrl; // Return the generated OAuth URL
 }
 
