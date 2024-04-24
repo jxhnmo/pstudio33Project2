@@ -7,7 +7,7 @@ import { ClipLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 
 
-import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData } from '../../analytics';
+import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -21,6 +21,7 @@ interface SalesTransaction {
   shift_start: string;
   shift_end: string;
   items: string[];
+  valid: boolean;
 }
 
 interface MenuItem {
@@ -77,7 +78,32 @@ export default function StaffStats() {
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
   };
-  
+
+  const handleDelete = async (id: number) => {
+    setIsLoading(true);
+    await setSalesTransactionValid(id);
+    // Refetch the data after updating
+    if (selectedOption === 'x_report') {
+        fetchXData().then(data => {
+            setXData(data);
+            setIsLoading(false);
+        }).catch(error => {
+            console.error("Failed to fetch sales data after update", error);
+            setIsLoading(false);
+        });
+    } else if (selectedOption === 'z_report') {
+        // Assuming you might want to do this in Z-Report as well
+        fetchZData(startDate, endDate).then(data => {
+            setZData(data);
+            setIsLoading(false);
+        }).catch(error => {
+            console.error("Failed to fetch sales data after update", error);
+            setIsLoading(false);
+        });
+    }
+};
+
+
 
   // X report data effect
   useEffect(() => {
@@ -308,7 +334,7 @@ export default function StaffStats() {
                   <tbody>
                     {xData && xData.length > 0 ? (
                       xData.map((order: SalesTransaction, index: number) => (
-                        <tr key={index}>
+                        <tr key={index} className={order.valid ? "" : styles.invalidRow}>
                           <td>{order.id}</td>
                           <td>
                             {order.items.map((item, idx) => (
@@ -321,7 +347,11 @@ export default function StaffStats() {
                           <td>{order.name}</td>
                           <td>{order.shift_start}</td>
                           <td>{order.shift_end}</td>
-                          <td><button /*onClick={() => handleDelete(order.id)}*/>Delete</button></td>
+                          <td className="centered-cell">
+                          <button onClick={() => handleDelete(order.id)} className={styles.deleteButton}>
+                              {order.valid ? "Delete" : "Add"}
+                          </button>
+                          </td>
                         </tr>
                       ))
                     ) : (
@@ -341,7 +371,7 @@ export default function StaffStats() {
             <h2>Z-Report</h2>
             <div>
               <label>Start Date:</label>
-              <input type="date" id="startDate" onChange={handleStartDateChange} value={Date.now()}/>
+              <input type="date" id="startDate" onChange={handleStartDateChange} />
               <label>End Date:</label>
               <input type="date" id="endDate" onChange={handleEndDateChange} />
             </div>
@@ -366,7 +396,7 @@ export default function StaffStats() {
                 <tbody>
                   {zData && zData.length > 0 ? (
                     zData.map((order: SalesTransaction, index: number) => (
-                      <tr key={index}>
+                      <tr key={index} className={order.valid ? "" : styles.invalidRow}>
                         <td>{order.id}</td>
                         <td>
                           {order.items.map((item, idx) => (
@@ -379,7 +409,11 @@ export default function StaffStats() {
                         <td>{order.name}</td>
                         <td>{order.shift_start}</td>
                         <td>{order.shift_end}</td>
-                        <td><button /*onClick={() => handleDelete(order.id)}*/>Delete</button></td>
+                        <td className="centered-cell">
+                        <button onClick={() => handleDelete(order.id)} className={styles.deleteButton}>
+                            {order.valid ? "Delete" : "Add"}
+                        </button>
+                        </td>
                       </tr>
                     ))
                   ) : (

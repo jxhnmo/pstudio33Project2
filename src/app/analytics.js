@@ -88,7 +88,7 @@ export async function fetchXData() {
     try {
         const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
         const query = `
-            SELECT st.id, st.cost, st.purchase_time, 
+            SELECT st.id, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
                 array_agg(concat(mi_count, 'x ', mi_name) ORDER BY mi_name) AS items
             FROM (
@@ -104,8 +104,7 @@ export async function fetchXData() {
             GROUP BY st.id, e.name, e.shift_start, e.shift_end
             ORDER BY st.id ASC;
         `;
-    
-
+        
         const result = await pool.query(query, [today]);
         return result.rows.map(row => ({
             id: row.id,
@@ -114,7 +113,8 @@ export async function fetchXData() {
             name: row.employee_name,
             shift_start: row.shift_start,
             shift_end: row.shift_end,
-            items: row.items.map(name => `${name}`) // Assuming each sales item has a quantity of 1
+            items: row.items.map(name => `${name}`), // Assuming each sales item has a quantity of 1
+            valid: row.valid
         }));
     } catch (err) {
         console.error('Failed to fetch sales data for today', err);
@@ -132,22 +132,11 @@ export async function fetchZData(startDate, endDate) {
     });
   
     try {
-        // Convert input dates to ISO format with a fixed timezone (UTC)
-        const start = new Date(`${startDate}T00:00:00Z`); // Start of the selected day in UTC
-        const end = new Date(`${endDate}T23:59:59Z`); // End of the selected day in UTC
-
-        if (startDate === endDate) {
-            // If the same day, include the entire day from midnight to just before midnight in UTC
-            start.setUTCHours(0, 0, 0, 0);
-            end.setUTCHours(23, 59, 59, 999);
-        } else {
-            // For different days, adjust to cover from noon of the start day to the end of the end day in UTC
-            start.setUTCHours(12, 0, 0, 0); // Noon UTC might not correspond to noon local time
-            end.setUTCHours(23, 59, 59, 999);
-        }
+        const start = new Date(`${startDate}T00:00:00Z`);
+        const end = new Date(`${endDate}T23:59:59Z`);
     
         const query = `
-            SELECT st.id, st.cost, st.purchase_time, 
+            SELECT st.id, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
                 array_agg(concat(mi_count, 'x ', mi_name) ORDER BY mi_name) AS items
             FROM (
@@ -175,11 +164,35 @@ export async function fetchZData(startDate, endDate) {
             name: row.employee_name,
             shift_start: row.shift_start,
             shift_end: row.shift_end,
-            items: row.items.map(name => `${name}`)
+            items: row.items.map(name => `${name}`),
+            valid: row.valid
         }));
     } catch (err) {
       console.error('Failed to fetch sales data for the selected period', err);
       return [];
+    }
+}
+
+
+export async function setSalesTransactionValid(id) {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+    
+    try {
+        const query = `
+            UPDATE sales_transactions
+            SET valid = NOT valid
+            WHERE id = $1;
+        `;
+        await pool.query(query, [id]);
+        console.log(`Transaction ${id} validity toggled.`);
+    } catch (err) {
+        console.error('Failed to delete/undo delete sales transaction', err);
     }
 }
 
