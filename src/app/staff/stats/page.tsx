@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
+import { ClipLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 
 
@@ -81,20 +82,23 @@ export default function StaffStats() {
   // X report data effect
   useEffect(() => {
     const loadXData = async () => {
+      setIsLoading(true);
       try {
         const data = await fetchXData();
         console.log(data);
         setXData(data);
+        setIsLoading(false);
       }
       catch (error) {
         console.error("Failed to fetch sales data", error);
+        setIsLoading(false);
       }
     };
 
     if (selectedOption === 'x_report') {
       loadXData();
     }
-  }, [selectedOption, xData]);
+  }, [selectedOption]);
 
   const updateProductUsageStatistics = () => {
     // Here you can place any additional logic if needed to process or refresh the product usage data
@@ -283,6 +287,9 @@ export default function StaffStats() {
           {selectedOption === 'x_report' && (
             <div>
               <h2>X-Report</h2>
+              {isLoading ? (
+                <ClipLoader className={styles.spinner} loading={isLoading} />
+              ) : (
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
                   <thead>
@@ -325,6 +332,7 @@ export default function StaffStats() {
                   </tbody>
                 </table>
               </div>
+              )}
             </div>
           )}
 
@@ -333,10 +341,13 @@ export default function StaffStats() {
             <h2>Z-Report</h2>
             <div>
               <label>Start Date:</label>
-              <input type="date" id="startDate" onChange={handleStartDateChange} />
+              <input type="date" id="startDate" onChange={handleStartDateChange} value={Date.now()}/>
               <label>End Date:</label>
               <input type="date" id="endDate" onChange={handleEndDateChange} />
             </div>
+            {isLoading ? (
+                <ClipLoader className={styles.spinner} loading={isLoading} />
+            ) : (
             <div className={styles.xreportTableContainer}>
               <table className={styles.xreportTable}>
                 <thead>
@@ -379,6 +390,7 @@ export default function StaffStats() {
                 </tbody>
               </table>
             </div>
+            )}
           </div>
           )}
 
