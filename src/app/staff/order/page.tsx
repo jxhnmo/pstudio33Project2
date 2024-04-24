@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction, getItemInfo, getMenuItemIngredients } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
-import { addIngredient } from '../../ingredients';
+import { addMenuItem } from '../../menuItem';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
@@ -249,21 +249,13 @@ export default function Home() {
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
 
     try {
-      const addedItem = await addItem({
+      const addedItem = await addMenuItem({
         name: newItem.name,
         price: newItem.price,
-        stock: newItem.stock,
+        description: newItem.description,
+        calories: newItem.calories,
         // Handle image upload separately if needed
       });
-
-      // Add each selected ingredient to the ingredients table
-      for (const ingredientId of selectedIngredients) {
-        await addIngredient({
-          item_id: parseInt(ingredientId),
-          menu_id: addedItem.id,
-          num: 1, // Default quantity, adjust as needed
-        });
-      }
 
       console.log('Item and ingredients added to inventory');
     } catch (error) {
@@ -316,7 +308,7 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <Image src={`/images/${item.name ? item.name.replace(/\s/g, '') : ''}.png`} alt={item.name} width={100} height={100} />
               <div>{item.name}<br />{'$' + item.price}</div>
               {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                     <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
