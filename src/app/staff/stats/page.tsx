@@ -100,7 +100,7 @@ export default function StaffStats() {
 
   useEffect(() => {
     const loadZData = async () => {
-      if (!startDate || !endDate) {
+      if (!startDate || !endDate || startDate > endDate) {
         return;
       }
       try {
@@ -279,7 +279,7 @@ export default function StaffStats() {
 
           {selectedOption === 'x_report' && (
             <div>
-              <h2>X-Report for Today</h2>
+              <h2>X-Report</h2>
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
                   <thead>
@@ -324,28 +324,29 @@ export default function StaffStats() {
               </div>
             </div>
           )}
+
           {selectedOption === 'z_report' && (
+          <div>
+            <h2>Z-Report</h2>
             <div>
-              <h2>Z-Report</h2>
-              <div>
-                <label>Start Date:</label>
-                <input type="date" id="startDate" onChange={handleStartDateChange} />
-                <label>End Date:</label>
-                <input type="date" id="endDate" onChange={handleEndDateChange} />
-              </div>
-              <div className={styles.xreportTableContainer}>
-                <table className={styles.xreportTable}>
+              <label>Start Date:</label>
+              <input type="date" id="startDate" onChange={handleStartDateChange} />
+              <label>End Date:</label>
+              <input type="date" id="endDate" onChange={handleEndDateChange} />
+            </div>
+            <div className={styles.xreportTableContainer}>
+              <table className={styles.xreportTable}>
                 <thead>
                   <tr>
                     <th>Transaction ID</th>
-                    <th>Employee ID</th>
-                    <th>Employee Name</th>
+                    <th>Items Ordered</th>
+                    <th>Cost</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                    <th>Employee</th>
                     <th>Shift Start</th>
                     <th>Shift End</th>
-                    <th>Manager</th>
-                    <th>Salary</th>
-                    <th>Cost</th>
-                    <th>Time of Transaction</th>
+                    <th>Delete Order</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -353,14 +354,18 @@ export default function StaffStats() {
                     zData.map((order: SalesTransaction, index: number) => (
                       <tr key={index}>
                         <td>{order.id}</td>
-                        <td>{order.employee_id}</td>
+                        <td>
+                          {order.items.map((item, idx) => (
+                            <div key={idx}>{item}</div>
+                          ))}
+                        </td>
+                        <td>{Number(order.cost).toFixed(2)}</td>
+                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                        <td>{new Date(order.purchase_time).toLocaleDateString()}</td>
                         <td>{order.name}</td>
                         <td>{order.shift_start}</td>
                         <td>{order.shift_end}</td>
-                        <td>{order.manager ? 'Yes' : 'No'}</td>
-                        <td>{order.salary}</td>
-                        <td>{order.cost}</td>
-                        <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
+                        <td><button /*onClick={() => handleDelete(order.id)}*/>Delete</button></td>
                       </tr>
                     ))
                   ) : (
@@ -369,10 +374,11 @@ export default function StaffStats() {
                     </tr>
                   )}
                 </tbody>
-                </table>
-              </div>
+              </table>
             </div>
+          </div>
           )}
+
           {selectedOption === 'restock_report' && (
             // Implement UI for restock report statistics
             <div>

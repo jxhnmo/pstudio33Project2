@@ -134,16 +134,43 @@ export async function fetchZData(startDate, endDate) {
     });
   
     try {
-      const query = `
-        SELECT st.id, st.cost, st.employee_id, st.purchase_time, 
-               e.name, e.shift_start, e.shift_end, e.manager, e.salary
-        FROM sales_transactions AS st
-        JOIN employees AS e ON st.employee_id = e.id
-        WHERE st.purchase_time BETWEEN $1 AND $2
-        ORDER BY st.purchase_time DESC;
-      `;
-      const result = await pool.query(query, [startDate, endDate + ' 23:59:59']);
-      return result.rows;
+        const start = new Date(startDate);
+        start.setHours(12, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+    
+        const query = `
+            SELECT st.id, st.cost, st.purchase_time, 
+                e.name AS employee_name, e.shift_start, e.shift_end,
+                array_agg(concat(mi_count, 'x ', mi_name) ORDER BY mi_name) AS items
+            FROM (
+                SELECT st.id AS transaction_id, mi.name AS mi_name, COUNT(mi.id) AS mi_count
+                FROM sales_transactions st
+                JOIN sales_items si ON si.sales_id = st.id
+                JOIN menu_items mi ON si.menu_id = mi.id
+                GROUP BY st.id, mi.id, mi.name
+            ) AS subquery
+            JOIN sales_transactions st ON st.id = subquery.transaction_id
+            JOIN employees e ON st.employee_id = e.id
+            WHERE st.purchase_time BETWEEN $1 AND $2
+            GROUP BY st.id, e.name, e.shift_start, e.shift_end
+            ORDER BY st.id ASC;
+        `;
+
+        // Formatting dates to ISO strings for SQL query
+        const result = await pool.query(query, [
+            new Date(formattedStartDate).toISOString(),
+            new Date(formattedEndDate).toISOString()
+        ]);
+        return result.rows.map(row => ({
+            id: row.id,
+            cost: row.cost,
+            purchase_time: row.purchase_time,
+            name: row.employee_name,
+            shift_start: row.shift_start,
+            shift_end: row.shift_end,
+            items: row.items.map(name => `${name}`) // Assuming each sales item has a quantity of 1
+        }));
     } catch (err) {
       console.error('Failed to fetch sales data for the selected period', err);
       return [];
