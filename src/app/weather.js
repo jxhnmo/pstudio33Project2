@@ -22,7 +22,6 @@ export async function fetchWeatherAllData(zipcode) {
         console.log('about to get response');
         console.log(zipcode);
         const response = await axios.get(url);
-        
         return response.data;
     } catch (error) {
         console.error("Failed to fetch weather data:", error);

@@ -5,7 +5,8 @@ import styles from "@/app/staff/stats/staffStats.module.css";
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-import { fetchData, fetchRestock, fetchSales, fetchXData, fetchZData } from '../../analytics';
+
+import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -43,12 +44,9 @@ interface InventoryItem {
   price: number;
 }
 
-interface SaleData {
-  transaction_id: number;
-  employee_name: string;
-  manager_status: boolean;
-  cost: number;
-  purchase_time: string;
+interface ProductUsage {
+  item_name: string;
+  count: number;
 }
 
 export default function StaffStats() {
@@ -64,19 +62,24 @@ export default function StaffStats() {
   const [restockTableData, setRestockTableData] = useState([]);
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
+
+  const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
+  const [productUsageData, setProductUsageData] = useState<ProductUsage[]>([]);
+
   const [xData, setXData] = useState<SalesTransaction[]>([]);
   const [zData, setZData] = useState<SalesTransaction[]>([]);
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   
-  const handleStartDateChange = (event) => {
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartDate(event.target.value);
   };
   
-  const handleEndDateChange = (event) => {
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
   };
   
+
   useEffect(() => {
     const loadXData = async () => {
       try {
@@ -93,6 +96,10 @@ export default function StaffStats() {
       loadXData();
     }
   }, [selectedOption, xData]);
+
+  const updateProductUsageStatistics = () => {
+    // Here you can place any additional logic if needed to process or refresh the product usage data
+  };
 
   useEffect(() => {
     const loadZData = async () => {
@@ -112,6 +119,7 @@ export default function StaffStats() {
       loadZData();
     }
   }, [selectedOption, startDate, endDate, zData]);
+
   
   
   
@@ -147,7 +155,20 @@ export default function StaffStats() {
       category: item.category
     }));
   }
-
+  useEffect(() => {
+    const fetchProductUsage = async () => {
+      try {
+        const usageData = await fetchIngredientsUsedToday();
+        setProductUsageData(usageData);
+      } catch (error) {
+        console.error("Failed to fetch product usage data", error);
+      }
+    };
+  
+    if (selectedOption === 'product_usage') {
+      fetchProductUsage();
+    }
+  }, [selectedOption]);
   const processInventory = (inventoryData: InventoryItem[]) => {
     return inventoryData.map(item => ({
       id: item.id,
@@ -232,9 +253,42 @@ export default function StaffStats() {
         <div className={styles.statsContent}>
           {/* Display statistics based on selected option */}
           {selectedOption === 'product_usage' && (
-            // Implement UI for product usage statistics
-            <div>Product Usage Statistics</div>
+  <div>
+    <h2>Product Usage Statistics</h2>
+    <div className={styles.xreportTableContainer}>
+      <table className={styles.xreportTable}>
+        <thead>
+          <tr>
+            <th>Inventory Item</th>
+            <th>Amount Used Today</th>
+          </tr>
+        </thead>
+        <tbody>
+          {productUsageData.length > 0 ? (
+            productUsageData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.item_name}</td>
+                <td>{item.count}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={2}>No product usage data available for today.</td>
+            </tr>
           )}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+          
+          
+          {selectedOption === 'sales_report' && (
+            // Implement UI for sales report statistics
+            <div>Sales report</div>
+          )}
+
           {selectedOption === 'x_report' && (
             <div>
               <h2>X-Report for Today</h2>
