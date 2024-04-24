@@ -30,17 +30,17 @@ conn_params = {
 }
 
 employees = [
-    (1, 'Chee Surger', 31.5, '9:30:00', '23:30:00', True, 'burger_man', '0'),
-    (2, 'Chic Ken', 14.5, '10:00:00', '23:30:00', False, 'chickman', 'password'),
-    (3, 'Tenz Ders', 11.5, '10:00:00', '23:30:00', False, 'user1', 'pw1'),
-    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'zero', 'zero'),
-    (5, 'Han Surger', 12.0, '10:00:00', '23:30:00', False, 'ilovekids', 'password'),
-    (6, 'Ethan Van', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw'),
-    (7, 'John Mo', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw'),
-    (8, 'Grant Oxford', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw'),
-    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw'),
-    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw'),
-    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw')
+    (1, 'Chee Surger', 31.5, '9:30:00', '23:30:00', True, 'burger_man', '0', 'chee@domain.com'),
+    (2, 'Chic Ken', 14.5, '10:00:00', '23:30:00', False, 'chickman', 'password', 'chic@domain.com'),
+    (3, 'Tenz Ders', 11.5, '10:00:00', '23:30:00', False, 'user1', 'pw1', 'tenz@domain.com'),
+    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'zero', 'zero', 'man@domain.com'),
+    (5, 'Han Surger', 12.0, '10:00:00', '23:30:00', False, 'ilovekids', 'password', 'han@domain.com'),
+    (6, 'John Mo', 31.5, '10:00:00', '23:30:00', True, 'username', 'pwd', 'johnmo@tamu.edu'),
+    (7, 'Ethan Van', 15.0, '10:00:00', '23:30:00', False, 'etUser', 'etPwd', 'etvan13@tamu.edu'),
+    (8, 'Grant Oxford', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw', 'grantwoxford@tamu.edu'),
+    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'thomasbolf1@tamu.edu'),
+    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jcheung@tamu.edu'),
+    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jtchau7@tamu.edu')
 ]
 
 menu_items = {
@@ -381,7 +381,8 @@ def reset_database_tables(conn):
         shift_end TIME,
         manager BOOLEAN,
         username VARCHAR(50),
-        password VARCHAR(50)
+        password VARCHAR(50),
+        email VARCHAR(50)
     );
     CREATE TABLE inventory_items (
         id SERIAL PRIMARY KEY,
@@ -459,8 +460,8 @@ def reset_database_tables(conn):
 def populate_employees(conn):
     with conn.cursor() as cur:
         cur.executemany(sql.SQL("""
-            INSERT INTO employees (id, name, salary, shift_start, shift_end, manager, username, password)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO employees (id, name, salary, shift_start, shift_end, manager, username, password, email)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """), employees)
         conn.commit()
         print("Employees data populated successfully.")
