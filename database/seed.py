@@ -431,6 +431,7 @@ def reset_database_tables(conn):
         cost NUMERIC,
         employee_id INT,
         purchase_time TIMESTAMP,
+        valid BOOLEAN,
         FOREIGN KEY (employee_id) REFERENCES employees(id)
     );
     CREATE TABLE sales_items (
@@ -604,7 +605,7 @@ def populate_sales_transactions(conn):
                 
                 # Add transactions in sequential order
                 for total_cost, employee_id, transaction_date, items in transactions_this_hour:
-                    transaction_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');")
+                    transaction_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time, valid) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}', True);")
                     for item in items:
                         item_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {item[0]});")
                     transaction_id += 1
