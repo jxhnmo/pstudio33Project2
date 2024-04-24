@@ -515,21 +515,20 @@ def populate_inventory_transactions(conn):
         cur.execute("SELECT id FROM employees WHERE manager = TRUE;")
         manager_ids = [row[0] for row in cur.fetchall()]
 
-        # Fetch item IDs from inventory_items table
-        cur.execute("SELECT id, max_stock FROM inventory_items;")
-        item_data = [(row[0], row[1]) for row in cur.fetchall()]
+        # Fetch item IDs and their prices from inventory_items table
+        cur.execute("SELECT id, price, max_stock FROM inventory_items;")
+        item_data = [(row[0], row[1], row[2]) for row in cur.fetchall()]
 
-        # Generate transactions for the past 5 years
-        start_date = datetime.now() - timedelta(days=5 * 365)
-        end_date = datetime.now()
-        delta = timedelta(days=1)
+        # Define the date range for transactions
+        start_date = datetime.now() - timedelta(days=182) # 6 months ago
+        end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
 
         transaction_id = 1
         while start_date < end_date:
             # Choose a random manager
             manager_id = random.choice(manager_ids)
 
-            # Generate transaction date
+            # Generate transaction date within defined range
             transaction_date = start_date + timedelta(days=random.randint(1, 7))
 
             # Generate a random transaction
@@ -539,9 +538,8 @@ def populate_inventory_transactions(conn):
             # Prepare a batch of order insertions
             order_values = []
             for _ in range(num_items):
-                item_id, max_stock = random.choice(item_data)
-                quantity = random.randint(1, 20)  # Logical amount to order
-                price_per_unit = faker.random_number(digits=2) / 100.0
+                item_id, price_per_unit, max_stock = random.choice(item_data)
+                quantity = random.randint(1, min(20, max_stock))  # Logical amount to order, capped at max_stock
                 total_price += price_per_unit * quantity
                 order_values.append((transaction_id, item_id, quantity, price_per_unit))
 
@@ -570,51 +568,76 @@ def populate_sales_transactions(conn):
         cur.execute("SELECT id FROM employees;")
         employee_ids = [row[0] for row in cur.fetchall()]
 
-        # Fetch menu item IDs from menu_items table
-        cur.execute("SELECT id FROM menu_items;")
-        menu_item_ids = [row[0] for row in cur.fetchall()]
+        # Fetch menu item IDs and their prices
+        cur.execute("SELECT id, price FROM menu_items;")
+        menu_items_with_prices = {row[0]: row[1] for row in cur.fetchall()}
 
-        # Generate transactions for the past 5 years
-        start_date = datetime.now() - timedelta(days=5 * 365)
-        end_date = datetime.now()
-        transaction_date = start_date
+        # Define operation hours
+        weekday_hours = range(10, 21)  # 10 AM to 9 PM
+        weekend_hours = range(11, 20)  # 11 AM to 8 PM
+        peak_hours = [12, 13, 18, 19]  # Peak hours at noon and evening
+
+        # Define the date range for transactions
+        start_date = datetime.now() - timedelta(days=182) # 6 months ago
+        end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
 
         transaction_id = 1
-        while transaction_date < end_date:
-            # Choose a random employee
-            employee_id = random.choice(employee_ids)
+        while start_date < end_date:
+            weekday = start_date.weekday()  # Monday is 0 and Sunday is 6
+            if weekday >= 5:  # Weekend
+                hours = weekend_hours
+            else:
+                hours = weekday_hours
 
-            # Generate transaction date
-            transaction_date += timedelta(days=random.randint(1, 7))
+            # Generate transactions based on operating hours
+            for hour in hours:
+                # Adjust transaction frequency for peak hours
+                if hour in peak_hours:
+                    num_transactions = random.randint(3, 5)  # More transactions during peak hours
+                else:
+                    num_transactions = random.randint(1, 2)  # Fewer transactions during off-peak hours
 
-            # Determine number of items bought (at least one)
-            num_items = random.randint(1, 5)
-            total_cost = 0
+                for _ in range(num_transactions):
+                    # Choose a random employee
+                    employee_id = random.choice(employee_ids)
+                    # Generate transaction time within the hour
+                    minute = random.randint(0, 59)
+                    second = random.randint(0, 59)
+                    transaction_date = datetime(start_date.year, start_date.month, start_date.day, hour, minute, second)
 
-            # Prepare a batch of item insertions
-            item_values = []
-            for _ in range(num_items):
-                menu_id = random.choice(menu_item_ids)
-                item_price = faker.random_int(min=1, max=20)  # Simulating a cost per item
-                total_cost += item_price
-                item_values.append((transaction_id, menu_id))
+                    # Determine number of items bought (at least one)
+                    num_items = random.randint(1, 5)
+                    total_cost = 0
 
-            # Insert transaction record
-            cur.execute(sql.SQL("""
-                INSERT INTO sales_transactions (id, cost, employee_id, purchase_time)
-                VALUES (%s, %s, %s, %s)
-            """), (transaction_id, total_cost, employee_id, transaction_date))
+                    # Prepare a batch of item insertions
+                    item_values = []
+                    for _ in range(num_items):
+                        menu_id = random.choice(list(menu_items_with_prices.keys()))
+                        item_price = menu_items_with_prices[menu_id]  # Fetching price from dictionary
+                        total_cost += item_price
+                        item_values.append((transaction_id, menu_id))
 
-            # Insert corresponding sales items
-            cur.executemany(sql.SQL("""
-                INSERT INTO sales_items (sales_id, menu_id)
-                VALUES (%s, %s)
-            """), item_values)
+                    # Insert transaction record
+                    cur.execute(sql.SQL("""
+                        INSERT INTO sales_transactions (id, cost, employee_id, purchase_time)
+                        VALUES (%s, %s, %s, %s)
+                    """), (transaction_id, total_cost, employee_id, transaction_date))
 
-            transaction_id += 1
+                    # Insert corresponding sales items
+                    cur.executemany(sql.SQL("""
+                        INSERT INTO sales_items (sales_id, menu_id)
+                        VALUES (%s, %s)
+                    """), item_values)
+
+                    transaction_id += 1
+
+            # Move to the next day
+            start_date += timedelta(days=1)
 
         conn.commit()
         print("Sales transactions and items populated successfully.")
+
+
 
 """
 -------------------------------
@@ -653,7 +676,7 @@ def main():
         populate_ingredients(conn)
         print("(Populating inventory transactions takes a while...)")
         populate_inventory_transactions(conn)
-        print("(Populating sales transactions takes a while...)")
+        print("(Populating sales transactions (last one!) takes even longer...)")
         populate_sales_transactions(conn)
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"An error occurred: {error}")
