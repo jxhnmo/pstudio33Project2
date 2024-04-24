@@ -357,6 +357,7 @@ ingredients_data = [
     RESET DATABASE TABLES
 -------------------------------
 """
+
 def reset_database_tables(conn):
     cur = conn.cursor()
 
@@ -509,7 +510,6 @@ def populate_ingredients(conn):
         print("Ingredients data populated successfully.")
 
 def populate_inventory_transactions(conn):
-    faker = Faker()
     with conn.cursor() as cur:
         # Fetch manager IDs from employees table
         cur.execute("SELECT id FROM employees WHERE manager = TRUE;")
@@ -562,79 +562,66 @@ def populate_inventory_transactions(conn):
         print("Inventory transactions and item orders populated successfully.")
 
 def populate_sales_transactions(conn):
-    faker = Faker()
     with conn.cursor() as cur:
-        # Fetch employee IDs from employees table
+        # Fetch all necessary data at once
         cur.execute("SELECT id FROM employees;")
         employee_ids = [row[0] for row in cur.fetchall()]
 
-        # Fetch menu item IDs and their prices
         cur.execute("SELECT id, price FROM menu_items;")
         menu_items_with_prices = {row[0]: row[1] for row in cur.fetchall()}
 
-        # Define operation hours
+        # Define operation hours and date range
         weekday_hours = range(10, 21)  # 10 AM to 9 PM
         weekend_hours = range(11, 20)  # 11 AM to 8 PM
-        peak_hours = [12, 13, 18, 19]  # Peak hours at noon and evening
+        peak_hours = [12, 13, 18, 19]  # Peak hours
 
-        # Define the date range for transactions
-        start_date = datetime.now() - timedelta(days=182) # 6 months ago
+        start_date = datetime.now() - timedelta(days=182)  # 6 months ago
         end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
+
+        # Initialize SQL command list
+        sql_commands = []
 
         transaction_id = 1
         while start_date < end_date:
-            weekday = start_date.weekday()  # Monday is 0 and Sunday is 6
-            if weekday >= 5:  # Weekend
-                hours = weekend_hours
-            else:
-                hours = weekday_hours
+            weekday = start_date.weekday()
+            hours = weekend_hours if weekday >= 5 else weekday_hours
 
-            # Generate transactions based on operating hours
             for hour in hours:
-                # Adjust transaction frequency for peak hours
-                if hour in peak_hours:
-                    num_transactions = random.randint(3, 5)  # More transactions during peak hours
-                else:
-                    num_transactions = random.randint(1, 2)  # Fewer transactions during off-peak hours
+                num_transactions = random.randint(3, 5) if hour in peak_hours else random.randint(1, 2)
 
                 for _ in range(num_transactions):
-                    # Choose a random employee
                     employee_id = random.choice(employee_ids)
-                    # Generate transaction time within the hour
                     minute = random.randint(0, 59)
                     second = random.randint(0, 59)
-                    transaction_date = datetime(start_date.year, start_date.month, start_date.day, hour, minute, second)
-
-                    # Determine number of items bought (at least one)
+                    transaction_date = datetime(start_date.year, start_date.month, start_date.day, hour, minute, second).isoformat()
                     num_items = random.randint(1, 5)
                     total_cost = 0
 
-                    # Prepare a batch of item insertions
-                    item_values = []
+                    transaction_sql = f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');\n"
+                    sql_commands.append(transaction_sql)
+
                     for _ in range(num_items):
                         menu_id = random.choice(list(menu_items_with_prices.keys()))
-                        item_price = menu_items_with_prices[menu_id]  # Fetching price from dictionary
+                        item_price = menu_items_with_prices[menu_id]
                         total_cost += item_price
-                        item_values.append((transaction_id, menu_id))
+                        sql_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {menu_id});\n")
 
-                    # Insert transaction record
-                    cur.execute(sql.SQL("""
-                        INSERT INTO sales_transactions (id, cost, employee_id, purchase_time)
-                        VALUES (%s, %s, %s, %s)
-                    """), (transaction_id, total_cost, employee_id, transaction_date))
-
-                    # Insert corresponding sales items
-                    cur.executemany(sql.SQL("""
-                        INSERT INTO sales_items (sales_id, menu_id)
-                        VALUES (%s, %s)
-                    """), item_values)
-
+                    # Update the total cost after all items are added
+                    sql_commands.append(f"UPDATE sales_transactions SET cost = {total_cost} WHERE id = {transaction_id};\n")
                     transaction_id += 1
 
-            # Move to the next day
             start_date += timedelta(days=1)
 
+        # Write commands to a file
+        with open('sales_transactions.sql', 'w') as file:
+            file.writelines(sql_commands)
+
+        # Execute SQL file
+        with open('sales_transactions.sql', 'r') as file:
+            cur.execute(file.read())
         conn.commit()
+        os.remove('sales_transactions.sql')
+
         print("Sales transactions and items populated successfully.")
 
 
