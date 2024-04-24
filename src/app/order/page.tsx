@@ -263,7 +263,7 @@ export default function Home() {
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={(e: React.MouseEvent) => handleSelectItem(item)}>
               <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
-              <div>{item.name}<br />{'$' + item.price}</div>
+              <div>{item.name}<br />{'$' + Number(item.price).toFixed(2)}</div>
               <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                 <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
               </div>
