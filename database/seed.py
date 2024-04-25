@@ -33,14 +33,14 @@ employees = [
     (1, 'Chee Surger', 31.5, '9:30:00', '23:30:00', True, 'burger_man', '0', 'chee@domain.com'),
     (2, 'Chic Ken', 14.5, '10:00:00', '23:30:00', False, 'chickman', 'password', 'chic@domain.com'),
     (3, 'Tenz Ders', 11.5, '10:00:00', '23:30:00', False, 'user1', 'pw1', 'tenz@domain.com'),
-    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'zero', 'zero', 'man@domain.com'),
+    (4, 'Man Ger', 10.0, '10:00:00', '23:30:00', False, 'ManGer', 'zero', 'man@domain.com'),
     (5, 'Han Surger', 12.0, '10:00:00', '23:30:00', False, 'ilovekids', 'password', 'han@domain.com'),
     (6, 'John Mo', 31.5, '10:00:00', '23:30:00', True, 'username', 'pwd', 'johnmo@tamu.edu'),
     (7, 'Ethan Van', 15.0, '10:00:00', '23:30:00', False, 'etUser', 'etPwd', 'etvan13@tamu.edu'),
     (8, 'Grant Oxford', 10.0, '10:00:00', '23:30:00', True, 'zero', 'pw', 'grantwoxford@tamu.edu'),
-    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'thomasbolf1@tamu.edu'),
-    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jcheung@tamu.edu'),
-    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'zero', 'pw', 'jtchau7@tamu.edu')
+    (9, 'Thomas Bolf', 10.0, '10:00:00', '23:30:00', False, 'one', 'pw', 'thomasbolf1@tamu.edu'),
+    (10, 'Jeffrey Cheung', 10.0, '10:00:00', '23:30:00', False, 'two', 'pw', 'jcheung@tamu.edu'),
+    (11, 'Joseph Chau', 10.0, '10:00:00', '23:30:00', False, 'three', 'pw', 'jtchau7@tamu.edu')
 ]
 
 menu_items = {
@@ -251,107 +251,7 @@ irremovable_ingredients = [
     ("napkin",)
 ]
 
-ingredients_data = [
-    (1, 1, 1, 1),
-    (2, 3, 1, 1),
-    (3, 4, 1, 1),
-    (4, 5, 1, 1),
-    (5, 31, 1, 1),
-    (6, 28, 1, 1),
-    (7, 1, 2, 1),
-    (8, 3, 2, 1),
-    (9, 4, 2, 1),
-    (10, 31, 2, 1),
-    (11, 28, 2, 1),
-    (12, 6, 3, 1),
-    (13, 3, 3, 1),
-    (14, 4, 3, 1),
-    (15, 31, 3, 1),
-    (16, 28, 3, 1),
-    (17, 1, 4, 1),
-    (18, 3, 4, 1),
-    (19, 2, 4, 1),
-    (20, 7, 4, 1),
-    (21, 31, 4, 1),
-    (22, 28, 4, 1),
-    (23, 1, 5, 1),
-    (24, 8, 5, 1),
-    (25, 2, 5, 1),
-    (26, 5, 5, 1),
-    (27, 31, 5, 1),
-    (28, 28, 5, 1),
-    (29, 1, 6, 1),
-    (30, 10, 6, 1),
-    (31, 2, 6, 1),
-    (32, 7, 6, 1),
-    (33, 31, 6, 1),
-    (34, 28, 6, 1),
-    (35, 1, 7, 1),
-    (36, 9, 7, 1),
-    (37, 2, 7, 1),
-    (38, 31, 7, 1),
-    (39, 28, 7, 1),
-    (40, 10, 8, 1),
-    (41, 2, 8, 3),
-    (42, 11, 8, 1),
-    (43, 33, 8, 1),
-    (44, 28, 8, 1),
-    (45, 12, 9, 1),
-    (46, 31, 9, 1),
-    (47, 28, 9, 1),
-    (48, 13, 10, 1),
-    (49, 29, 10, 1),
-    (50, 30, 10, 1),
-    (51, 14, 11, 1),
-    (52, 29, 11, 1),
-    (53, 30, 11, 1),
-    (54, 15, 12, 2),
-    (55, 31, 12, 1),
-    (56, 28, 12, 1),
-    (57, 17, 13, 1),  # Adjusted ID for "corn dog"
-    (58, 31, 13, 1),
-    (59, 28, 13, 1),
-    (60, 18, 14, 2),  # Adjusted ID for "hot dog bun"
-    (61, 31, 14, 1),
-    (62, 28, 14, 1),
-    (63, 19, 15, 2),  # Adjusted ID for "wiener"
-    (64, 20, 15, 2),  # Adjusted ID for "tortilla"
-    (65, 31, 15, 1),
-    (66, 28, 15, 1),
-    (67, 21, 16, 1),  # Adjusted ID for "salsa"
-    (68, 10, 16, 1),
-    (69, 22, 16, 1),  # Adjusted ID for "ice cream"
-    (70, 2, 16, 1),
-    (71, 31, 16, 1),
-    (72, 28, 16, 1),
-    (73, 23, 17, 2),  # Adjusted ID for "whipped cream"
-    (74, 32, 17, 1),  # Adjusted ID for "ribs"
-    (75, 23, 18, 1),  # Adjusted ID, repeats "whipped cream"
-    (76, 24, 18, 1),  # Adjusted ID for "pickles"
-    (77, 33, 18, 1),  # Adjusted ID for "salad bowl"
-    (78, 30, 18, 1),  # Adjusted ID for "straw"
-    (79, 15, 19, 2),  # Adjusted ID for "cookie"
-    (80, 23, 19, 1),  # Adjusted ID, repeats "whipped cream"
-    (81, 31, 19, 1),
-    (82, 28, 19, 1),
-    (83, 25, 20, 1),  # Adjusted ID for "onions"
-    (84, 27, 20, 1),  # Adjusted ID for "napkin"
-    (85, 26, 20, 1),  # Adjusted ID for "cup lid"
-    (86, 31, 20, 1),
-    (87, 28, 20, 1),
-    (88, 1, 21, 1),
-    (89, 3, 21, 1),
-    (90, 5, 21, 1),
-    (91, 2, 21, 1),
-    (92, 7, 21, 1),
-    (93, 31, 21, 1),
-    (94, 28, 21, 1),
-    (95, 1, 22, 1),
-    (96, 3, 22, 2),
-    (97, 4, 22, 1),
-    (98, 31, 22, 1),
-    (99, 28, 22, 1)
-]
+
 
 """
 -------------------------------
@@ -431,6 +331,7 @@ def reset_database_tables(conn):
         cost NUMERIC,
         employee_id INT,
         purchase_time TIMESTAMP,
+        valid BOOLEAN,
         FOREIGN KEY (employee_id) REFERENCES employees(id)
     );
     CREATE TABLE sales_items (
@@ -503,10 +404,33 @@ def populate_menu_items(conn):
         print("Menu items data populated successfully.")
 
 def populate_ingredients(conn):
+    # Step 1: Map ingredient names to their IDs
+    inventory_dict = {name: id for id, name, _, _, _ in inventory_items}
+    
+    # Step 2: Build the ingredients_data list
+    ingredients_data = []
+    menu_id = 1  # Starting ID for menu items, assuming they are added in the same order
+    for menu_name, ingredients_list in menu_items.items():
+        # Count each ingredient in the current menu item
+        ingredient_count = {}
+        for ingredient in ingredients_list:
+            if ingredient in ingredient_count:
+                ingredient_count[ingredient] += 1
+            else:
+                ingredient_count[ingredient] = 1
+        
+        # Create data tuples for each unique ingredient
+        for ingredient, count in ingredient_count.items():
+            if ingredient in inventory_dict:  # Ensure the ingredient exists in inventory_items
+                ingredients_data.append((inventory_dict[ingredient], menu_id, count))
+        
+        menu_id += 1  # Increment to match the next menu item's ID
+
+    # Step 3: Insert data into the database
     with conn.cursor() as cur:
         cur.executemany(sql.SQL("""
-            INSERT INTO ingredients (id, item_id, menu_id, num)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO ingredients (item_id, menu_id, num)
+            VALUES (%s, %s, %s)
         """), ingredients_data)
         conn.commit()
         print("Ingredients data populated successfully.")
@@ -575,7 +499,8 @@ def populate_sales_transactions(conn):
         start_date = datetime.now() - timedelta(days=90)
         end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)
 
-        sql_commands = []
+        transaction_commands = []
+        item_commands = []
         transaction_id = 1
 
         while start_date < end_date:
@@ -584,22 +509,39 @@ def populate_sales_transactions(conn):
 
             for hour in hours:
                 num_transactions = random.randint(3, 5) if hour in [12, 13, 18, 19] else random.randint(1, 2)
+                transactions_this_hour = []
+                
                 for _ in range(num_transactions):
                     employee_id = random.choice(employee_ids)
-                    minute, second = random.randint(0, 59), random.randint(0, 59)
-                    transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
-                    total_cost = sum(random.choice(list(menu_items_with_prices.values())) for _ in range(random.randint(1, 5)))
-
-                    sql_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}');")
+                    
+                    # Generate sequential minutes and seconds for each transaction in this hour
+                    times_this_hour = [(random.randint(0, 59), random.randint(0, 59)) for _ in range(num_transactions)]
+                    times_this_hour.sort()  # Sort times to ensure chronological order
+                    
+                    for minute, second in times_this_hour:
+                        transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
+                        num_items = random.randint(1, 5)
+                        items = random.choices(list(menu_items_with_prices.items()), k=num_items)
+                        total_cost = sum(item[1] for item in items)
+                        
+                        transactions_this_hour.append((total_cost, employee_id, transaction_date, items))
+                
+                # Add transactions in sequential order
+                for total_cost, employee_id, transaction_date, items in transactions_this_hour:
+                    transaction_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time, valid) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}', True);")
+                    for item in items:
+                        item_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {item[0]});")
                     transaction_id += 1
 
             start_date += timedelta(days=1)
 
+        # Write and execute SQL commands
         with open('sales_transactions.sql', 'w') as file:
-            file.write("\n".join(sql_commands))
+            file.write("\n".join(transaction_commands + item_commands))
 
         with open('sales_transactions.sql', 'r') as file:
             cur.execute(file.read())
+
         conn.commit()
         os.remove('sales_transactions.sql')
 

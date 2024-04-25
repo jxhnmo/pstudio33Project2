@@ -90,12 +90,14 @@ export default function Home() {
     }
   };
   
+  const headerImagePath = '/images/RevSign.png';
+
   return (
     <>
       <Sidebar />
       <main>
-        <div>
-          <h1 className={styles.h1}>Welcome to REV&apos;S</h1>
+        <div className={styles.header}> {/* Use the new header class */}
+          <img src={headerImagePath} alt="Welcome to REV's" className={styles.headerImage} />
         </div>
         <div className="container">
           <Link href="/order" className={styles.square}>Customer Order</Link>

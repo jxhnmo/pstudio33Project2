@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import styles from './ZipCode.module.css';
+import styles from './zipcode.module.css';
 
 const ZipCode = ({ onZipCodeChange }) => {
   const [zipCode, setZipCode] = useState('');

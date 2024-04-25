@@ -147,39 +147,52 @@ export async function completeTransaction(cost,selectedItems) {
         port: 5432,
     });
     
-    const pool3 = new Pool({
+    const pool3 = new Pool(
+        {
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
         database: process.env.DATABASE_NAME,
         password: process.env.DATABASE_PASSWORD,
         port: 5432,
-    });
+        }
+    );
     
     console.log();
     selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
     const currentTime = new Date();
     try {
+
         console.log(`Fetching id value from sales_transactions`); // Debugging
         const result = await pool.query('SELECT (MAX(id)+1)%1000 FROM sales_transactions;');
         console.log('here');
+
         await pool.end();
         var sales_id = result.rows[0].max_id;
-        
-        
         const queryText = 'INSERT INTO sales_transactions VALUES ((SELECT MAX(id) + 1 FROM sales_transactions),$1,1,$2);';
         await pool2.query(queryText, [cost,currentTime.toISOString()]);
         await pool2.end();
-        
         const itemQueryText = 'INSERT INTO sales_items (id, sales_id, menu_id) VALUES ';
         var idx = 1;
-        const params = selectedItems.map((item,index) => '('+`(SELECT MAX(id)+1+${index} FROM sales_items)`+',\n'+'(SELECT MAX(id) FROM sales_transactions), '+'\n'+item.id+');').join(',');
-        console.log(itemQueryText + params)
-        
+        const params = selectedItems.map((item, index) => {
+            return '(' + 
+              `(SELECT COALESCE(MAX(id), 0) + 1 + ${index} FROM sales_items), ` + 
+              `(SELECT MAX(id) FROM sales_transactions), ` + 
+              `${item.id}` + 
+              ')';
+          }).join(',');
+        console.log(itemQueryText + params);
         await pool3.query(itemQueryText+params);
+        
+        
+        
+        
+        
         await pool3.end();
         return sales_id;
+
     } catch (err) {
-        
+
         console.error(`Failed completeTransaction`,err);
+
     }
 }
