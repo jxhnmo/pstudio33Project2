@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import styles from './weather.module.css';
+import styles from './Weather.module.css';
 import { fetchWeatherAllData } from '../../app/weather'; // Adjust the path as necessary
 
 const Weather = ({zipCode}) => {
