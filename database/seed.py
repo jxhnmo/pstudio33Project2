@@ -251,107 +251,7 @@ irremovable_ingredients = [
     ("napkin",)
 ]
 
-ingredients_data = [
-    (1, 1, 1, 1),
-    (2, 3, 1, 1),
-    (3, 4, 1, 1),
-    (4, 5, 1, 1),
-    (5, 31, 1, 1),
-    (6, 28, 1, 1),
-    (7, 1, 2, 1),
-    (8, 3, 2, 1),
-    (9, 4, 2, 1),
-    (10, 31, 2, 1),
-    (11, 28, 2, 1),
-    (12, 6, 3, 1),
-    (13, 3, 3, 1),
-    (14, 4, 3, 1),
-    (15, 31, 3, 1),
-    (16, 28, 3, 1),
-    (17, 1, 4, 1),
-    (18, 3, 4, 1),
-    (19, 2, 4, 1),
-    (20, 7, 4, 1),
-    (21, 31, 4, 1),
-    (22, 28, 4, 1),
-    (23, 1, 5, 1),
-    (24, 8, 5, 1),
-    (25, 2, 5, 1),
-    (26, 5, 5, 1),
-    (27, 31, 5, 1),
-    (28, 28, 5, 1),
-    (29, 1, 6, 1),
-    (30, 10, 6, 1),
-    (31, 2, 6, 1),
-    (32, 7, 6, 1),
-    (33, 31, 6, 1),
-    (34, 28, 6, 1),
-    (35, 1, 7, 1),
-    (36, 9, 7, 1),
-    (37, 2, 7, 1),
-    (38, 31, 7, 1),
-    (39, 28, 7, 1),
-    (40, 10, 8, 1),
-    (41, 2, 8, 3),
-    (42, 11, 8, 1),
-    (43, 33, 8, 1),
-    (44, 28, 8, 1),
-    (45, 12, 9, 1),
-    (46, 31, 9, 1),
-    (47, 28, 9, 1),
-    (48, 13, 10, 1),
-    (49, 29, 10, 1),
-    (50, 30, 10, 1),
-    (51, 14, 11, 1),
-    (52, 29, 11, 1),
-    (53, 30, 11, 1),
-    (54, 15, 12, 2),
-    (55, 31, 12, 1),
-    (56, 28, 12, 1),
-    (57, 17, 13, 1),  # Adjusted ID for "corn dog"
-    (58, 31, 13, 1),
-    (59, 28, 13, 1),
-    (60, 18, 14, 2),  # Adjusted ID for "hot dog bun"
-    (61, 31, 14, 1),
-    (62, 28, 14, 1),
-    (63, 19, 15, 2),  # Adjusted ID for "wiener"
-    (64, 20, 15, 2),  # Adjusted ID for "tortilla"
-    (65, 31, 15, 1),
-    (66, 28, 15, 1),
-    (67, 21, 16, 1),  # Adjusted ID for "salsa"
-    (68, 10, 16, 1),
-    (69, 22, 16, 1),  # Adjusted ID for "ice cream"
-    (70, 2, 16, 1),
-    (71, 31, 16, 1),
-    (72, 28, 16, 1),
-    (73, 23, 17, 2),  # Adjusted ID for "whipped cream"
-    (74, 32, 17, 1),  # Adjusted ID for "ribs"
-    (75, 23, 18, 1),  # Adjusted ID, repeats "whipped cream"
-    (76, 24, 18, 1),  # Adjusted ID for "pickles"
-    (77, 33, 18, 1),  # Adjusted ID for "salad bowl"
-    (78, 30, 18, 1),  # Adjusted ID for "straw"
-    (79, 15, 19, 2),  # Adjusted ID for "cookie"
-    (80, 23, 19, 1),  # Adjusted ID, repeats "whipped cream"
-    (81, 31, 19, 1),
-    (82, 28, 19, 1),
-    (83, 25, 20, 1),  # Adjusted ID for "onions"
-    (84, 27, 20, 1),  # Adjusted ID for "napkin"
-    (85, 26, 20, 1),  # Adjusted ID for "cup lid"
-    (86, 31, 20, 1),
-    (87, 28, 20, 1),
-    (88, 1, 21, 1),
-    (89, 3, 21, 1),
-    (90, 5, 21, 1),
-    (91, 2, 21, 1),
-    (92, 7, 21, 1),
-    (93, 31, 21, 1),
-    (94, 28, 21, 1),
-    (95, 1, 22, 1),
-    (96, 3, 22, 2),
-    (97, 4, 22, 1),
-    (98, 31, 22, 1),
-    (99, 28, 22, 1)
-]
+
 
 """
 -------------------------------
@@ -504,10 +404,33 @@ def populate_menu_items(conn):
         print("Menu items data populated successfully.")
 
 def populate_ingredients(conn):
+    # Step 1: Map ingredient names to their IDs
+    inventory_dict = {name: id for id, name, _, _, _ in inventory_items}
+    
+    # Step 2: Build the ingredients_data list
+    ingredients_data = []
+    menu_id = 1  # Starting ID for menu items, assuming they are added in the same order
+    for menu_name, ingredients_list in menu_items.items():
+        # Count each ingredient in the current menu item
+        ingredient_count = {}
+        for ingredient in ingredients_list:
+            if ingredient in ingredient_count:
+                ingredient_count[ingredient] += 1
+            else:
+                ingredient_count[ingredient] = 1
+        
+        # Create data tuples for each unique ingredient
+        for ingredient, count in ingredient_count.items():
+            if ingredient in inventory_dict:  # Ensure the ingredient exists in inventory_items
+                ingredients_data.append((inventory_dict[ingredient], menu_id, count))
+        
+        menu_id += 1  # Increment to match the next menu item's ID
+
+    # Step 3: Insert data into the database
     with conn.cursor() as cur:
         cur.executemany(sql.SQL("""
-            INSERT INTO ingredients (id, item_id, menu_id, num)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO ingredients (item_id, menu_id, num)
+            VALUES (%s, %s, %s)
         """), ingredients_data)
         conn.commit()
         print("Ingredients data populated successfully.")
