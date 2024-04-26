@@ -8,10 +8,11 @@ import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction, getItemInfo, getMenuItemIngredients } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
-import { addIngredient } from '../../ingredients';
+import { addMenuItem } from '../../menuItem';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
+import AddMenuItem from '../../../components/AddItemPopup/AddItemPopup'
 
 import dynamic from 'next/dynamic';
 
@@ -30,92 +31,6 @@ interface Item {
   imageUrl?: string;
 }
 
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onAdd: (item: { name: string; price: number }, selectedIngredients: string[]) => void;
-};
-
-
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onAdd }) => {
-  const [newItem, setNewItem] = useState({ name: '', price: 0, ingredients: [], imageUrl: '' });
-  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    const loadInventory = async () => {
-      const items = await fetchInventory();
-      setInventoryItems(items);
-    };
-    loadInventory();
-  }, []);
-
-  const handleIngredientChange = (ingredientId: number, checked: boolean) => {
-    if (checked) {
-      setSelectedIngredients([...selectedIngredients, ingredientId.toString()]);
-    } else {
-      setSelectedIngredients(selectedIngredients.filter(id => id !== ingredientId.toString()));
-    }
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    setImageFile(file);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onAdd(newItem, selectedIngredients);
-    onClose();
-  };
-
-  return (
-    isOpen && (
-      <div className={styles.modal}>
-        <div className={styles.modalContent}>
-          <span className={styles.close} onClick={onClose}>
-            &times;
-          </span>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Item Name"
-              value={newItem.name}
-              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={newItem.price}
-              onChange={(e) => setNewItem({ ...newItem, price: parseFloat(e.target.value) || 0 })}
-            />
-            <div>
-              <label>Ingredients:</label>
-              {inventoryItems.map((item) => (
-                <div key={item.id}>
-                  <input
-                    type="checkbox"
-                    id={`ingredient-${item.id}`}
-                    name={`ingredient-${item.id}`}
-                    onChange={(e) => handleIngredientChange(item.id, e.target.checked)}
-                  />
-                  <label htmlFor={`ingredient-${item.id}`} className={styles.checkboxLabel}>{item.name}</label>
-                </div>
-              ))}
-            </div>
-            <div>
-              <label>Image:</label>
-              <input type="file" onChange={handleImageChange} />
-            </div>
-            <button type="submit">Add Item</button>
-          </form>
-        </div>
-      </div>
-    )
-  );
-};
-
 
 export default function Home() {
   const router = useRouter();
@@ -130,7 +45,9 @@ export default function Home() {
   const storedItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedItems') || '[]') : [];
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  //const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState<string | null>(null);
+
 
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
@@ -266,6 +183,7 @@ export default function Home() {
     setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
+    setIsAddMenuItemOpen(null);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -331,26 +249,20 @@ export default function Home() {
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
 
     try {
-      const addedItem = await addItem({
+      const addedItem = await addMenuItem({
         name: newItem.name,
         price: newItem.price,
+        description: newItem.description,
+        calories: newItem.calories,
         // Handle image upload separately if needed
       });
-
-      // Add each selected ingredient to the ingredients table
-      for (const ingredientId of selectedIngredients) {
-        await addIngredient({
-          item_id: parseInt(ingredientId),
-          menu_id: addedItem.id,
-          num: 1, // Default quantity, adjust as needed
-        });
-      }
 
       console.log('Item and ingredients added to inventory');
     } catch (error) {
       console.error('Error adding item and ingredients to inventory:', error);
     }
   };
+
 
   return (
     <>
@@ -365,6 +277,16 @@ export default function Home() {
           onConfirmCustomization={handleCustomizationConfirmation}
         />
       )}
+
+{isAddMenuItemOpen && ( 
+  <AddMenuItem
+    isOpen={isAddMenuItemOpen !== null}
+    onClose={() => setIsAddMenuItemOpen(null)}
+    onAddNewItem={handleAddNewItem}
+    categoryName={isAddMenuItemOpen || ""}
+  />
+)}
+
 
       <div className={styles.main}>
         {/* Categories Column */}
@@ -386,7 +308,7 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <Image src={`/images/${item.name ? item.name.replace(/\s/g, '') : ''}.png`} alt={item.name} width={100} height={100} />
               <div>{item.name}<br />{'$' + item.price}</div>
               {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                     <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
@@ -394,7 +316,7 @@ export default function Home() {
             </button>
           ))}
 
-          <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
+          <button className={styles.addItemButton} onClick={() => setIsAddMenuItemOpen(() => activeCategory)}>
             Add New Item
           </button>
         </div>
@@ -448,12 +370,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdd={handleAddNewItem}
-      />
     </>
 
   );

@@ -39,9 +39,9 @@ export async function addItem(newItem) {
 
         await pool.end();
         return insertResult.rows[0];
-    } catch (err) {
-        console.error('Failed to add item', err);
-        throw err;
+    } catch (error) {
+        console.error('Failed to add item', error);
+        throw error;
     }
 }
 
