@@ -90,6 +90,7 @@ export default function Home() {
     }
   };
   
+  const googleImage = '/images/google.jpg';
   const headerImagePath = '/images/RevSign.png';
 
   return (
@@ -118,11 +119,12 @@ export default function Home() {
 
               {/* Google login button */}
               {googleLoginURL && (
-                <button 
-                  onClick={() => window.location.href = googleLoginURL} 
-                  className={styles.googleLoginButton} 
+                <button
+                  onClick={() => (window.location.href = googleLoginURL)}
+                  className={styles.googleLoginButton}
                   aria-label="Login with Google"
                 >
+                  <img src={googleImage} alt="Google Logo" /> {/* Add Google logo */}
                   Google Login
                 </button>
               )}
