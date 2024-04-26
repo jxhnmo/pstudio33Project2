@@ -17,7 +17,6 @@ const AddMenuItem = ({ isOpen, onClose, onAddNewItem, categoryName }) => {
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
     const [calories, setCalories] = useState('');
-    const [image, setImage] = useState(null);
     const [selectedIngredients, setSelectedIngredients] = useState([]);
     const [inventoryItems, setInventoryItems] = useState([]);
     const [menuItems, setMenuItems] = useState(null);
@@ -41,13 +40,13 @@ const AddMenuItem = ({ isOpen, onClose, onAddNewItem, categoryName }) => {
         const addNewMenuItem = async () => {
             try {
                 const newItem = {
-                    item_name: name,
+                    name: name,
                     price: parseFloat(price),
                     calories: parseInt(calories),
                     description: description,
-                    image: image,
                     ingredients: selectedIngredients,
                     category: categoryName,
+                    available: true,
                 };
                 console.log("JJJ", newItem);
                 //const addedItem = await addMenuItem(newItem);
@@ -65,7 +64,7 @@ const AddMenuItem = ({ isOpen, onClose, onAddNewItem, categoryName }) => {
             addNewMenuItem();
         }
         setMenuItems(null);
-    }, [calories, categoryName, description, image, menuItems, name, price, selectedIngredients]);
+    }, [calories, categoryName, description, menuItems, name, onClose, price, selectedIngredients]);
 
 
     const handleIngredientChange = (ingredientId) => {
@@ -78,38 +77,10 @@ const AddMenuItem = ({ isOpen, onClose, onAddNewItem, categoryName }) => {
         });
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setImage(file);
-    };
-
-    /*const handleAddItem = async (oc) => {
-        console.log('Adding item...');
-        try {
-            const newItem = {
-                item_name: name,
-                price: parseFloat(price),
-                calories: parseInt(calories),
-                description: description,
-                image: image, // File object
-                ingredients: selectedIngredients, // Array of selected ingredient ids
-                category: categoryName,
-            };
-            const aip = addMenuItem(newItem);
-            console.log('Before calling addItem', newItem, aip);
-            const addedItem = await aip;
-            console.log('After calling addItem');
-            
-            //setMenuItems([...menuItems, addedItem]);
-
-            oc();
-            console.log('Item added to order page:', addedItem);
-            
-        } catch (error) {
-            console.error('Error adding item to order page:', error);
-            throw error;
-        }
-    };*/
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     setImage(file);
+    // };
 
     return (
         <div className={styles.popupBackdrop}>
@@ -126,10 +97,6 @@ const AddMenuItem = ({ isOpen, onClose, onAddNewItem, categoryName }) => {
 
                 <label>Calories</label>
                 <input type = "number" value = {calories} onChange={(e) => setCalories(e.target.value)}></input>
-
-                <label>Image:</label>
-                <input type="file" accept="image/*" onChange={handleImageChange} />
-                {image && <img src={URL.createObjectURL(image)} alt="Selected Item" />}
 
                 <label>Ingredients:</label>
                 <div className={styles.ingredientsGrid}>
