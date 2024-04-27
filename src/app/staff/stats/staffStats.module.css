@@ -191,5 +191,9 @@
   padding-top: 10px;
   padding-bottom: 24px;
 }
-
+.excessTableContainer {
+  max-height: 20vh;
+  overflow-y: auto;
+  border: 1px solid var(--c7);
+}
 

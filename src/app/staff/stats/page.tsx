@@ -18,7 +18,7 @@ interface ExcessData {
   item_name: string;
   max_stock: number;
   sold_stock: number;
-  unsold_percentage: string;
+  sold_percentage: string;
 }
 
 interface SalesTransaction {
@@ -321,7 +321,7 @@ export default function StaffStats() {
             <div>
               <h2>X-Report</h2>
               {isLoading ? (
-                <ClipLoader className={styles.spinner} loading={isLoading} />
+                <ClipLoader loading={isLoading} size={150} />
               ) : (
               <div className={styles.xreportTableContainer}>
                 <table className={styles.xreportTable}>
@@ -383,7 +383,7 @@ export default function StaffStats() {
               <input type="date" id="endDate" onChange={handleEndDateChange} />
             </div>
             {isLoading ? (
-                <ClipLoader className={styles.spinner} loading={isLoading} />
+                <ClipLoader loading={isLoading} size={150} />
             ) : (
             <div className={styles.xreportTableContainer}>
               <table className={styles.xreportTable}>
@@ -503,7 +503,7 @@ export default function StaffStats() {
                           <td>{item.item_name}</td>
                           <td>{item.max_stock}</td>
                           <td>{item.sold_stock}</td>
-                          <td>{item.unsold_percentage}</td>
+                          <td>{item.sold_percentage}</td>
                         </tr>
                       ))}
                     </tbody>
