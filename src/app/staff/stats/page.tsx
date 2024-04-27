@@ -7,11 +7,19 @@ import { ClipLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 
 
-import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid } from '../../analytics';
+import { fetchData, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid, fetchExcessData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
 });
+
+interface ExcessData {
+  id: number;
+  item_name: string;
+  max_stock: number;
+  sold_stock: number;
+  unsold_percentage: string;
+}
 
 interface SalesTransaction {
   id: number;
@@ -71,6 +79,8 @@ export default function StaffStats() {
   const [endDate, setEndDate] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [excessData, setExcessData] = useState<ExcessData[]>([]);
+
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartDate(event.target.value);
   };
@@ -101,9 +111,26 @@ export default function StaffStats() {
             setIsLoading(false);
         });
     }
-};
+  };
 
+  // Excess data effect
+  useEffect(() => {
+    const loadExcessData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchExcessData(startDate);
+        setExcessData(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch excess data", error);
+        setIsLoading(false);
+      }
+    };
 
+    if (selectedOption === 'excess_report') {
+      loadExcessData();
+    }
+  }, [selectedOption, startDate]);
 
   // X report data effect
   useEffect(() => {
@@ -176,15 +203,6 @@ export default function StaffStats() {
     updateStatistics();
   }, [startDateTime, endDateTime]);
 
-  const processMenuItems = (menuItemsData: MenuItem[]) => {
-    return menuItemsData.map(item => ({
-      id: item.id,
-      name: item.name,
-      available: item.available,
-      price: item.price,
-      category: item.category
-    }));
-  }
   useEffect(() => {
     const fetchProductUsage = async () => {
       try {
@@ -198,18 +216,7 @@ export default function StaffStats() {
     if (selectedOption === 'product_usage') {
       fetchProductUsage();
     }
-  }, [selectedOption]);
-  const processInventory = (inventoryData: InventoryItem[]) => {
-    return inventoryData.map(item => ({
-      id: item.id,
-      itemName: item.itemName,
-      stock: item.stock,
-      maxStock: item.maxStock,
-      deficit: item.maxStock-item.stock,
-      unitCost: item.price,
-      totalCost: item.price*(item.maxStock-item.stock),
-    }));
-  }    
+  }, [selectedOption]); 
 
   const updateStatistics = () => {
     if (selectedOption === 'product_usage') {
@@ -462,16 +469,56 @@ export default function StaffStats() {
                 </div>
             </div>
           )}
+
           {selectedOption === 'excess_report' && (
-            // Implement UI for excess report statistics
-            <div>Excess Report Statistics</div>
+            <div>
+              <h2>Excess Report</h2>
+              <div>
+                <p className={styles.description}>
+                Given a timestamp, display the list of items that only sold less than 
+                10% of their inventory between the timestamp and the current time, assuming 
+                no restocks have happened during the window.
+                </p>
+                <label>Start Date:</label>
+                <input type="date" id="startDate" onChange={handleStartDateChange} />
+              </div>
+              {isLoading ? (
+                <ClipLoader loading={isLoading} size={150} />
+              ) : (
+                <div className={styles.xreportTableContainer}>
+                  <table className={styles.xreportTable}>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Item Name</th>
+                        <th>Max Stock</th>
+                        <th>Sold Stock</th>
+                        <th>Unsold Percentage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {excessData.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.item_name}</td>
+                          <td>{item.max_stock}</td>
+                          <td>{item.sold_stock}</td>
+                          <td>{item.unsold_percentage}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           )}
+
           {selectedOption === 'sells_together' && (
             // Implement UI for paired menu items statistics
             <div>Paired Menu Items Statistics</div>
           )}
         </div>
-        {/* // <div id="sales_chart"></div> */}
+
         {/* Navigation Buttons */}
         <div className={styles.buttonsContainer}>
           <Link href="/staff/order" legacyBehavior>
