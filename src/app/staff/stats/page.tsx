@@ -7,11 +7,19 @@ import { ClipLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 
 
-import { fetchData, fetchRestock, fetchSales, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid } from '../../analytics';
+import { fetchData, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid, fetchExcessData } from '../../analytics';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
 });
+
+interface ExcessData {
+  id: number;
+  item_name: string;
+  max_stock: number;
+  sold_stock: number;
+  unsold_percentage: string;
+}
 
 interface SalesTransaction {
   id: number;
@@ -71,6 +79,8 @@ export default function StaffStats() {
   const [endDate, setEndDate] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [excessData, setExcessData] = useState([]);
+
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartDate(event.target.value);
   };
@@ -101,9 +111,30 @@ export default function StaffStats() {
             setIsLoading(false);
         });
     }
-};
+  };
 
 
+  const ExcessReportComponent = () => {
+
+    useEffect(() => {
+      const loadExcessData = async () => {
+        if (!startDate) {
+          return;
+        }
+        setIsLoading(true); // Set loading to true when fetch begins
+        try {
+          const data = await fetchExcessData(startDate);
+          setExcessData(data);
+          setIsLoading(false); // Set loading to false when fetch completes
+        } catch (error) {
+          console.error("Failed to fetch excess data", error);
+          setIsLoading(false); // Ensure loading is turned off if there's an error
+        }
+      };
+
+      loadExcessData();
+    }, [timestamp]);
+  }
 
   // X report data effect
   useEffect(() => {
