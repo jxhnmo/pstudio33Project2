@@ -189,7 +189,14 @@
 
 .description {
   padding-top: 10px;
-  padding-bottom: 24px;
+  padding-bottom: 5px;
 }
-
+.excessTableContainer {
+  max-height: 65vh;
+  overflow-y: auto;
+  border: 1px solid var(--c7);
+}
+.boldRow {
+  font-weight: bold;
+}
 

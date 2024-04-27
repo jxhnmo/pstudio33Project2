@@ -206,34 +206,31 @@ export async function fetchExcessData(timestamp) {
     });
 
     try {
+        const formattedTimestamp = new Date(timestamp); // Ensure timestamp is a Date object
         const currentTime = new Date();
         const query = `
-            SELECT ii.id, ii.item_name, ii.max_stock, COALESCE(SUM(si.stock), 0) AS sold_stock
+            SELECT ii.id, ii.item_name, ii.stock,
+                   COALESCE(SUM(ing.num), 0) AS sold_stock
             FROM inventory_items ii
-            LEFT JOIN (
-                SELECT mio.item_id, COUNT(*) * mio.stock AS stock
-                FROM menu_items mi
-                JOIN sales_items si ON mi.id = si.menu_id
-                JOIN sales_transactions st ON si.sales_id = st.id
-                JOIN inventory_item_orders mio ON mi.id = mio.item_id
-                WHERE st.purchase_time BETWEEN $1 AND $2
-                GROUP BY mio.item_id
-            ) AS sold ON ii.id = sold.item_id
-            WHERE ii.max_stock > 0 AND (COALESCE(SUM(si.stock), 0)::float / ii.max_stock) < 0.1
+            LEFT JOIN ingredients ing ON ii.id = ing.item_id
+            LEFT JOIN menu_items mi ON ing.menu_id = mi.id
+            LEFT JOIN sales_items si ON mi.id = si.menu_id
+            LEFT JOIN sales_transactions st ON si.sales_id = st.id
+            WHERE st.purchase_time BETWEEN $1 AND $2 AND st.valid = TRUE
             GROUP BY ii.id
             ORDER BY ii.id ASC;
         `;
 
         const result = await pool.query(query, [
-            timestamp.toISOString(),
+            formattedTimestamp.toISOString(),
             currentTime.toISOString()
         ]);
         return result.rows.map(row => ({
             id: row.id,
             item_name: row.item_name,
-            max_stock: row.max_stock,
+            stock: row.stock,
             sold_stock: row.sold_stock,
-            unsold_percentage: ((row.max_stock - row.sold_stock) / row.max_stock * 100).toFixed(2) + '%'
+            sold_percentage: ((row.sold_stock / row.stock) * 100).toFixed(2) + '%'
         }));
     } catch (err) {
         console.error('Failed to fetch excess data', err);

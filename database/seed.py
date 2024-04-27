@@ -447,7 +447,7 @@ def populate_inventory_transactions(conn):
 
         # Define the date range for transactions
         start_date = datetime.now() - timedelta(days=90) # 6 months ago
-        end_date = datetime.now().replace(hour=23, minute=59, second=59)  # end of today
+        end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)  # end of today plus a margin
 
         transaction_id = 1
         while start_date < end_date:
