@@ -207,25 +207,26 @@ export async function fetchExcessData(timestamp) {
 
     try {
         const currentTime = new Date();
+        const formattedTimestamp = new Date(timestamp);
         const query = `
-            SELECT ii.id, ii.item_name, ii.max_stock, COALESCE(SUM(si.stock), 0) AS sold_stock
+            SELECT ii.id, ii.item_name, ii.max_stock, COALESCE(sold.sold_stock, 0) AS sold_stock
             FROM inventory_items ii
             LEFT JOIN (
-                SELECT mio.item_id, COUNT(*) * mio.stock AS stock
-                FROM menu_items mi
-                JOIN sales_items si ON mi.id = si.menu_id
+                SELECT mio.item_id, SUM(si.stock) AS sold_stock
+                FROM sales_items si
                 JOIN sales_transactions st ON si.sales_id = st.id
+                JOIN menu_items mi ON si.menu_id = mi.id
                 JOIN inventory_item_orders mio ON mi.id = mio.item_id
                 WHERE st.purchase_time BETWEEN $1 AND $2
                 GROUP BY mio.item_id
             ) AS sold ON ii.id = sold.item_id
-            WHERE ii.max_stock > 0 AND (COALESCE(SUM(si.stock), 0)::float / ii.max_stock) < 0.1
-            GROUP BY ii.id
+            WHERE ii.max_stock > 0
+            GROUP BY ii.id, sold.sold_stock
             ORDER BY ii.id ASC;
         `;
 
         const result = await pool.query(query, [
-            timestamp.toISOString(),
+            formattedTimestamp.toISOString(),
             currentTime.toISOString()
         ]);
         return result.rows.map(row => ({
@@ -233,7 +234,7 @@ export async function fetchExcessData(timestamp) {
             item_name: row.item_name,
             max_stock: row.max_stock,
             sold_stock: row.sold_stock,
-            unsold_percentage: ((row.max_stock - row.sold_stock) / row.max_stock * 100).toFixed(2) + '%'
+            unsold_percentage: (((row.max_stock - row.sold_stock) / row.max_stock) * 100).toFixed(2) + '%'
         }));
     } catch (err) {
         console.error('Failed to fetch excess data', err);
