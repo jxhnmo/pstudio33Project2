@@ -206,10 +206,10 @@ export async function fetchExcessData(timestamp) {
     });
 
     try {
-        const formattedTimestamp = new Date(timestamp);
+        const formattedTimestamp = new Date(timestamp); // Ensure timestamp is a Date object
         const currentTime = new Date();
         const query = `
-            SELECT ii.id, ii.item_name, ii.max_stock,
+            SELECT ii.id, ii.item_name, ii.stock,
                    COALESCE(SUM(ing.num), 0) AS sold_stock
             FROM inventory_items ii
             LEFT JOIN ingredients ing ON ii.id = ing.item_id
@@ -228,9 +228,9 @@ export async function fetchExcessData(timestamp) {
         return result.rows.map(row => ({
             id: row.id,
             item_name: row.item_name,
-            max_stock: row.max_stock,
+            stock: row.stock,
             sold_stock: row.sold_stock,
-            sold_percentage: ((row.sold_stock / row.max_stock) * 100).toFixed(2) + '%'
+            sold_percentage: ((row.sold_stock / row.stock) * 100).toFixed(2) + '%'
         }));
     } catch (err) {
         console.error('Failed to fetch excess data', err);

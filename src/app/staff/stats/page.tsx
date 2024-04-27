@@ -16,7 +16,7 @@ const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
 interface ExcessData {
   id: number;
   item_name: string;
-  max_stock: number;
+  stock: number;
   sold_stock: number;
   sold_percentage: string;
 }
@@ -238,6 +238,12 @@ export default function StaffStats() {
     setSelectedOption(option);
     updateStatistics();
   }
+
+  const sortedExcessData = excessData.sort((a, b) => {
+    const percentageA = parseFloat(a.sold_percentage.replace('%', ''));
+    const percentageB = parseFloat(b.sold_percentage.replace('%', ''));
+    return percentageA - percentageB; // Descending order
+  });
 
   return (
     <>
@@ -479,33 +485,39 @@ export default function StaffStats() {
                 10% of their inventory between the timestamp and the current time, assuming 
                 no restocks have happened during the window.
                 </p>
+                <p className={styles.description}>
+                Items in <strong>bold</strong> have sold 10% or less of their stock.
+                </p>
                 <label>Start Date:</label>
                 <input type="date" id="startDate" onChange={handleStartDateChange} />
               </div>
               {isLoading ? (
                 <ClipLoader loading={isLoading} size={150} />
               ) : (
-                <div className={styles.xreportTableContainer}>
+                <div className={styles.excessTableContainer}>
                   <table className={styles.xreportTable}>
                     <thead>
                       <tr>
                         <th>ID</th>
                         <th>Item Name</th>
-                        <th>Max Stock</th>
+                        <th>Stock</th>
                         <th>Sold Stock</th>
-                        <th>Unsold Percentage</th>
+                        <th>Sold Percentage</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {excessData.map((item) => (
-                        <tr key={item.id}>
-                          <td>{item.id}</td>
-                          <td>{item.item_name}</td>
-                          <td>{item.max_stock}</td>
-                          <td>{item.sold_stock}</td>
-                          <td>{item.sold_percentage}</td>
-                        </tr>
-                      ))}
+                      {sortedExcessData.map((item) => {
+                        const isBold = parseFloat(item.sold_percentage.replace('%', '')) <= 10;
+                        return (
+                          <tr key={item.id} className={isBold ? styles.boldRow : ''}>
+                            <td>{item.id}</td>
+                            <td>{item.item_name}</td>
+                            <td>{item.stock}</td>
+                            <td>{item.sold_stock}</td>
+                            <td>{item.sold_percentage}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
