@@ -435,117 +435,86 @@ def populate_ingredients(conn):
         conn.commit()
         print("Ingredients data populated successfully.")
 
-def populate_inventory_transactions(conn):
+def populate_transactions(conn):
     with conn.cursor() as cur:
-        # Fetch manager IDs from employees table
-        cur.execute("SELECT id FROM employees WHERE manager = TRUE;")
-        manager_ids = [row[0] for row in cur.fetchall()]
-
-        # Fetch item IDs and their prices from inventory_items table
-        cur.execute("SELECT id, price, max_stock FROM inventory_items;")
-        item_data = [(row[0], row[1], row[2]) for row in cur.fetchall()]
-
-        # Define the date range for transactions
-        start_date = datetime.now() - timedelta(days=90) # 6 months ago
-        end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)  # end of today plus a margin
-
-        transaction_id = 1
-        while start_date < end_date:
-            # Choose a random manager
-            manager_id = random.choice(manager_ids)
-
-            # Generate transaction date within defined range
-            transaction_date = start_date + timedelta(days=random.randint(1, 7))
-
-            # Generate a random transaction
-            num_items = random.randint(1, 5)  # Number of different items to order
-            total_price = 0
-
-            # Prepare a batch of order insertions
-            order_values = []
-            for _ in range(num_items):
-                item_id, price_per_unit, max_stock = random.choice(item_data)
-                quantity = random.randint(1, min(20, max_stock))  # Logical amount to order, capped at max_stock
-                total_price += price_per_unit * quantity
-                order_values.append((transaction_id, item_id, quantity, price_per_unit))
-
-            # Insert transaction record
-            cur.execute(sql.SQL("""
-                INSERT INTO inventory_transactions (id, manager_id, transaction_date, price)
-                VALUES (%s, %s, %s, %s)
-            """), (transaction_id, manager_id, transaction_date, total_price))
-
-            # Insert corresponding item orders
-            cur.executemany(sql.SQL("""
-                INSERT INTO inventory_item_orders (transaction_id, item_id, stock, price)
-                VALUES (%s, %s, %s, %s)
-            """), order_values)
-
-            transaction_id += 1
-            start_date = transaction_date  # Move to the next transaction date
-
-        conn.commit()
-        print("Inventory transactions and item orders populated successfully.")
-
-def populate_sales_transactions(conn):
-    with conn.cursor() as cur:
+        # Fetch necessary data
         cur.execute("SELECT id FROM employees;")
         employee_ids = [row[0] for row in cur.fetchall()]
+
+        cur.execute("SELECT id, stock, max_stock, price FROM inventory_items;")
+        inventory_data = {row[0]: {'stock': row[1], 'max_stock': row[2], 'price': row[3]} for row in cur.fetchall()}
 
         cur.execute("SELECT id, price FROM menu_items;")
         menu_items_with_prices = {row[0]: row[1] for row in cur.fetchall()}
 
-        # Define operation hours and date range
-        start_date = datetime.now() - timedelta(days=90)
-        end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=1)
+        cur.execute("SELECT menu_id, item_id, num FROM ingredients;")
+        ingredients_data = {}
+        for row in cur.fetchall():
+            ingredients_data.setdefault(row[0], []).append((row[1], row[2]))
 
-        transaction_commands = []
-        item_commands = []
-        transaction_id = 1
+        # Define the operation date range
+        end_date = datetime.now().replace(hour=23, minute=59, second=59) + timedelta(days=2) # wiggle room
+        start_date = end_date - timedelta(days=90)
+        
+        # Prepare SQL files
+        sales_file = open('sales_transactions.sql', 'w')
+        inventory_file = open('inventory_transactions.sql', 'w')
 
         while start_date < end_date:
             weekday = start_date.weekday()
             hours = range(11, 20) if weekday >= 5 else range(10, 21)
 
             for hour in hours:
-                num_transactions = random.randint(3, 5) if hour in [12, 13, 18, 19] else random.randint(1, 2)
-                transactions_this_hour = []
-                
+                num_transactions = random.randint(1, 5)
+
                 for _ in range(num_transactions):
                     employee_id = random.choice(employee_ids)
+                    transaction_time = start_date.replace(hour=hour, minute=random.randint(0, 59), second=random.randint(0, 59))
+                    items = random.choices(list(menu_items_with_prices.keys()), k=random.randint(1, 5))
+                    total_cost = sum(menu_items_with_prices[item] for item in items)
+
+                    # Writing sales transaction to file
+                    sales_file.write(f"INSERT INTO sales_transactions (cost, employee_id, purchase_time, valid) VALUES ({total_cost}, {employee_id}, '{transaction_time}', TRUE) RETURNING id;\n")
                     
-                    # Generate sequential minutes and seconds for each transaction in this hour
-                    times_this_hour = [(random.randint(0, 59), random.randint(0, 59)) for _ in range(num_transactions)]
-                    times_this_hour.sort()  # Sort times to ensure chronological order
-                    
-                    for minute, second in times_this_hour:
-                        transaction_date = start_date.replace(hour=hour, minute=minute, second=second).isoformat()
-                        num_items = random.randint(1, 5)
-                        items = random.choices(list(menu_items_with_prices.items()), k=num_items)
-                        total_cost = sum(item[1] for item in items)
-                        
-                        transactions_this_hour.append((total_cost, employee_id, transaction_date, items))
-                
-                # Add transactions in sequential order
-                for total_cost, employee_id, transaction_date, items in transactions_this_hour:
-                    transaction_commands.append(f"INSERT INTO sales_transactions (id, cost, employee_id, purchase_time, valid) VALUES ({transaction_id}, {total_cost}, {employee_id}, '{transaction_date}', True);")
-                    for item in items:
-                        item_commands.append(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ({transaction_id}, {item[0]});")
-                    transaction_id += 1
+                    for item_id in items:
+                        # Write sales items to file
+                        sales_file.write(f"INSERT INTO sales_items (sales_id, menu_id) VALUES ((SELECT currval(pg_get_serial_sequence('sales_transactions', 'id'))), {item_id});\n")
+
+                        # Manage inventory based on ingredients
+                        for ingredient_id, quantity_needed in ingredients_data.get(item_id, []):
+                            current_stock = inventory_data[ingredient_id]['stock']
+                            new_stock = max(0, current_stock - quantity_needed)
+                            inventory_data[ingredient_id]['stock'] = new_stock
+
+                            if new_stock < inventory_data[ingredient_id]['max_stock'] / 2:
+                                needed_stock = inventory_data[ingredient_id]['max_stock'] - new_stock
+                                inventory_data[ingredient_id]['stock'] += needed_stock
+                                total_price = needed_stock * inventory_data[ingredient_id]['price']
+
+                                # Writing inventory transactions to file
+                                inventory_file.write(f"INSERT INTO inventory_transactions (manager_id, transaction_date, price) VALUES ({random.choice(employee_ids)}, '{transaction_time}', {total_price}) RETURNING id;\n")
+                                inventory_file.write(f"INSERT INTO inventory_item_orders (transaction_id, item_id, stock, price) VALUES ((SELECT currval(pg_get_serial_sequence('inventory_transactions', 'id'))), {ingredient_id}, {needed_stock}, {inventory_data[ingredient_id]['price']});\n")
 
             start_date += timedelta(days=1)
 
-        # Write and execute SQL commands
-        with open('sales_transactions.sql', 'w') as file:
-            file.write("\n".join(transaction_commands + item_commands))
+        # Close and write files
+        sales_file.close()
+        inventory_file.close()
 
+        # Execute SQL commands from files
         with open('sales_transactions.sql', 'r') as file:
             cur.execute(file.read())
+        with open('inventory_transactions.sql', 'r') as file:
+            cur.execute(file.read())
 
+        # Commit transactions
         conn.commit()
-        os.remove('sales_transactions.sql')
 
-        print("Sales transactions and items populated successfully.")
+        # Cleanup files
+        os.remove('sales_transactions.sql')
+        os.remove('inventory_transactions.sql')
+
+        print("Transactions and inventory management completed successfully.")
 
 
 
@@ -584,10 +553,7 @@ def main():
         populate_irremovable_ingredients(conn)
         populate_menu_items(conn)
         populate_ingredients(conn)
-        print("(Populating inventory transactions sometimes takes a while...)")
-        populate_inventory_transactions(conn)
-        print("(Populating sales transactions sometimes takes a while...)")
-        populate_sales_transactions(conn)
+        populate_transactions(conn)
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"An error occurred: {error}")
         conn.rollback()
