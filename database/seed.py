@@ -466,6 +466,8 @@ def populate_transactions(conn):
 
             for hour in hours:
                 num_transactions = random.randint(1, 5)
+                if (hour > 11 and hour < 14) or (hour > 17 and hour < 20):
+                    num_transactions = random.randint(4, 7) # peak hours
 
                 for _ in range(num_transactions):
                     employee_id = random.choice(employee_ids)
