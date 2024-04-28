@@ -1,5 +1,6 @@
 'use server'
 import { Pool } from 'pg';
+import moment from 'moment-timezone';
 
 class metadata {
     constructor(menuItems, inventory, firstSale, lastSale, lastRestock) {
@@ -86,7 +87,10 @@ export async function fetchXData() {
     });
 
     try {
-        const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
+        const startOfLocalDay = new Date();
+        startOfLocalDay.setHours(0, 0, 0, 0); // Set to start of the day
+        const startOfLocalDayStr = startOfLocalDay.toISOString();
+
         const query = `
             SELECT st.id, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
@@ -100,20 +104,21 @@ export async function fetchXData() {
             ) AS subquery
             JOIN sales_transactions st ON st.id = subquery.transaction_id
             JOIN employees e ON st.employee_id = e.id
-            WHERE DATE(st.purchase_time) = $1
+            WHERE st.purchase_time >= $1
             GROUP BY st.id, e.name, e.shift_start, e.shift_end
-            ORDER BY st.id ASC;
+            ORDER BY st.id DESC;
         `;
-        
-        const result = await pool.query(query, [today]);
+
+        const result = await pool.query(query, [startOfLocalDayStr]);
+        const clientTimeZone = moment.tz.guess(); // Guess the client's timezone
         return result.rows.map(row => ({
             id: row.id,
             cost: row.cost,
-            purchase_time: row.purchase_time,
+            purchase_time: moment(row.purchase_time).tz(clientTimeZone).format(), // Convert to client timezone
             name: row.employee_name,
             shift_start: row.shift_start,
             shift_end: row.shift_end,
-            items: row.items.map(name => `${name}`), // Assuming each sales item has a quantity of 1
+            items: row.items.map(name => `${name}`),
             valid: row.valid
         }));
     } catch (err) {
@@ -121,6 +126,7 @@ export async function fetchXData() {
         return [];
     }
 }
+
 
 export async function fetchZData(startDate, endDate) {
     const pool = new Pool({
@@ -150,7 +156,7 @@ export async function fetchZData(startDate, endDate) {
             JOIN employees e ON st.employee_id = e.id
             WHERE st.purchase_time BETWEEN $1 AND $2
             GROUP BY st.id, e.name, e.shift_start, e.shift_end
-            ORDER BY st.id ASC;
+            ORDER BY st.id DESC;
         `;
 
         const result = await pool.query(query, [
