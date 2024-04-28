@@ -155,3 +155,48 @@
 .xreportTable tr:nth-child(even) {
   background-color: var(--c4);
 }
+
+
+.spinner {
+  size: 50px;
+  padding: 10px;
+  color: var(--c6);
+}
+
+.deleteButton {
+  padding: 10px 15px;
+  background-color: var(--c1);
+  color: var(--c3);
+  border-radius: 10px;
+  border-color: var(--c6);
+  border-style: solid;
+  text-decoration: none;
+  transition: 0.5s;
+}
+.deleteButton:hover {
+  background-color: var(--c6);
+  color: var(--c1);
+}
+.invalidRow {
+  font-style: italic;
+  text-decoration: line-through;
+}
+.centered-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.description {
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+.excessTableContainer {
+  max-height: 65vh;
+  overflow-y: auto;
+  border: 1px solid var(--c7);
+}
+.boldRow {
+  font-weight: bold;
+}
+

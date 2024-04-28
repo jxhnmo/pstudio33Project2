@@ -37,7 +37,7 @@ const Home = () => {
         const items = await fetchItems(category.category);
         if (Array.isArray(items)) {
           items.forEach((item) => {
-            item.imageUrl = `/images/${item.name.replace(/\s/g, '')}.png`;
+            item.imageUrl = `/images/${item.name.replace(/\s/g, '').toLowerCase()}.png`;
           });
         }
         return { category: category.category, items };

@@ -240,7 +240,7 @@ export default function Home() {
           isOpen={isMealUpgradePopupOpen}
           onClose={() => setIsMealUpgradePopupOpen(false)}
           onConfirmMeal={handleMealUpgradeConfirmation}
-          selectedItem={selectedItemForCustomization}
+          //selectedItem={selectedItemForCustomization} //commented for build
         />
       )}
 
@@ -264,7 +264,7 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={(e: React.MouseEvent) => handleSelectItem(item)}>
-              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <Image src={`/images/${item.name.replace(/\s/g, '').toLowerCase()}.png`} alt={item.name} width={100} height={100} />
               <div>{item.name}<br />{'$' + Number(item.price).toFixed(2)}</div>
               <div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                 <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
@@ -280,7 +280,7 @@ export default function Home() {
             <div className={styles.orderList}>
               {selectedItems.map((item, index) => (
                 <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                  {item.name} - ${item.price} x {item.quantity}
+                  {item.name} - ${Number(item.price).toFixed(2)} x {item.quantity}
                   <br />
                   <div className={styles.deselectedIngredients}>
                     {generateDeselectedIngredientsList(item)}

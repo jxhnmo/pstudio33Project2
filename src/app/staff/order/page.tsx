@@ -8,11 +8,13 @@ import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction, getItemInfo, getMenuItemIngredients } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
-import { addIngredient } from '../../ingredients';
+import { addMenuItem } from '../../menuItem';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
+  
 import MealPopup from '../../../components/MakeItAMeal/MakeItAMeal';
+import AddMenuItem from '../../../components/AddItemPopup/AddItemPopup'
 
 import dynamic from 'next/dynamic';
 
@@ -133,7 +135,9 @@ export default function Home() {
   const storedItems = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedItems') || '[]') : [];
   const [selectedItems, setSelectedItems] = useState<Item[]>(storedItems);
   //const [newItem, setNewItem] = useState({ id: -1, name: '', price: 0, quantity: 1 });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  //const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddMenuItemOpen, setIsAddMenuItemOpen] = useState<string | null>(null);
+
 
   const [totalPriceInfo, setTotalPriceInfo] = useState({ total: 0, updateKey: Date.now() });
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
@@ -266,6 +270,7 @@ export default function Home() {
     setSelectedItemForCustomization(updatedSelectedItem);
     setSelectedItemIngredients(ingredients);
     setIsCustomizePopupOpen(true);
+    setIsAddMenuItemOpen(null);
   };
 
   const handleRemoveItem = (index: number) => {
@@ -330,9 +335,11 @@ export default function Home() {
     setCurrentCategoryItems([...currentCategoryItems, newItemWithId]);
 
     try {
-      const addedItem = await addItem({
+      const addedItem = await addMenuItem({
         name: newItem.name,
         price: newItem.price,
+        description: newItem.description,
+        calories: newItem.calories,
       });
 
       for (const ingredientId of selectedIngredients) {
@@ -379,6 +386,16 @@ export default function Home() {
           selectedItem={selectedItemForCustomization}
         />
       )}
+      
+{isAddMenuItemOpen && ( 
+  <AddMenuItem
+    isOpen={isAddMenuItemOpen !== null}
+    onClose={() => setIsAddMenuItemOpen(null)}
+    onAddNewItem={handleAddNewItem}
+    categoryName={isAddMenuItemOpen || ""}
+  />
+)}
+
 
       <div className={styles.main}>
         <div className={styles.categories}>
@@ -398,7 +415,7 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-              <Image src={`/images/${item.name.replace(/\s/g, '')}.png`} alt={item.name} width={100} height={100} />
+              <Image src={`/images/${item.name ? item.name.replace(/\s/g, '') : ''}.png`} alt={item.name} width={100} height={100} />
               <div>{item.name}<br />{'$' + item.price}</div>
               {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                     <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
@@ -406,7 +423,7 @@ export default function Home() {
             </button>
           ))}
 
-          <button className={styles.addItemButton} onClick={() => setIsModalOpen(true)}>
+          <button className={styles.addItemButton} onClick={() => setIsAddMenuItemOpen(() => activeCategory)}>
             Add New Item
           </button>
         </div>
@@ -457,12 +474,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdd={handleAddNewItem}
-      />
     </>
 
   );

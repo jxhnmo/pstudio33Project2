@@ -57,7 +57,7 @@ const OrderSummary = () => {
             selectedItems.map((item, index) => (
               <div key={index} className={styles.orderItem}>
                 <div>
-                  {item.name} - ${item.price} x {item.quantity}
+                  {item.name} - ${Number(item.price).toFixed(2)} x {item.quantity}
                 </div>
                 <button onClick={() => handleRemoveItem(index)} className={styles.removeButton}>
                   Remove

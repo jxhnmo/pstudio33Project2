@@ -5,7 +5,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import styles from './sidebar.module.css';
 import SetTheme from '../theme/SetTheme';
 import Magnifier from '../magnifier/Magnifier';
-import Weather from '../weather/Weather';
+import Weather from '../Weather/weather';
 import ZipCode from '../ZipCode/zipcode'; // Import the new ZipCode component
 
 // Sidebar component

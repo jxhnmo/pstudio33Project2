@@ -90,12 +90,15 @@ export default function Home() {
     }
   };
   
+  const googleImage = '/images/google.jpg';
+  const headerImagePath = '/images/RevSign.png';
+
   return (
     <>
       <Sidebar />
       <main>
-        <div>
-          <h1 className={styles.h1}>Welcome to REV&apos;S</h1>
+        <div className={styles.header}> {/* Use the new header class */}
+          <img src={headerImagePath} alt="Welcome to REV's" className={styles.headerImage} />
         </div>
         <div className="container">
           <Link href="/order" className={styles.square}>Customer Order</Link>
@@ -116,11 +119,12 @@ export default function Home() {
 
               {/* Google login button */}
               {googleLoginURL && (
-                <button 
-                  onClick={() => window.location.href = googleLoginURL} 
-                  className={styles.googleLoginButton} 
+                <button
+                  onClick={() => (window.location.href = googleLoginURL)}
+                  className={styles.googleLoginButton}
                   aria-label="Login with Google"
                 >
+                  <img src={googleImage} alt="Google Logo" /> {/* Add Google logo */}
                   Google Login
                 </button>
               )}
