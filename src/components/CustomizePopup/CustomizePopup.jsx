@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './CustomizePopup.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes, faLock } from '@fortawesome/free-solid-svg-icons';
-import { getIrremovableIngredients } from '../../app/order'; // Ensure you're importing from the correct location
+import { getIrremovableIngredients } from '../../app/order';
 
 const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConfirmCustomization }) => {
     const [selectedIngredients, setSelectedIngredients] = useState(new Set(selectedItem.ingredients || []));
@@ -41,7 +41,7 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConf
         }
         setSelectedIngredients(newSelectedIngredients);
     };
-    
+
     const handleConfirmCustomization = () => {
         const selectedIngredientsArray = Array.from(selectedIngredients);
         const deselectedIngredients = selectedItem.ingredients?.filter(ingredient => !selectedIngredients.has(ingredient)) || [];
@@ -50,7 +50,7 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConf
     };
 
     const hasValidSelections = () => {
-        return Array.from(selectedIngredients).some(ingredient => 
+        return Array.from(selectedIngredients).some(ingredient =>
             !irremovableIngredients.includes(ingredient)
         );
     };
@@ -61,7 +61,7 @@ const CustomizePopup = ({ selectedItem, selectedItemIngredients, onClose, onConf
                 <div className={styles.popup}>
                     <h2 className>Loading...</h2>
                 </div>
-        </div>
+            </div>
         );
     }
 

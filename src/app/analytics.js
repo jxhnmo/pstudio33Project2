@@ -196,14 +196,7 @@ export async function setSalesTransactionValid(id) {
     }
 }
 
-
-  
-
-
-
-
-
-export async function fetchRestock(startTime,endTime) {
+export async function fetchExcessData(timestamp) {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
@@ -211,35 +204,36 @@ export async function fetchRestock(startTime,endTime) {
         password: process.env.DATABASE_PASSWORD,
         port: 5432,
     });
-    
-    try {
-        const restock_reports = await pool.query('')
-    } catch (err) {
-        console.error('Failed to fetch restock data',err);
-        return [];
-    }
-}
 
-export async function fetchSales(startTime,endTime,menuId) {
-    const pool = new Pool({
-        user: process.env.DATABASE_USER,
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        password: process.env.DATABASE_PASSWORD,
-        port: 5432,
-    });
-    
     try {
-        const sales_data = await pool.query("SELECT DATE_TRUNC('day', purchase_time) AS purchase_day,COUNT(*) as count "
-        + "FROM sales_transactions JOIN sales_items ON sales_transactions.id = sales_items.sales_id "
-        + "WHERE purchase_time > $1 AND purchase_time < $2 AND sales_items.menu_id = $3 "
-        + "GROUP BY DATE_TRUNC('day',purchase_time) ORDER BY purchase_day;", [startTime,endTime,menuId]);
-        const data = sales_data.rows.map((row) => {return [row.purchase_day.getTime(),parseInt(row.count)]})
-        console.log(data)
-        return data;
-        //return sales_data.rows;
+        const formattedTimestamp = new Date(timestamp); // Ensure timestamp is a Date object
+        const currentTime = new Date();
+        const query = `
+            SELECT ii.id, ii.item_name, ii.stock,
+                   COALESCE(SUM(ing.num), 0) AS sold_stock
+            FROM inventory_items ii
+            LEFT JOIN ingredients ing ON ii.id = ing.item_id
+            LEFT JOIN menu_items mi ON ing.menu_id = mi.id
+            LEFT JOIN sales_items si ON mi.id = si.menu_id
+            LEFT JOIN sales_transactions st ON si.sales_id = st.id
+            WHERE st.purchase_time BETWEEN $1 AND $2 AND st.valid = TRUE
+            GROUP BY ii.id
+            ORDER BY ii.id ASC;
+        `;
+
+        const result = await pool.query(query, [
+            formattedTimestamp.toISOString(),
+            currentTime.toISOString()
+        ]);
+        return result.rows.map(row => ({
+            id: row.id,
+            item_name: row.item_name,
+            stock: row.stock,
+            sold_stock: row.sold_stock,
+            sold_percentage: ((row.sold_stock / row.stock) * 100).toFixed(2) + '%'
+        }));
     } catch (err) {
-        console.error('Failed to fetch sales data',err);
+        console.error('Failed to fetch excess data', err);
         return [];
     }
 }
