@@ -3,22 +3,22 @@ import React, { useState, useEffect } from 'react';
 import styles from './Weather.module.css';
 import { fetchWeatherAllData } from '../../app/weather'; // Adjust the path as necessary
 
-const Weather = ({zipCode}) => {
+const Weather = ({ zipCode }) => {
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(true);
-   
- 
+
+
 
     useEffect(() => {
         const loadWeatherData = async () => {
-            
+
             try {
-                if(typeof window !== 'undefined'){
+                if (typeof window !== 'undefined') {
                     const data = await fetchWeatherAllData(zipCode);
                     setWeatherData(data);
                 }
-                
-                
+
+
             } catch (error) {
                 console.error('Error fetching weather data:', error);
                 setWeatherData(null);
@@ -33,7 +33,7 @@ const Weather = ({zipCode}) => {
         return <div className={styles.weatherContainer}>Loading weather data...</div>;
     }
 
-    if (!weatherData) {
+    if (!weatherData || !weatherData.weather || weatherData.weather.length === 0) {
         return <div className={styles.weatherContainer}>Weather data is not available.</div>;
     }
 
