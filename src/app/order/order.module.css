@@ -180,6 +180,7 @@
   height: 95%;
   gap: 10px;
   padding: 10px;
+  overflow-y: auto;
 }
 
 .currOrderTop {

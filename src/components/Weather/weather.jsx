@@ -23,7 +23,8 @@ const Weather = ({ zipCode }) => {
                 console.error('Error fetching weather data:', error);
                 setWeatherData(null);
             }
-            setLoading(false);
+   
+        setLoading(false);
         };
 
         loadWeatherData();
