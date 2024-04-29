@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import { fetchCategories, fetchItems, completeTransaction, getItemInfo, getMenuItemIngredients } from '../../order';
 import { fetchInventory, addItem, updateItemStock } from '../../inventory';
-import { addMenuItem } from '../../menuItem';
+import { addMenuItem, addIngredient } from '../../menuItem';
 
 import InfoPopup from '../../../components/InfoPopup/InfoPopup';
 import CustomizePopup from '../../../components/CustomizePopup/CustomizePopup';
