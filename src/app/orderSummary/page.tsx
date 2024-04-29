@@ -20,6 +20,8 @@ interface Item {
 const OrderSummary = () => {
   const router = useRouter();
 
+  // State to track whether it's Dine-In or Takeout
+  const [isTakeout, setIsTakeout] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -29,10 +31,18 @@ const OrderSummary = () => {
 
   const totalPrice = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+  // Toggle between Dine-In and Takeout
+  const toggleTakeout = () => {
+    setIsTakeout(!isTakeout);
+  };
+
   const handleConfirmOrder = async () => {
-    const currentTime: Date = new Date();
+    const currentTime = new Date();
     const orderId = await getMaxId() + 1;
-    completeTransaction(totalPrice.toFixed(2), selectedItems);
+
+    // Pass 'isTakeout' to completeTransaction
+    completeTransaction(totalPrice.toFixed(2), selectedItems, isTakeout);
+
     localStorage.setItem('orderId', JSON.stringify(orderId));
     setSelectedItems([]);
     localStorage.setItem('selectedItems', JSON.stringify([]));
@@ -52,6 +62,8 @@ const OrderSummary = () => {
       <Sidebar />
       <div className={styles.main}>
         <h1 className={styles.orderSummaryHeader}>Order Summary</h1>
+        
+        {/* Order Details */}
         <div className={styles.orderList}>
           {selectedItems.length > 0 ? (
             selectedItems.map((item, index) => (
@@ -68,13 +80,26 @@ const OrderSummary = () => {
             <div>No items in the order.</div>
           )}
         </div>
+        
+        {/* Order Total */}
         <div className={styles.total}>
           Total: <span>${totalPrice.toFixed(2)}</span>
         </div>
+        
+        {/* Order Submission */}
         <div className={styles.buttonsContainer}>
           <button className={styles.goBackButton} onClick={() => router.back()}>
             Go Back
           </button>
+          {/* Dine-In/Takeout Toggle */}
+          <div className={styles.toggleContainer}>
+            <button
+              onClick={toggleTakeout}
+              className={isTakeout ? styles.confirmOrderButton : styles.confirmOrderButton}
+            >
+              {isTakeout ? 'Switch to Dine-In' : 'Switch to Takeout'}
+            </button>
+        </div>
           <button onClick={handleConfirmOrder} className={styles.confirmOrderButton}>
             Confirm Order
           </button>

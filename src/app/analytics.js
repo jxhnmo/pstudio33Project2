@@ -88,7 +88,7 @@ export async function fetchXData() {
     try {
         const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
         const query = `
-            SELECT st.id, st.cost, st.purchase_time, st.valid,
+            SELECT st.id, st.takeout, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
                 array_agg(concat(mi_count, 'x ', mi_name) ORDER BY mi_name) AS items
             FROM (
@@ -101,13 +101,14 @@ export async function fetchXData() {
             JOIN sales_transactions st ON st.id = subquery.transaction_id
             JOIN employees e ON st.employee_id = e.id
             WHERE DATE(st.purchase_time) = $1
-            GROUP BY st.id, e.name, e.shift_start, e.shift_end
+            GROUP BY st.id, e.name, e.shift_start, e.shift_end, st.takeout
             ORDER BY st.id ASC;
         `;
         
         const result = await pool.query(query, [today]);
         return result.rows.map(row => ({
             id: row.id,
+            takeout: row.takeout,
             cost: row.cost,
             purchase_time: row.purchase_time,
             name: row.employee_name,
@@ -136,7 +137,7 @@ export async function fetchZData(startDate, endDate) {
         const end = new Date(`${endDate}T23:59:59Z`);
     
         const query = `
-            SELECT st.id, st.cost, st.purchase_time, st.valid,
+            SELECT st.id, st.takeout, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
                 array_agg(concat(mi_count, 'x ', mi_name) ORDER BY mi_name) AS items
             FROM (
@@ -149,7 +150,7 @@ export async function fetchZData(startDate, endDate) {
             JOIN sales_transactions st ON st.id = subquery.transaction_id
             JOIN employees e ON st.employee_id = e.id
             WHERE st.purchase_time BETWEEN $1 AND $2
-            GROUP BY st.id, e.name, e.shift_start, e.shift_end
+            GROUP BY st.id, e.name, e.shift_start, e.shift_end, st.takeout
             ORDER BY st.id ASC;
         `;
 
@@ -159,6 +160,7 @@ export async function fetchZData(startDate, endDate) {
         ]);
         return result.rows.map(row => ({
             id: row.id,
+            takeout: row.takeout,
             cost: row.cost,
             purchase_time: row.purchase_time,
             name: row.employee_name,
