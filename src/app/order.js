@@ -130,6 +130,29 @@ export async function getIrremovableIngredients() {
         return [];
     }
 }
+async function updateIngredients(menu_id) {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+    
+    const inventory_update_query = "UPDATE inventory_items AS ii SET stock = stock - (SELECT num FROM ingredients AS ing WHERE ing.menu_id = $1"
+    + " AND ing.item_id = ii.id)"
+    + " WHERE id IN (SELECT item_id FROM ingredients WHERE ingredients.menu_id = $1"
+    + " GROUP BY item_id);";
+    console.log(inventory_update_query);
+    try {
+        const result = await pool.query(inventory_update_query,[menu_id]);
+    } catch (err) {
+        console.error('Failed to update inventory for ingredients', err);
+        return [];
+    } finally {
+        await pool.end();
+    }
+}
 
 export async function completeTransaction(cost, selectedItems, takeout) {
     const pool = new Pool({
@@ -158,6 +181,11 @@ export async function completeTransaction(cost, selectedItems, takeout) {
         ).join(',');
 
         await pool.query(itemQueryText + params);
+
+        // Decrement inventory items
+        for(const item of selectedItems) {
+            updateIngredients(item.id);
+        }
 
         return sales_id;
 
