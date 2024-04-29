@@ -98,7 +98,7 @@ export async function fetchXData() {
                 JOIN menu_items mi ON si.menu_id = mi.id
                 GROUP BY st.id, mi.id, mi.name
             ) AS subquery
-            JOIN sales_transactions st ON st.id = subquery.transaction_id
+            LEFT JOIN sales_transactions st ON st.id = subquery.transaction_id
             JOIN employees e ON st.employee_id = e.id
             WHERE DATE(st.purchase_time) = $1
             GROUP BY st.id, e.name, e.shift_start, e.shift_end, st.takeout
