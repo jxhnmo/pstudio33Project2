@@ -41,7 +41,7 @@ function MealUpgradePopup({ isOpen, onClose, onConfirmMeal }) {
                             className={styles.popupButton}
                             key={side.id}
                             onClick={() => handleItemSelection(side)}>
-                            Add {side.name} (${side.price})
+                            Add {side.name} (${Number(side.price).toFixed(2)})
                         </button>
                     ))}
                 </div>
@@ -52,7 +52,7 @@ function MealUpgradePopup({ isOpen, onClose, onConfirmMeal }) {
                             className={styles.popupButton}
                             key={drink.id}
                             onClick={() => handleItemSelection(drink)}>
-                            Add {drink.name} (${drink.price})
+                            Add {drink.name} (${Number(drink.price).toFixed(2)})
                         </button>
                     ))}
                 </div>

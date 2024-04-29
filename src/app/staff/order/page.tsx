@@ -415,8 +415,8 @@ export default function Home() {
         <div className={styles.orderMenu}>
           {currentCategoryItems.map((item, index) => (
             <button key={index} className={styles.menuItemContainer} onClick={() => handleSelectItem(item)}>
-             <Image src={`/images/${item.name.replace(/\s/g, '').toLowerCase()}.png`} alt={item.name} width={100} height={100} />
-              <div>{item.name}<br />{'$' + item.price}</div>
+              <Image src={`/images/${item.name ? item.name.replace(/\s/g, '') : ''}.png`} alt={item.name} width={100} height={100} />
+              <div>{item.name}<br />{'$' + Number(item.price).toFixed(2)}</div>
               {/*<div className={`${styles.infoIcon}`} onClick={(e) => handleOpenPopup(e, item)} >
                     <Image src={'/images/infoButton.png'} alt="Info" width={30} height={30} />
           </div>*/}
@@ -434,7 +434,7 @@ export default function Home() {
             <div className={styles.orderList}>
               {selectedItems.map((item, index) => (
                 <div key={`${item.id}-${new Date().getTime()}-${index}`}>
-                  {item.name} - ${item.price} x {item.quantity}
+                  {item.name} - ${Number(item.price).toFixed(2)} x {item.quantity}
                   <br />
                   <div className={styles.deselectedIngredients}>
                     {generateDeselectedIngredientsList(item)}

@@ -466,8 +466,8 @@ export default function StaffStats() {
                           <td>{item.stock}</td>
                           <td>{item.max_stock}</td>
                           <td>{item.max_stock-item.stock}</td>
-                          <td>{item.price}</td>
-                          <td>{(item.max_stock-item.stock)*item.price}</td>
+                          <td>{Number(item.price).toFixed(2)}</td>
+                          <td>{(Number(item.max_stock-item.stock)*item.price).toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
