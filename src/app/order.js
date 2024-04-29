@@ -131,7 +131,7 @@ export async function getIrremovableIngredients() {
     }
 }
 
-export async function completeTransaction(cost,selectedItems) {
+export async function completeTransaction(cost, selectedItems, takeout) {
     const pool = new Pool({
         user: process.env.DATABASE_USER,
         host: process.env.DATABASE_HOST,
@@ -139,60 +139,93 @@ export async function completeTransaction(cost,selectedItems) {
         password: process.env.DATABASE_PASSWORD,
         port: 5432,
     });
-    const pool2 = new Pool({
-        user: process.env.DATABASE_USER,
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        password: process.env.DATABASE_PASSWORD,
-        port: 5432,
-    });
-    
-    const pool3 = new Pool(
-        {
-        user: process.env.DATABASE_USER,
-        host: process.env.DATABASE_HOST,
-        database: process.env.DATABASE_NAME,
-        password: process.env.DATABASE_PASSWORD,
-        port: 5432,
-        }
-    );
-    
-    console.log();
-    selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
-    const currentTime = new Date();
+
     try {
+        const currentTime = new Date();
 
-        console.log(`Fetching id value from sales_transactions`); // Debugging
-        const result = await pool.query('SELECT (MAX(id)+1)%1000 FROM sales_transactions;');
-        console.log('here');
+        // Fetch the next sales ID
+        const result = await pool.query('SELECT (MAX(id) + 1) AS next_id FROM sales_transactions;');
+        const sales_id = result.rows[0].next_id;
 
-        await pool.end();
-        var sales_id = result.rows[0].max_id;
-        const queryText = 'INSERT INTO sales_transactions VALUES ((SELECT MAX(id) + 1 FROM sales_transactions),$1,1,$2);';
-        await pool2.query(queryText, [cost,currentTime.toISOString()]);
-        await pool2.end();
+        // Insert into sales_transactions with takeout
+        const queryText = 'INSERT INTO sales_transactions (id, takeout, cost, employee_id, purchase_time, valid) VALUES ($1, $2, $3, 1, $4, true);';
+        await pool.query(queryText, [sales_id, takeout, cost, currentTime.toISOString()]);
+
+        // Insert into sales_items
         const itemQueryText = 'INSERT INTO sales_items (id, sales_id, menu_id) VALUES ';
-        var idx = 1;
-        const params = selectedItems.map((item, index) => {
-            return '(' + 
-              `(SELECT COALESCE(MAX(id), 0) + 1 + ${index} FROM sales_items), ` + 
-              `(SELECT MAX(id) FROM sales_transactions), ` + 
-              `${item.id}` + 
-              ')';
-          }).join(',');
-        console.log(itemQueryText + params);
-        await pool3.query(itemQueryText+params);
-        
-        
-        
-        
-        
-        await pool3.end();
+        const params = selectedItems.map((item, index) => 
+            `((SELECT COALESCE(MAX(id), 0) + 1 + ${index} FROM sales_items), ${sales_id}, ${item.id})`
+        ).join(',');
+
+        await pool.query(itemQueryText + params);
+
         return sales_id;
 
     } catch (err) {
-
-        console.error(`Failed completeTransaction`,err);
-
+        console.error(`Failed completeTransaction`, err);
+    } finally {
+        await pool.end(); // Ensure the pool is closed
     }
 }
+
+// export async function completeTransaction(cost, selectedItems, takeout) {
+//     const pool = new Pool({
+//         user: process.env.DATABASE_USER,
+//         host: process.env.DATABASE_HOST,
+//         database: process.env.DATABASE_NAME,
+//         password: process.env.DATABASE_PASSWORD,
+//         port: 5432,
+//     });
+
+//     const pool2 = new Pool({
+//         user: process.env.DATABASE_USER,
+//         host: process.env.DATABASE_HOST,
+//         database: process.env.DATABASE_NAME,
+//         password: process.env.DATABASE_PASSWORD,
+//         port: 5432,
+//     });
+    
+//     const pool3 = new Pool(
+//         {
+//         user: process.env.DATABASE_USER,
+//         host: process.env.DATABASE_HOST,
+//         database: process.env.DATABASE_NAME,
+//         password: process.env.DATABASE_PASSWORD,
+//         port: 5432,
+//         }
+//     );
+    
+//     console.log();
+//     selectedItems.map((item,index) => {console.log(item.id+item.name+item.price+item.quantity)})
+//     const currentTime = new Date();
+//     try {
+
+//         console.log(`Fetching id value from sales_transactions`); // Debugging
+//         const result = await pool.query('SELECT (MAX(id)+1)%1000 FROM sales_transactions;');
+//         console.log('here');
+
+//         await pool.end();
+//         var sales_id = result.rows[0].max_id;
+//         const queryText = 'INSERT INTO sales_transactions VALUES ((SELECT MAX(id) + 1 FROM sales_transactions),$1,1,$2);';
+//         await pool2.query(queryText, [cost,currentTime.toISOString()]);
+//         await pool2.end();
+//         const itemQueryText = 'INSERT INTO sales_items (id, sales_id, menu_id) VALUES ';
+//         var idx = 1;
+//         const params = selectedItems.map((item, index) => {
+//             return '(' + 
+//               `(SELECT COALESCE(MAX(id), 0) + 1 + ${index} FROM sales_items), ` + 
+//               `(SELECT MAX(id) FROM sales_transactions), ` + 
+//               `${item.id}` + 
+//               ')';
+//           }).join(',');
+//         console.log(itemQueryText + params);
+//         await pool3.query(itemQueryText+params);
+//         await pool3.end();
+//         return sales_id;
+
+//     } catch (err) {
+
+//         console.error(`Failed completeTransaction`,err);
+
+//     }
+// }

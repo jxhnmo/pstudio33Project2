@@ -383,7 +383,7 @@ export default function Home() {
           isOpen={isMealUpgradePopupOpen}
           onClose={() => setIsMealUpgradePopupOpen(false)}
           onConfirmMeal={handleMealUpgradeConfirmation}
-          selectedItem={selectedItemForCustomization}
+          //selectedItem={selectedItemForCustomization} // commented out to pass build
         />
       )}
       

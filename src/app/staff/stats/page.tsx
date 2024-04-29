@@ -23,6 +23,7 @@ interface ExcessData {
 
 interface SalesTransaction {
   id: number;
+  takeout: boolean;
   cost: number;
   purchase_time: string;
   name: string;
@@ -335,6 +336,7 @@ export default function StaffStats() {
                     <tr>
                       <th>Transaction ID</th>
                       <th>Items Ordered</th>
+                      <th>Takeout/Dine-In</th>  {/* New column */}
                       <th>Cost</th>
                       <th>Time</th>
                       <th>Date</th>
@@ -354,6 +356,7 @@ export default function StaffStats() {
                               <div key={idx}>{item}</div> // Each item is a string formatted as "2x Burger"
                             ))}
                           </td>
+                          <td>{order.takeout ? 'Takeout' : 'Dine-In'}</td>  {/* New display logic */}
                           <td>{Number(order.cost).toFixed(2)}</td>
                           <td>{new Date(order.purchase_time).toLocaleTimeString()}</td>
                           <td>{new Date(order.purchase_time).toLocaleDateString()}</td>

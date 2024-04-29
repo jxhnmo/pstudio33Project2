@@ -328,6 +328,7 @@ def reset_database_tables(conn):
     );
     CREATE TABLE sales_transactions (
         id SERIAL PRIMARY KEY,
+        takeout BOOLEAN,
         cost NUMERIC,
         employee_id INT,
         purchase_time TIMESTAMP,
@@ -475,8 +476,11 @@ def populate_transactions(conn):
                     items = random.choices(list(menu_items_with_prices.keys()), k=random.randint(1, 5))
                     total_cost = sum(menu_items_with_prices[item] for item in items)
 
+                    takeout = random.choice([True, False])
+                    takeout_str = 'TRUE' if takeout else 'FALSE'
+
                     # Writing sales transaction to file
-                    sales_file.write(f"INSERT INTO sales_transactions (cost, employee_id, purchase_time, valid) VALUES ({total_cost}, {employee_id}, '{transaction_time}', TRUE) RETURNING id;\n")
+                    sales_file.write(f"INSERT INTO sales_transactions (takeout, cost, employee_id, purchase_time, valid) VALUES ({takeout_str}, {total_cost}, {employee_id}, '{transaction_time}', TRUE) RETURNING id;\n")
                     
                     for item_id in items:
                         # Write sales items to file
