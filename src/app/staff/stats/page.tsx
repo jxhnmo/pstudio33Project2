@@ -46,9 +46,6 @@ interface InventoryItem {
   item_name: string;
   stock: number;
   max_stock: number;
-  deficit?: number;
-  price: number;
-  totalCost?: number;
   price: number;
 }
 
