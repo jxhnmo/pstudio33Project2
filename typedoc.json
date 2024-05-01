@@ -1,0 +1,11 @@
+{
+    "entryPoints": ["src/app", "src/components"],
+    "out": "docs",
+    "exclude": ["**/*.test.tsx", "**/*.spec.tsx", "node_modules", "**/__tests__/**"],
+    "includes": "./src",  // Ensure this is used to specify additional documentation files
+    "tsconfig": "tsconfig.json",
+    "entryPointStrategy": "expand",
+    "excludeExternals": true,
+    "excludePrivate": true
+  }
+  
