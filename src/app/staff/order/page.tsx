@@ -457,19 +457,20 @@ export default function Home() {
 
           </div>
         </div>
-
         <div className={styles.buttonsContainer}>
           {isManager ? (
             <>
               <Link href="/staff/order" passHref><div className={styles.navButton}>Staff Order</div></Link>
               <Link href="/staff/stats" passHref><div className={styles.navButton}>Staff Stats</div></Link>
               <Link href="/staff/inventory" passHref><div className={styles.navButton}>Staff Inventory</div></Link>
+              <Link href="/staff/users" passHref><div className={styles.navButton}>Users</div></Link>
             </>
           ) : (
             <>
               <div className={`${styles.navButton} ${styles.disabled}`}>Staff Order</div>
               <div className={`${styles.navButton} ${styles.disabled}`}>Staff Stats</div>
               <div className={`${styles.navButton} ${styles.disabled}`}>Staff Inventory</div>
+              <div className={`${styles.navButton} ${styles.disabled}`}>Users</div>
             </>
           )}
         </div>

@@ -542,6 +542,9 @@ export default function StaffStats() {
           <Link href="/staff/inventory" legacyBehavior>
             <a className={styles.navButton}>Staff Inventory</a>
           </Link>
+          <Link href="/staff/users" legacyBehavior>
+            <a className={styles.navButton}>Users</a>
+          </Link>
         </div>
       </div>
     </>
