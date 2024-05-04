@@ -4,6 +4,11 @@ import Link from 'next/link';
 import styles from './users.module.css'; // Import the styles
 import { fetchAllEmployees, addEmployee, removeEmployee } from '@/app/user';
 import Modal from '../userPopup/page'; // Import the Modal component
+import dynamic from 'next/dynamic';
+
+const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
+  ssr: false,
+});
 
 interface Employee {
   id: number;
@@ -86,57 +91,62 @@ const UsersPage = () => {
 
   
   return (
-    <div className={styles.container}>
-      <h1>Users Management</h1>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Salary</th>
-            <th>Shift Start</th>
-            <th>Shift End</th>
-            <th>Manager</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map(employee => (
-            <tr key={employee.id}>
-              <td>{employee.id}</td>
-              <td>{employee.name}</td>
-              <td>{employee.salary}</td>
-              <td>{employee.shift_start}</td>
-              <td>{employee.shift_end}</td>
-              <td>{employee.manager ? 'Yes' : 'No'}</td>
-              <td>{employee.username}</td>
-              <td>{employee.email}</td>
-              <td><button onClick={() => handleDelete(employee.id)}>Delete</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>Add New Employee</button>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddEmployee} />
-      {/*Navigation Buttons*/}
-      <div className={styles.buttonsContainer}>
-        <Link href="/staff/order" legacyBehavior>
-          <a className={styles.navButton}>Staff Order</a>
-        </Link>
-        <Link href="/staff/stats" legacyBehavior>
-          <a className={styles.navButton}>Staff Stats</a>
-        </Link>
-        <Link href="/staff/inventory" legacyBehavior>
-          <a className={styles.navButton}>Staff Inventory</a>
-        </Link>
-        <Link href="/staff/users" legacyBehavior>
-          <a className={styles.navButton}>Users</a>
-        </Link>
-      </div> 
+    <div className={styles.pageContainer}> 
+        <Sidebar />
+        <div className={styles.main}>  
+            <h1 className={styles.title}>User Management</h1> 
+            <table className={styles.table}>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Salary</th>
+                        <th>Shift Start</th>
+                        <th>Shift End</th>
+                        <th>Manager</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {employees.map(employee => (
+                        <tr key={employee.id}>
+                            <td>{employee.id}</td>
+                            <td>{employee.name}</td>
+                            <td>{employee.salary}</td>
+                            <td>{employee.shift_start}</td>
+                            <td>{employee.shift_end}</td>
+                            <td>{employee.manager ? 'Yes' : 'No'}</td>
+                            <td>{employee.username}</td>
+                            <td>{employee.email}</td>
+                            <td><button onClick={() => handleDelete(employee.id)} className={styles.button}>Delete</button></td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>Add New Employee</button>
+        </div>
+    
+        {/* Navigation Buttons */}
+        <div className={styles.buttonsContainer}> 
+            <Link href="/staff/order" legacyBehavior>
+                <a className={styles.navButton}>Staff Order</a>
+            </Link>
+            <Link href="/staff/stats" legacyBehavior>
+                <a className={styles.navButton}>Staff Stats</a>
+            </Link>
+            <Link href="/staff/inventory" legacyBehavior>
+                <a className={styles.navButton}>Staff Inventory</a>
+            </Link>
+            <Link href="/staff/users" legacyBehavior>
+                <a className={styles.navButton}>Users</a> 
+            </Link>
+        </div>
+    
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddEmployee} />
     </div>
   );
-};
+}
 
 export default UsersPage;
