@@ -24,25 +24,18 @@ const Sidebar = () => {
     // Function to load and initialize the Google Translate widget
     const loadGoogleTranslate = () => {
       if (window.googleTranslateScriptLoaded) return;
-
-      // Define the initialization function for Google Translate
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement({ pageLanguage: 'en' }, 'google_translate_element');
       };
-      // Dynamically load the Google Translate script
       const googleTranslateScript = document.createElement('script');
       googleTranslateScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
       googleTranslateScript.async = true;
       document.body.appendChild(googleTranslateScript);
+      document.getElementById('google_translate_element').style.textAlign = 'center';
+      window.googleTranslateScriptLoaded = true; 
 
-      window.googleTranslateScriptLoaded = true; // Set flag to true
-
-      // Cleanup function
       return () => {
-        window.googleTranslateScriptLoaded = false; // Reset flag
-
-      //  document.body.removeChild(googleTranslateScript);
-      //  delete window.googleTranslateElementInit;
+        window.googleTranslateScriptLoaded = false; 
       };
     };
 
@@ -59,7 +52,7 @@ const Sidebar = () => {
       <div className={styles.settingName}>High Contrast Mode</div>
       <SetTheme />
       <Magnifier />
-      <div id="google_translate_element" style={{ marginTop: '20px' }}></div>
+      <div id="google_translate_element" style={{ marginTop: '20px'}}></div>
       <Weather zipCode={zipCode} />
       <ZipCode onZipCodeChange={handleZipCodeChange} />
     </div>
