@@ -18,7 +18,7 @@
 }
 
 .popupContent {
-  background-color: #f9f9f9; /* Lighter background for the popup */
+  background-color: var(--c4); /* Lighter background for the popup */
   width: auto; /* Adjust width */
   max-width: 500px; /* Maximum width */
   padding: 30px;
@@ -40,7 +40,7 @@
 
 .calories {
   font-weight: bold; /* Highlight calorie count */
-  color: #333; /* Darker text for emphasis */
+  color: var(--c3); /* Darker text for emphasis */
 }
 
 .title, .subtitle {
@@ -48,7 +48,7 @@
 }
 
 .description {
-  color: #666; /* Darker gray for readability */
+  color: var(--c3); /* Darker gray for readability */
   margin-bottom: 20px; /* More space before the ingredients section */
 }
 
@@ -57,8 +57,8 @@
   top: 10px;
   right: 10px;
   padding: 5px 10px;
-  background-color: black; /* Match title color */
-  color: white;
+  background-color: var(--c1); /* Match title color */
+  color: var(--c3);
   border: none;
   border-radius: 50%; /* Circular button */
 }
@@ -68,7 +68,7 @@
 }
 
 .ingredientsContainer {
-  border-top: 2px solid maroon; /* Decorative line before ingredients */
+  border-top: 2px solid var(--c3); /* Decorative line before ingredients */
   padding-top: 10px; /* Space after the line */
 }
 .warning {
