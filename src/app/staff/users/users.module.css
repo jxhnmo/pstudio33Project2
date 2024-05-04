@@ -57,7 +57,26 @@
 }
 
 .addButton:hover {
+  color: var(--c4);
   background-color: var(--c6);
+}
+
+.button {
+  padding: 4px;
+  background-color: var(--c4);
+  color: var(--c3);
+  border-radius: 5px;
+  border: 1px solid var(--c7);
+  text-decoration: none;
+}
+
+.button:hover {
+  padding: 4px;
+  background-color: var(--c6);
+  color: var(--c4);
+  border-radius: 5px;
+  border: 1px solid var(--c7);
+  text-decoration: none;
 }
 
 .buttonsContainer {
@@ -78,31 +97,14 @@
   background-color: var(--c4);
   color: var(--c3);
   border-radius: 10px;
-  border: 1px solid var(--c7);
+  border-color: var(--c7);
+  border-style: solid;
   text-decoration: none;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: 0.5s;
 }
 
 .navButton:hover {
   background-color: var(--c6);
+  color: var(--c4);
   transform: scale(1.1);
 }
-
-
-/* .xreportTable td {
-  text-align: left;
-  padding: 8px;
-  border-bottom: 1px solid var(--c7);
-}
-
-.xreportTable th {
-  background-color: var(--c2);
-  color: var(--c1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.xreportTable tr:nth-child(even) {
-  background-color: var(--c4);
-} */
