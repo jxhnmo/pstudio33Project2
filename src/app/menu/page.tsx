@@ -80,7 +80,7 @@ const Home = () => {
             {currentCategory.items.map(item => (
               <div key={item.name} className={styles.itemContainer}>
                 <img src={item.imageUrl} alt={item.name} className={styles.itemImage} />
-                <p className={styles.itemNamePrice}>{item.name} - ${item.price}</p>
+                <p className={styles.itemNamePrice}>{item.name} - ${Number(item.price).toFixed(2)}</p>
               </div>
             ))}
           </div>
