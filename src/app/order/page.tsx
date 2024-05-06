@@ -240,7 +240,7 @@ export default function Home() {
           isOpen={isMealUpgradePopupOpen}
           onClose={() => setIsMealUpgradePopupOpen(false)}
           onConfirmMeal={handleMealUpgradeConfirmation}
-          //selectedItem={selectedItemForCustomization} //commented for build
+        //selectedItem={selectedItemForCustomization} //commented for build
         />
       )}
 
