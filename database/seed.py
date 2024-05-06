@@ -361,12 +361,20 @@ def reset_database_tables(conn):
 
 def populate_employees(conn):
     with conn.cursor() as cur:
-        cur.executemany(sql.SQL("""
-            INSERT INTO employees (id, name, salary, shift_start, shift_end, manager, username, password, email)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """), employees)
-        conn.commit()
-        print("Employees data populated successfully.")
+        try:
+            # Insert employee data
+            cur.executemany(sql.SQL("""
+                INSERT INTO employees (id, name, salary, shift_start, shift_end, manager, username, password, email)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """), employees)
+
+            # Reset the sequence to the highest current id plus one
+            cur.execute("SELECT setval('employees_id_seq', COALESCE((SELECT MAX(id)+1 FROM employees), 1), false);")
+            conn.commit()
+            print("Employees data populated successfully and sequence adjusted.")
+        except psycopg2.Error as e:
+            print("An error occurred:", e)
+            conn.rollback()
 
 def populate_inventory_items(conn):
     with conn.cursor() as cur:
