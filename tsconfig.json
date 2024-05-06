@@ -23,6 +23,6 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/AddItemPopup/AddItemPopup.jsx", "src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next/types/app/staff/userPopup/page.ts"]
 }
 
