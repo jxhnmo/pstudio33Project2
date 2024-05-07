@@ -86,7 +86,6 @@ export async function fetchXData() {
     });
 
     try {
-        const today = new Date().toISOString().split('T')[0]; // Format today's date to YYYY-MM-DD
         const query = `
             SELECT st.id, st.takeout, st.cost, st.purchase_time, st.valid,
                 e.name AS employee_name, e.shift_start, e.shift_end,
@@ -104,7 +103,14 @@ export async function fetchXData() {
             GROUP BY st.id, e.name, e.shift_start, e.shift_end, st.takeout
             ORDER BY st.id ASC;
         `;
-        
+        const test_offset = 0; // for testing
+        const timezone_offset = 14; // for timezone differences
+        const today = new Date();
+        today.setHours(0 + test_offset + timezone_offset,0,0,0); // Set to midnight today
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        tomorrow.setHours(6+ test_offset + timezone_offset,0,0,0); // Set to 6 AM tomorrow
+
         const result = await pool.query(query, [today]);
         return result.rows.map(row => ({
             id: row.id,
