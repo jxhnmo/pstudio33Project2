@@ -245,3 +245,30 @@ export async function fetchExcessData(timestamp) {
         return [];
     }
 }
+
+export async function fetchSalesData(startDate,endDate) {
+    const pool = new Pool({
+        user: process.env.DATABASE_USER,
+        host: process.env.DATABASE_HOST,
+        database: process.env.DATABASE_NAME,
+        password: process.env.DATABASE_PASSWORD,
+        port: 5432,
+    });
+
+    try {
+        const query = `
+        SELECT menu_items.id AS menu_id,name AS item_name,category,COUNT(*) as num_sales
+        FROM menu_items
+        JOIN sales_items ON sales_items.menu_id = menu_items.id
+        JOIN sales_transactions ON sales_items.sales_id = sales_transactions.id
+        WHERE purchase_time > $1 AND purchase_time < $2
+        GROUP BY menu_items.id
+        ORDER BY menu_items.id;
+        `;
+        const sales_data = await pool.query(query,[startDate,endDate]);
+        return sales_data.rows;
+    } catch (err) {
+        console.error('Failed to fetch sales data', err);
+        return [];
+    }
+}
