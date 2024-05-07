@@ -151,10 +151,6 @@ export default function StaffStats() {
     }
   }, [selectedOption]);
 
-  const updateProductUsageStatistics = () => {
-    // Here you can place any additional logic if needed to process or refresh the product usage data
-  };
-
   // Z report data effect
   useEffect(() => {
     const loadZData = async () => {
@@ -226,9 +222,6 @@ export default function StaffStats() {
     } else if (selectedOption === 'excess_report') {
       // Update excess report statistics
       // Implement your logic here
-    } else if (selectedOption === 'sells_together') {
-      // Update paired sales statistics
-      // Implement your logic here
     }
   }
 
@@ -278,12 +271,6 @@ export default function StaffStats() {
               onClick={() => handleButtonSelect('excess_report')}
             >
               Excess Report
-            </button>
-            <button
-              className={selectedOption === 'sells_together' ? styles.selectedOption : styles.option}
-              onClick={() => handleButtonSelect('sells_together')}
-            >
-              Paired Menu Items
             </button>
           </div>
         </div>
@@ -523,11 +510,6 @@ export default function StaffStats() {
                 </div>
               )}
             </div>
-          )}
-
-          {selectedOption === 'sells_together' && (
-            // Implement UI for paired menu items statistics
-            <div>Paired Menu Items Statistics</div>
           )}
         </div>
 
