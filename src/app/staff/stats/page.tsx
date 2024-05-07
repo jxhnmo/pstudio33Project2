@@ -7,7 +7,8 @@ import { ClipLoader } from 'react-spinners';
 import { useEffect, useState } from 'react';
 
 
-import { fetchData, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid, fetchExcessData } from '../../analytics';
+import { fetchData, fetchIngredientsUsedToday, fetchXData, fetchZData, setSalesTransactionValid, fetchExcessData, fetchSalesData } from '../../analytics';
+import { integrations_v1alpha } from 'googleapis';
 
 const Sidebar = dynamic(() => import('../../../components/sidebar/Sidebar'), {
   ssr: false
@@ -54,11 +55,19 @@ interface ProductUsage {
   count: number;
 }
 
+interface SalesFreq {
+  menu_id: number;
+  item_name: string;
+  category: string;
+  num_sales: number;
+}
+
+
 export default function StaffStats() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
-  const [firstSale, setFirstSale] = useState<string | null>(null);
-  const [lastSale, setLastSale] = useState<string | null>(null);
+  const [firstSale, setFirstSale] = useState<Date>(new Date());
+  const [lastSale, setLastSale] = useState<Date>(new Date());
   const [lastRestock, setLastRestock] = useState<string | null>(null);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
@@ -68,13 +77,15 @@ export default function StaffStats() {
   const [pairSalesTableData, setPairSalesTableData] = useState([]);
   const [selectedOption, setSelectedOption] = useState('product_usage');
 
-  const [salesData, setSalesData] = useState<SalesTransaction[]>([]);
+  const [salesData, setSalesData] = useState<SalesFreq[]>([]);
   const [productUsageData, setProductUsageData] = useState<ProductUsage[]>([]);
 
   const [xData, setXData] = useState<SalesTransaction[]>([]);
   const [zData, setZData] = useState<SalesTransaction[]>([]);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [salesStartDate, setSalesStart] = useState<Date>(new Date('Jan 01 2023'));
+  const [salesEndDate, setSalesEnd] = useState<Date>(new Date('Dec 31 2023'));
   const [isLoading, setIsLoading] = useState(false);
 
   const [excessData, setExcessData] = useState<ExcessData[]>([]);
@@ -85,6 +96,15 @@ export default function StaffStats() {
   
   const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndDate(event.target.value);
+  };
+
+  const handleSalesStartChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
+    setSalesStart(new Date(event.target.value));
+  };
+
+  const handleSalesEndChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSalesEnd(new Date(event.target.value));
   };
 
   const handleDelete = async (id: number) => {
@@ -173,6 +193,24 @@ export default function StaffStats() {
     }
 }, [selectedOption, startDate, endDate]);
 
+  useEffect(() => {
+    const loadSalesData = async () => {
+      if (!salesStartDate || !salesEndDate || salesStartDate.getTime() > salesEndDate.getTime() || 
+      salesStartDate.getTime() > lastSale.getTime() || salesEndDate.getTime() < firstSale.getTime()) {
+        return;
+      }
+      try {
+        const sales_data = await fetchSalesData(salesStartDate, salesEndDate);
+        setSalesData(sales_data);
+      } catch (err) {
+        console.error('Failed to fetch sales data', err);
+      }
+    };
+
+    if (selectedOption === 'sales_report') {
+      loadSalesData();
+    }
+  }, [selectedOption, salesStartDate,salesEndDate, firstSale, lastSale]);
   
   useEffect(() => {
     const loadData = async () => {
@@ -181,8 +219,8 @@ export default function StaffStats() {
         if (fetchedData) {
           setMenuItems(fetchedData.menuItems);
           setInventory(fetchedData.inventory);
-          setFirstSale(fetchedData.firstSale);
-          setLastSale(fetchedData.lastSale);
+          setFirstSale(new Date(fetchedData.firstSale));
+          setLastSale(new Date(fetchedData.lastSale));
           setLastRestock(fetchedData.lastRestock);
         }
       } catch (error) {
@@ -259,6 +297,12 @@ export default function StaffStats() {
               onClick={() => handleButtonSelect('z_report')}
             >
               Z-Report
+            </button>
+            <button
+              className={selectedOption === 'sales_report' ? styles.selectedOption : styles.option}
+              onClick={() => handleButtonSelect('sales_report')}
+            >
+              Sales Report
             </button>
             <button
               className={selectedOption === 'restock_report' ? styles.selectedOption : styles.option}
@@ -426,6 +470,40 @@ export default function StaffStats() {
             </div>
             )}
           </div>
+          )}
+          
+          {selectedOption === 'sales_report' && (
+            <div>
+                <h2>Sales Report Statistics</h2>
+                <div>
+                  <label>Start Date:</label>
+                  <input type="date" id="startSalesDate" onChange={handleSalesStartChange} />
+                  <label>End Date:</label>
+                  <input type="date" id="endSalesDate" onChange={handleSalesEndChange} />
+                </div>
+                <div className={styles.tableContainer}>
+                  <table className={styles.restockTable}>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Num Sales</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {salesData.map((item: SalesFreq, index: number) => (
+                        <tr key={item.menu_id}>
+                          <td>{item.menu_id}</td>
+                          <td>{item.item_name}</td>
+                          <td>{item.category}</td>
+                          <td>{item.num_sales}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
           )}
 
           {selectedOption === 'restock_report' && (
